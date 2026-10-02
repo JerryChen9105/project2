@@ -1,0 +1,280 @@
+@startuml Mokepon_Class_Diagram
+' ============================================================================
+' Mokepon - 综合类图 (UI + UI Control + Backend)
+' 生成自 src/main/java/au/edu/unimelb/swen/oop/mokepon
+' ============================================================================
+title Mokepon Project - Class Diagram (UI / Control / Backend)
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 28
+skinparam ranksep 38
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+' ---------------------------------------------------------------------------
+' 颜色主题
+' ---------------------------------------------------------------------------
+skinparam class {
+    BackgroundColor #FDFDFD
+    BorderColor #444444
+    ArrowColor #555555
+    HeaderBackgroundColor #E8EEF7
+}
+skinparam noteBackgroundColor #FFFBE6
+skinparam noteBorderColor #D6C36A
+
+' ===========================================================================
+' 1. BACKEND 层 (后端游戏驱动逻辑)
+' ===========================================================================
+package "Backend" #E7F3E7 {
+
+    class Mokepon <<model + battle logic>> {
+        ' --- 属性 ---
+        # name : String
+        # imgURL : String
+        # hp : int
+        # energy : int
+        # strength : int
+        # accuracy : int
+        # defence : int
+        # dodge : int
+        # skills : String[]
+        {static} # logTextArr : String[]
+        {static} # maxDefence : int = 100
+        ' --- 构造 ---
+        + Mokepon()
+        + Mokepon(name, imgURL, hp, energy, strength, accuracy, defence, dodge, skillStr)
+        ' --- 数据操作 ---
+        + attrCopy(mokepon : Mokepon) : void
+        + isEmpty() : boolean
+        ' --- getters ---
+        + getName() : String
+        + getImgURL() : String
+        + getHP() : int
+        + getEnergy() : int
+        + getStrength() : int
+        + getAccuracy() : int
+        + getDefence() : int
+        + getDodge() : int
+        + getSkills() : String[]
+        ' --- setters ---
+        + setHP(newHP : int) : void
+        + setEnergy(newEnergy : int) : void
+        + setDefence(newDefence : int) : void
+        ' --- 战斗行为 ---
+        + bite(enemy : Mokepon) : int
+        + tackle(enemy : Mokepon) : int
+        + bunker() : int
+        + waitEnergy(origin : Mokepon) : String
+    }
+
+    class RandomMethod <<utility>> {
+        {static} + randomInt(start : int, range : int) : int
+        {static} + randomDouble(start : double, range : double) : double
+        {static} + randomObject(objectSet : Object[]) : Object
+        - RandomMethod()
+    }
+}
+
+' ===========================================================================
+' 2. UI UTILS 层 (UI 工具)
+' ===========================================================================
+package "UIElement.Utils" #EEF1FA {
+
+    class GameWindow <<JavaFX Stage>> {
+        + GameWindow()
+        ' extends javafx.stage.Stage
+    }
+
+    class ScreenPosition <<utility/constants>> {
+        {static} + screenBounds : Rectangle2D
+        {static} + bgWidth : double = 1280
+        {static} + bgHeight : double = 768
+        {static} + menuBarHeight : double = 15
+        {static} + screenWidth : double
+        {static} + screenHeight : double
+        {static} + screenLeft : double
+        {static} + screenTop : double
+        {static} + relativeCenterX(idealX, lengthX) : double
+        {static} + relativeCenterY(idealY, lengthY) : double
+        - ScreenPosition()
+    }
+
+    class ImageMethod <<utility>> {
+        {static} + createImage(url, w, h, preserveRatio) : Image
+        {static} + createImageView(image : Image) : ImageView
+        {static} + createImageView(url, w, h, preserveRatio) : ImageView
+        {static} + setLocation(iv : ImageView, x, y) : void
+        - ImageMethod()
+    }
+
+    class GotischFont <<utility>> {
+        {static} - url : String
+        {static} + gotischFontError : String
+        {static} + createGotischFont(size : int, type : Object) : Font
+        - GotischFont()
+    }
+}
+
+' ===========================================================================
+' 3. STATIC UI 层 (单层 UI - 返回单个叶子控件)
+' ===========================================================================
+package "UIElement.StaticUI" #FFF4E6 {
+
+    class "StaticUI.BGBlock" as SBG {
+        {static} + bgURL : String
+        {static} + createBGImageView() : ImageView
+        {static} + createStartButton(chooseFont : Font) : Button
+    }
+
+    class "StaticUI.SelectScreen.SelectBlock" as SSB {
+        {static} + createSelectTitle(title, titleFont) : Text
+    }
+
+    class "StaticUI.SelectScreen.DisplayBlock" as SDB {
+        {static} + displayX : double
+        {static} + displayY : double
+        {static} + displayCircleRadius : double
+        {static} + mokeponNameFont : Font
+        {static} + scrollURL : String
+        {static} + scrollWidth : double
+        {static} + scrollHeight : double
+        {static} + createDisplayName(name : String) : Text
+        {static} + createDisplayCircle() : Circle
+        {static} + createDisplayImg(name : String) : ImageView
+        {static} + createDisplayScroll() : ImageView
+    }
+
+    class "StaticUI.BattleScreen.EnemyBlock" as SEB {
+        {static} + createEnemyBG() : ImageView
+    }
+
+    class "StaticUI.BattleScreen.SelfBlock" as SSBI {
+        {static} + createSelfBG() : ImageView
+    }
+
+    class "StaticUI.BattleScreen.BattleLog" as SBL {
+        {static} + createBattleLog() : TextArea
+    }
+}
+
+' ===========================================================================
+' 4. DYNAMIC UI 层 (多层 UI + out 参数回传内层控件)
+' ===========================================================================
+package "UIElement.DynamicUI" #EAF3FF {
+
+    class "DynamicUI.BGBlock" as DBG {
+        {static} + createMenuBar(itemList : ArrayList<MenuItem>) : MenuBar
+    }
+
+    class "DynamicUI.SelectScreen.SelectBlock" as DSB {
+        {static} + titleX : double
+        {static} + titleY : double
+        {static} + createSelectButtonBlock(mokeponList, txtFont, selectBtnList : ArrayList<Button>) : ScrollPane
+        {static} + createSelectButton(txt, txtFont) : Button
+        {static} + createAttributeDisplayBlock(attrArr, attrTxtList : ArrayList<Text>) : GridPane
+    }
+
+    class "DynamicUI.BattleScreen.EnemyBlock" as DEB {
+        {static} + createEnemyBarBlock(enemyBarArr : ProgressBar[]) : VBox
+    }
+
+    class "DynamicUI.BattleScreen.SelfBlock" as DSBI {
+        {static} + skillArr : String[]
+        {static} + createSelfBarBlock(selfBarArr : ProgressBar[], selfBarInfoArr : Text[]) : VBox
+        {static} + createSkillBlock(titleFont, btnFont, skillBtnList : ArrayList<Button>) : VBox
+    }
+}
+
+' ===========================================================================
+' 5. SELECT SCREEN (未接入的旧骨架, 保留以完整性)
+' ===========================================================================
+package "SelectScreen (legacy scaffold)" #F3F0F5 {
+
+    class SelectScreen {
+        - {static} selectScreenRoot : Group
+        + getSelectScreenRoot() : Group
+        + addScreenElement(selectScreenElement : SelectScreenElement<Node>) : void
+    }
+
+    interface SelectScreenElement<T> <<interface>> {
+        + buildElement() : T
+    }
+}
+
+' ===========================================================================
+' 6. MAIN (入口 + UI 控制 + 后端驱动协调)
+' ===========================================================================
+package "mokepon" #FDE8E8 {
+
+    class Main <<Application / Controller>> {
+        {static} # attrArr : String[]
+        {static} # maxMokeponNum : int = 50
+        + start(stage : Stage) : void
+        ' --- UI-Control: 数值刷新 ---
+        - updateBarProgress(barArr : ProgressBar[], current, origin) : void
+        - updateBarInfo(selfBarInfoArr : Text[], battleSelf, self) : void
+        - updateAllBattleStatus(battleEnemy, enemy, battleSelf, self, enemyBarArr, selfBarArr, selfBarInfoArr) : void
+        - updateSkillBtnStates(battleSelf, self, skillBtnList : ArrayList<Button>) : void
+        - mokeponIsDied(battleMokepon, bgImageView : ImageView) : Boolean
+        ' --- Backend driving ---
+        - enemyAutoRandomAction(battleEnemy, enemy, battleSelf, self, battleLog : TextArea, enemyBarArr, selfBarArr, selfBarInfoArr) : void
+        ' --- Scene ---
+        + selectScreen(gameWindow, root : Pane, nodeList : ArrayList<Node>) : void
+        - loadPropertiesFromArgument() : Properties
+        {static} + main(args : String[]) : void
+    }
+}
+
+' ===========================================================================
+' 关系：继承
+' ===========================================================================
+GameWindow --|> Stage : extends
+Main --|> Application : extends
+
+' ===========================================================================
+' 关系：Main 依赖 (创建/装配/控制) 各 UI 与 后端
+' ===========================================================================
+Main ..> Mokepon : creates / mutates
+Main ..> RandomMethod : uses
+Main ..> GameWindow : creates
+Main ..> SBG : createBGImageView(), createStartButton()
+Main ..> SDB : createDisplayName / Circle / Img / Scroll
+Main ..> SSB : createSelectTitle()
+Main ..> DSB : createSelectButtonBlock / AttributeDisplayBlock
+Main ..> DBG : createMenuBar()
+Main ..> SEB : createEnemyBG()
+Main ..> DEB : createEnemyBarBlock()
+Main ..> SSBI : createSelfBG()
+Main ..> DSBI : createSelfBarBlock / createSkillBlock
+Main ..> SBL : createBattleLog()
+
+' ===========================================================================
+' 关系：UI 层内部依赖 Utils
+' ===========================================================================
+SBG ..> ImageMethod : uses
+SBG ..> ScreenPosition : uses
+SDB ..> ImageMethod : uses
+SDB ..> GotischFont : uses
+SDB ..> ScreenPosition : uses
+SDB ..> Main : new Main() (font loader)
+SEB ..> ImageMethod : uses
+SSBI ..> ImageMethod : uses
+SBL ..> ScreenPosition : uses
+DSB ..> Mokepon : reads name
+DSB ..> ScreenPosition : uses
+DSB ..> SDB : reads scrollWidth/Height
+DEB ..> ProgressBar : creates
+DSBI ..> ScreenPosition : uses
+
+' ===========================================================================
+' 关系：后端依赖
+' ===========================================================================
+Mokepon ..> RandomMethod : uses (bite/tackle/bunker/wait)
+
+SelectScreen ..> SelectScreenElement : contains
+
+@enduml
+
+#   AI conclusion of original project 1 class UML code

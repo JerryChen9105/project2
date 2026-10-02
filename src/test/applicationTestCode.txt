@@ -1,0 +1,10 @@
+
+
+        HBox root = new HBox(10, new Text("TEST"));
+        root.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(root);
+
+        primaryStage.setScene(scene);
+        primaryStage.setWidth(500);
+        primaryStage.setHeight(500);
+        primaryStage.show();

@@ -1,0 +1,179 @@
+@startuml Mokepon_Sequence_Diagrams
+' ============================================================================
+' Mokepon - 时序图 (启动装配 + 选择控制 + 战斗回合驱动)
+' ============================================================================
+title Mokepon - Sequence Diagrams (Startup / Select Control / Battle Loop)
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 160
+
+' ===========================================================================
+' 图 1: 应用启动与 UI 装配 (Main.start)
+' ===========================================================================
+participant "User" as U
+participant "JavaFX\nRuntime" as FX
+participant "Main" as M
+participant "Backend.Mokepon" as MK
+participant "Utils\n(GameWindow/Font/Image)" as UT
+participant "StaticUI" as S
+participant "DynamicUI" as D
+
+FX -> M : start(stage)
+activate M
+
+group PART 1 - 后端数据加载
+    M -> M : loadPropertiesFromArgument()
+    loop mokeponCount < maxMokeponNum (50)
+        M -> MK : new Mokepon(name, img, hp, energy, ...)
+        M -> M : add to mokeponList / mokeponTable
+    end
+    M -> MK : new Mokepon() (enemy/self/battle copies)
+end
+
+group PART 2 - UI 构建
+    M -> UT : createGotischFont(...) x5
+    M -> UT : new GameWindow()
+    M -> D : createMenuBar(gameControlList)
+    M -> S : createBGImageView()
+    M -> S : createStartButton(font)
+    M -> S : createDisplayName/Circle/Scroll()
+    M -> D : createSelectButtonBlock(list, font, selectBtnList)
+    M -> D : createAttributeDisplayBlock(attrArr, attrTxtList)
+    M -> S : createBattleLog()
+    M -> S : createEnemyBG() / createSelfBG()
+    M -> D : createEnemyBarBlock(enemyBarArr)
+    M -> D : createSelfBarBlock(selfBarArr, selfBarInfoArr)
+    M -> D : createSkillBlock(font, font, skillBtnList)
+    M -> M : assemble selectRoot / battleRoot Groups
+end
+
+group PART 3 - UI 控制绑定
+    M -> M : bind selectBtn hover/click -> displayTrigger
+    M -> M : displayTrigger.addListener (refresh preview + attrs)
+    M -> M : startButton.setOnMouseClicked -> start battle
+    M -> M : menu items -> reset / restart / exit
+    M -> M : skill buttons -> skill handlers (bite/tackle/bunker/wait)
+end
+
+group PART 4 - 渲染
+    M -> M : selectScreen(gameWindow, root, nodeList)
+    M -> UT : gameWindow.show()
+end
+
+deactivate M
+@enduml
+
+
+@startuml Mokepon_Select_Control
+' ===========================================================================
+' 图 2: 选择界面控制 (选择 -> 预览 -> 开始战斗)
+' ===========================================================================
+title Mokepon - Select Screen Control Flow
+
+actor User as U
+participant "Select button" as BTN
+participant "displayTrigger\n(ObjectProperty<Button>)" as TRIG
+participant "Main.start()\nlistener" as M
+participant "Start button" as START
+participant "Mokepon\n(self / enemy / battle*)" as MK
+
+U -> BTN : mouseEntered / mouseExited
+BTN -> BTN : setOpacity (highlight)
+
+U -> BTN : mouseClicked
+BTN -> TRIG : set(btn) or set(null) (toggle)
+TRIG -> M : listener(old, new)
+activate M
+    alt newValue == null
+        M -> M : reset displayName / image / attrTexts
+    else newValue != null
+        M -> MK : mokeponTable.get(name)
+        M -> M : set image + 7 attribute Texts
+    end
+deactivate M
+
+note over START : startButton.disableProperty().bind(displayTrigger.isNull())
+Note over U, START : 未选中时 Start 按钮自动禁用
+
+U -> START : mouseClicked
+START -> M : handler
+activate M
+    M -> MK : self.attrCopy(selected)
+    M -> MK : enemy.attrCopy(random mokepon)
+    M -> MK : battleSelf.attrCopy(self)\n battleEnemy.attrCopy(enemy)
+    M -> M : updateAllBattleStatus(...)
+    M -> M : updateSkillBtnStates(...)
+    M -> M : battleLog.clear() + intro text
+    M -> M : selectRoot.setVisible(false),\n battleRoot.setVisible(true)
+deactivate M
+@enduml
+
+
+@startuml Mokepon_Battle_Loop
+' ===========================================================================
+' 图 3: 战斗回合驱动 (玩家技能 -> 敌方自动行动)
+' ===========================================================================
+title Mokepon - Battle Turn Loop (Skill Button Handler)
+
+actor User as U
+participant "Skill Button\n(Bite/Tackle/Bunker/Wait)" as SB
+participant "Main\n(skill handler)" as M
+participant "battleSelf : Mokepon" as SELF
+participant "battleEnemy : Mokepon" as ENEMY
+participant "Main.enemyAutoRandomAction" as AI
+participant "battleLog / Bars" as VIEW
+
+U -> SB : mouseClicked
+SB -> M : action handler
+activate M
+    M -> VIEW : appendText("Player used ...")
+    alt Bite
+        M -> SELF : bite(battleEnemy) : damage
+    else Tackle
+        M -> SELF : tackle(battleEnemy) : damage
+    else Bunker
+        M -> SELF : bunker() : defence
+    else Wait
+        M -> SELF : waitEnergy(self) : logText
+    end
+    M -> VIEW : appendText(damage / miss / defence / wait)
+    M -> M : updateAllBattleStatus(...)
+    M -> M : updateSkillBtnStates(...)
+
+    alt battleEnemy.getHP() <= 0
+        M -> VIEW : appendText("Enemy fainted! You win")
+        M -> M : disable all skill buttons
+        M --> SB : return
+    end
+
+    M -> AI : enemyAutoRandomAction(...)
+    activate AI
+        loop until valid action produced
+            AI -> ENEMY : randomInt(0,4) -> action
+            alt bite/tackle
+                AI -> ENEMY : bite/tackle(battleSelf)
+            else bunker
+                AI -> ENEMY : bunker()
+            else wait
+                AI -> ENEMY : waitEnergy(enemy)
+            end
+        end
+        AI -> VIEW : appendText(enemy action)
+        AI -> M : updateAllBattleStatus(...)
+    deactivate AI
+
+    alt battleSelf.getHP() <= 0
+        M -> VIEW : appendText("Player fainted! You lose")
+        M -> M : mokeponIsDied -> red ColorAdjust on bg
+        M -> M : updateSkillBtnStates(disable)
+    end
+deactivate M
+
+note over ENEMY : Mokepon.bite/tackle/bunker 内部\n调用 RandomMethod 判定命中/伤害\n并直接修改 hp/energy/defence
+
+@enduml
+
+
+
+#   AI conclusion of original project 1 class UML code

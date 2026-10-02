@@ -1,0 +1,1606 @@
+﻿================================================================================
+SWEN20003 PROJECT 2 - MOKEPON EXTENDED
+FULL CODE SUMMARY (for external project analysis)
+================================================================================
+
+PURPOSE OF THIS DOCUMENT
+--------------------------------------------------------------------------------
+This file contains a full scan/transcription of every Java source file under:
+    src/main/java/au/edu/unimelb/swen/oop/mokepon/
+It is intended to be handed to another AI / reviewer for a complete project
+analysis. It includes the module descriptor, every class/interface/enum, their
+fields, constructors and method SIGNATURES (and bodies where present), plus a
+structural overview of the architecture and a list of known defects.
+
+NOTE ON COMPLETENESS:
+- Many classes are still SKELETONS: they contain method signatures with empty
+  bodies (or bodies returning null). This is an in-progress refactor. Every such
+  placeholder is preserved verbatim below so the analysis reflects the true
+  current state of the code.
+- This file describes CODE AS WRITTEN. Behaviour that is stubbed out is marked.
+
+================================================================================
+SECTION 0 - PROJECT META
+================================================================================
+
+Build system : Gradle (Kotlin DSL), JavaFX plugin 0.1.0, Java toolchain 25
+JavaFX version : 25 (module: javafx.controls)
+Main module : au.edu.unimelb.swen.oop.mokepon
+Main class : au.edu.unimelb.swen.oop.mokepon.Main
+Run arg : data=src/main/resources/mokepon.game
+Test deps : JUnit 5 (junit-bom 6.0.0) - test sources currently empty
+
+Package root layout (src/main/java/au/edu/unimelb/swen/oop/mokepon/):
+    Main.java
+    app/            GameWindow, ScreenManager, ScreenState
+    controller/     ScreenController, MokeponSelectController, BattleController
+    battle/         BattleService, BattleContext, BattleResult, BattleOutcome
+    battle/skill/   Skill + 10 concrete skill classes
+    state/          GameState, Inventory, ItemType
+    model/          Mokepon, MokeponType
+    event/          EventBus
+    view/           GameBgView, MokeponSelectView, MokeponBattleView
+    view/view_interface/            View
+    view/view_interface/bg/         BgView
+    view/view_interface/select/     MokeponListView, MokeponDetailView, MokeponChooseView
+    view/fx/bg/                     FxBgView
+    view/fx/select/                 FxMokeponListView, FxMokeponDetailView, FxMokeponChooseView
+    util/           ScreenPosition, FontLoader, ImageLoader
+    util/random/    RandomSource, JavaRandomSource
+    data/           GameDataLoader (abstract), MokeponLoader, TileLoader
+
+Resources (src/main/resources/):
+    mokepon.game   (key-value game data, see Section 15)
+    style.css
+    assets/*       (~60 PNG sprites/tiles + GrenzeGotisch-Black.ttf font)
+
+ARCHITECTURAL SUMMARY (one paragraph):
+The project has been refactored from a single monolithic Main class into a
+layered MVC/MVP-style architecture with clear separation: model (Mokepon,
+MokeponType), state (GameState with JavaFX properties, Inventory), data loaders
+(GameDataLoader abstract base + MokeponLoader + TileLoader stub), a battle
+subsystem (BattleService + Skill strategy classes), an event system (EventBus
+topic-based pub/sub), view INTERFACES under view/view_interface.* with JavaFX
+implementations under view/fx.*, screen FACADES in view.* (GameBgView,
+MokeponSelectView, MokeponBattleView), controllers (ScreenController + concrete
+controllers), and an app shell (GameWindow extends Stage, ScreenManager,
+ScreenState enum). The SELECT screen is now largely wired and functional
+(loader -> view -> controller -> state properties -> detail display). The BATTLE
+and OVERWORLD screens plus battle logic remain stubbed/empty.
+
+CHANGES SINCE A PRIOR SUMMARY (for reference): GameWindow added; ScreenManager
+now takes a Stage and implements register/switchTo; GameState/Inventory/EventBus
+now initialise their properties (previously NullPointer-prone); Mokepon gained
+current* getters/setters and a MokeponType; MokeponType enum added with type
+sprite loading; view package reorganised into bg/select sub-packages with
+dedicated interfaces and Fx implementations; FxMokeponDetailView now renders
+attributes + type icon; MokeponSelectController and Main are now wired.
+
+================================================================================
+SECTION 1 - module-info.java
+================================================================================
+
+module au.edu.unimelb.swen.oop.mokepon {
+    requires javafx.graphics;
+    requires java.desktop;
+    requires javafx.controls;
+    exports au.edu.unimelb.swen.oop.mokepon to javafx.graphics;
+}
+
+================================================================================
+SECTION 2 - Main.java  (Application entry point - NOW WIRED)
+================================================================================
+package au.edu.unimelb.swen.oop.mokepon;
+
+imports:
+    app.GameWindow, app.ScreenManager, app.ScreenState,
+    controller.MokeponSelectController, controller.ScreenController,
+    data.MokeponLoader, event.EventBus, model.Mokepon, state.GameState,
+    view.GameBgView, view.MokeponSelectView, view.fx.bg.FxBgView,
+    view.fx.select.FxMokeponDetailView, view.fx.select.FxMokeponListView,
+    view.view_interface.bg.BgView, view.view_interface.select.MokeponDetailView,
+    view.view_interface.select.MokeponListView,
+    javafx.application.Application, javafx.scene.Group, javafx.scene.Scene,
+    javafx.stage.Stage, java.io.IOException, java.nio.file.Files,
+    java.nio.file.Path, java.util.ArrayList, java.util.Properties
+
+public class Main extends Application {
+
+    private ScreenManager screenManager;
+    private GameState gameState;
+    private EventBus eventBus;
+    private GameBgView gameBgView;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        primaryStage = new GameWindow();
+        screenManager = new ScreenManager(primaryStage);
+        gameState = new GameState();
+        eventBus = new EventBus();
+        gameBgView = new GameBgView(new FxBgView());
+
+        Properties gameProperty = loadPropertiesFromArgument();
+
+        MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
+        ArrayList<Mokepon> mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());
+
+        MokeponListView fxMokeponListView = new FxMokeponListView();
+        MokeponDetailView fxMokeponDetailView = new FxMokeponDetailView();
+
+        MokeponSelectView mokeponSelectView = new MokeponSelectView(fxMokeponListView, fxMokeponDetailView);
+
+        ScreenController mokeponSelectController = new MokeponSelectController(
+                mokeponSelectView, gameState, mokeponList, eventBus
+        );
+
+        screenManager.register(ScreenState.SELECT, mokeponSelectController);
+
+        mokeponSelectController.init();
+
+        Group mainRoot = new Group();
+        mainRoot.getChildren().addAll(gameBgView.getBgViewRoot(), mokeponSelectView.getMokeponSelectRoot());
+        Scene scene = new Scene(mainRoot);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private Properties loadPropertiesFromArgument() throws IOException {
+        String argument = getParameters().getRaw().getFirst();
+        if (!argument.startsWith("data=")) {
+            throw new IllegalArgumentException("Missing expected argument in the form data=relativeFilePath");
+        }
+
+        Properties properties = new Properties();
+        try (var input = Files.newInputStream(Path.of(argument.substring("data=".length())))) {
+            properties.load(input);
+        }
+        return properties;
+    }
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+}
+
+OBSERVATIONS:
+- start() is now a real composition root: creates GameWindow, ScreenManager,
+  GameState, EventBus, background, loaders, views, controller; registers SELECT;
+  builds the scene graph and shows the stage.
+- NOTE: local variable named 'mokeponList' shadows the java.util.List interface
+  name (compiles, but poor style). Also FxMokeponListView/FxMokeponDetailView are
+  constructed here as the concrete classes but referenced via interface types.
+- NOTE: mainRoot adds bg root first then select root (correct z-order).
+- NOTE: ScreenManager.switchTo() is NOT called here; SELECT is shown by directly
+  adding its root to the scene. So ScreenManager is only used for register().
+
+================================================================================
+SECTION 3 - app package
+================================================================================
+
+--- app/ScreenState.java (enum) ---
+package au.edu.unimelb.swen.oop.mokepon.app;
+
+public enum ScreenState {
+    SELECT, BATTLE, OVERWORLD
+}
+
+--- app/GameWindow.java (extends javafx.stage.Stage) ---
+package au.edu.unimelb.swen.oop.mokepon.app;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+public class GameWindow extends Stage {
+
+    public GameWindow() {
+        setTitle("Mokepon");
+        setResizable(false);
+        setWidth(ScreenPosition.SCREENWIDTH);
+        setHeight(ScreenPosition.SCREENHEIGHT);
+        setScene(new Scene(new Pane(), ScreenPosition.SCREENWIDTH,
+                ScreenPosition.SCREENHEIGHT, Color.LIGHTGREY));
+    }
+}
+
+--- app/ScreenManager.java (screen navigation shell) ---
+package au.edu.unimelb.swen.oop.mokepon.app;
+
+import au.edu.unimelb.swen.oop.mokepon.controller.ScreenController;
+import javafx.stage.Screen;        // NOTE: imported but unused
+import javafx.stage.Stage;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+public class ScreenManager {
+
+    private Stage stage;
+    private HashMap<ScreenState, ScreenController> controllerMap = new LinkedHashMap<>();
+    private ScreenState currentScreenState;
+
+    public ScreenManager(Stage stage) {
+        this.stage = stage;
+        currentScreenState = null;
+    }
+
+    public void register(ScreenState screenState, ScreenController screenController) {
+        this.controllerMap.put(screenState, screenController);
+    }
+
+    public void switchTo(ScreenState screenState) {
+        if (currentScreenState != null) {
+            controllerMap.get(currentScreenState).hide();
+        }
+        ScreenController targetController = controllerMap.get(screenState);
+        if (targetController == null) return;
+
+        targetController.show();
+        currentScreenState = screenState;
+        stage.getScene().setRoot(null); // add view.node()  <-- TODO / INCOMPLETE
+    }
+
+    public ScreenState getCurrentScreenState() {
+        return currentScreenState;
+    }
+}
+
+OBSERVATIONS:
+- register() now works; switchTo() shows target & hides previous, and updates
+  currentScreenState.
+- BUG/TODO: switchTo() calls stage.getScene().setRoot(null) — it CLEARS the scene
+  root and never re-attaches any view node. The comment "// add view.node()"
+  marks it unfinished. A Controller currently exposes no node() accessor.
+- 'import javafx.stage.Screen' unused.
+- HashMap declared, LinkedHashMap instantiated (keeps insertion order - intentional
+  for deterministic iteration, but field type is the less specific interface).
+
+================================================================================
+SECTION 4 - controller package
+================================================================================
+
+--- controller/ScreenController.java (interface) ---
+package au.edu.unimelb.swen.oop.mokepon.controller;
+
+public interface ScreenController {
+    public void init();
+    public void show();
+    public void hide();
+}
+
+--- controller/MokeponSelectController.java (NOW IMPLEMENTED) ---
+package au.edu.unimelb.swen.oop.mokepon.controller;
+
+import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public class MokeponSelectController implements ScreenController {
+
+    private MokeponSelectView view;
+    private GameState state;
+    private ArrayList<Mokepon> mokeponList;
+    private EventBus eventBus;
+
+    public MokeponSelectController(
+            MokeponSelectView view,
+            GameState state,
+            ArrayList<Mokepon> mokeponList,
+            EventBus eventBus) {
+        this.view = view;
+        this.state = state;
+        this.mokeponList = mokeponList;
+        this.eventBus = eventBus;
+    }
+
+    @Override
+    public void init() {
+        Consumer<Mokepon> btnClickEvent = mokepon -> {
+            if ((state.getSelectedMokepon() == null) || !state.getSelectedMokepon().equals(mokepon)) {
+                onMokeponSelected(mokepon);
+            } else {
+                onChooseClicked();
+            }
+        };
+        view.getMokeponListView().setItems(mokeponList, btnClickEvent);
+        state.selectedMokeponProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                view.getMokeponListView().clearSelection();
+                view.getMokeponDetailView().clear();
+            }
+        });
+    }
+
+    @Override
+    public void show() {
+        view.getMokeponSelectRoot().setVisible(true);
+    }
+
+    @Override
+    public void hide() {
+        view.getMokeponSelectRoot().setVisible(false);
+    }
+
+    private void onMokeponSelected(Mokepon mokepon) {
+        state.setSelectedMokepon(mokepon);
+        view.getMokeponDetailView().show(mokepon);
+    }
+
+    private void onChooseClicked() {
+        state.setSelectedMokepon(null);
+        view.getMokeponDetailView().clear();
+    }
+}
+
+OBSERVATIONS:
+- init() wires the list view with a callback and subscribes to selectedMokepon
+  changes.
+- The click callback implements a toggle: first click selects, second click on
+  the SAME already-selected mokepon triggers onChooseClicked().
+- BUG/LOGIC: onChooseClicked() sets selectedMokepon to null and clears the
+  detail view, i.e. it behaves like a DESELECT rather than a confirm/choose.
+  The intended "choose -> go to battle" behaviour (increment fightCount, set
+  playerMokepon, switchTo BATTLE) is NOT implemented.
+- onMokeponSelected() does not call view.getMokeponListView().select(mokepon),
+  so the list view's internal selectedButton is never set (getSelectedButtonName
+  would still NPE).
+
+--- controller/BattleController.java (STILL STUB) ---
+package au.edu.unimelb.swen.oop.mokepon.controller;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleService;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
+import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.view.MokeponBattleView;
+
+public class BattleController implements ScreenController {
+
+    private MokeponBattleView view;
+    private GameState state;
+    private BattleService battleService;
+    private EventBus eventBus;
+    private BattleContext context;
+
+    @Override public void init() { /* STUB - empty */ }
+    @Override public void show() { /* STUB - empty */ }
+    @Override public void hide() { /* STUB - empty */ }
+
+    private void onSkillClicked(Skill skill) {
+        // STUB - empty
+    }
+
+    private void runEnrmyTurn() {          // NOTE: method name typo "Enrmy"
+        // STUB - empty
+    }
+
+    private void handleBattleEnd(BattleOutcome battleOutcome) {
+        // STUB - empty
+    }
+}
+
+================================================================================
+SECTION 5 - battle package
+================================================================================
+
+--- battle/BattleOutcome.java (enum) ---
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+public enum BattleOutcome {
+    ONGOING, PLAYER_WIN, PLAYER_LOSE
+}
+
+--- battle/BattleResult.java (PARTIAL) ---
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+import java.util.ArrayList;
+
+public class BattleResult {
+
+    private ArrayList<String> messageList;
+    private boolean ended;
+    private BattleOutcome outcome;
+
+    public BattleResult(ArrayList<String> messageList, BattleOutcome outcome) {
+        this.messageList = messageList;
+        this.outcome = outcome;
+    }
+
+    public ArrayList<String> getMessageList() {
+        return null;   // STUB - should return messageList
+    }
+
+    public boolean isEnded() {
+        return this.outcome != BattleOutcome.ONGOING;
+    }
+
+    public BattleOutcome getOutcome() {
+        return null;   // STUB - should return outcome
+    }
+}
+
+NOTE: constructor now stores messageList/outcome, but getters are still stubs
+returning null. 'ended' field is declared and never used.
+
+--- battle/BattleContext.java (NOW INITIALISED) ---
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+import java.util.ArrayList;
+
+public class BattleContext {
+
+    ArrayList<String> logList;
+
+    public BattleContext() {
+        logList = new ArrayList<>();
+    }
+
+    public void log(String logMessage) {
+        logList.add(logMessage);
+    }
+
+    public ArrayList<String> getLogList() {
+        return logList;
+    }
+}
+// NOTE: logList is package-private (no modifier) - inconsistent encapsulation.
+
+--- battle/BattleService.java (PARTIAL) ---
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
+
+import java.util.HashMap;
+
+public class BattleService {
+
+    private RandomSource randomSource;
+    private HashMap<String, Skill> skillMap = new HashMap<>();   // declared, never populated
+
+    public BattleService(RandomSource randomSource) {
+        this.randomSource = randomSource;
+    }
+
+    public BattleResult useSkill(Skill skill, Mokepon self, Mokepon other, BattleContext battleContext) {
+        return skill.execute(self, other, battleContext);   // delegates to skill
+    }
+
+    public BattleResult useEnemyRandomSkill(Mokepon self, Mokepon other, BattleContext battleContext) {
+        int randonSkillInt = randomSource.nextInt(0, self.getSkills().size());
+        return null; // add code   <-- TODO: enemy skill selection not finished
+    }
+
+    public BattleOutcome checkBattleEnd(Mokepon self, Mokepon other) {
+        return null;   // STUB
+    }
+}
+
+OBSERVATIONS:
+- RandomSource is now injected via constructor (good DIP), but Main does not yet
+  construct a BattleService.
+- skillMap declared but never used/populated.
+- useEnemyRandomSkill() picks a random index but discards it and returns null.
+- typo local: 'randonSkillInt'.
+- checkBattleEnd() stubbed.
+
+================================================================================
+SECTION 6 - battle/skill package
+================================================================================
+--- battle/skill/Skill.java (interface - Strategy) ---
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public interface Skill {
+    public String getName();
+    public int getEnergyCost();
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext);
+}
+
+--- The 10 concrete skills (ALL still STUBS) ---
+Every execute(...) body returns null. Each overrides getName() (hard-coded
+string) and getEnergyCost() (hard-coded int).
+
+Class                | getName() returns | getEnergyCost() | execute()
+---------------------+-------------------+-----------------+----------
+BiteSkill            | "Bite"            | 1               | return null;
+TackleSkill          | "Tackle"          | 5               | return null;
+BunkerSkill          | "Bunker"          | 3               | return null;
+WaitSkill            | "Wait"            | -2              | return null;
+LanceSkill           | "Lance"           | 4               | return null;
+StunSkill            | "Stun"            | 4               | return null;
+AimSkill             | "Aim"             | 3               | return null;
+SwoleSkill           | "Swole"           | 3               | return null;
+NimbleSkill          | "Nimble"          | 3               | return null;
+PocketSandSkill      | "Pocket Sand"     | 4               | return null;
+
+(Representative source - all skill files are identical in shape; BiteSkill shown:)
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+public class BiteSkill implements Skill {
+    @Override public String getName() { return "Bite"; }
+    @Override public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        return null;
+    }
+    @Override public int getEnergyCost() { return 1; }
+}
+
+OBSERVATION: Classic Strategy pattern - each skill is a separate class
+implementing a common interface (replaces old switch/if). NONE of the skill
+effects are implemented yet.
+
+================================================================================
+SECTION 7 - state package
+================================================================================
+
+--- state/ItemType.java (enum) ---
+package au.edu.unimelb.swen.oop.mokepon.state;
+
+public enum ItemType {
+    HEALTH, COFFEE, POISON
+}
+
+--- state/GameState.java (NOW INITIALISED) ---
+package au.edu.unimelb.swen.oop.mokepon.state;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
+public class GameState {
+
+    private ObjectProperty<Mokepon> selectedMokepon = new SimpleObjectProperty<>();
+    private ObjectProperty<Mokepon> playerMokepon = new SimpleObjectProperty<>();
+    private ObjectProperty<Mokepon> enemyMokepon = new SimpleObjectProperty<>();
+    private IntegerProperty fightCount = new SimpleIntegerProperty(0);
+    private Inventory inventory = new Inventory();
+
+    public ObjectProperty<Mokepon> selectedMokeponProperty() { return selectedMokepon; }
+    public Mokepon getSelectedMokepon() { return selectedMokepon.getValue(); }
+    public void setSelectedMokepon(Mokepon mokepon) { selectedMokepon.setValue(mokepon); }
+    public Mokepon getPlayerMokepon() { return playerMokepon.getValue(); }
+    public void setPlayerMokepon(Mokepon mokepon) { playerMokepon.setValue(mokepon); }
+    public Mokepon getEnemyMokepon() { return enemyMokepon.getValue(); }
+    public void setEnemyMokepon(Mokepon mokepon) { enemyMokepon.setValue(mokepon); }
+    public int getFightCount() { return fightCount.getValue(); }
+    public void incrementFightCount() { fightCount.setValue(fightCount.getValue() + 1); }
+    public Inventory getInventory() { return inventory; }
+    public void resetForNewSelection() {
+        selectedMokepon.setValue(null);
+        playerMokepon.setValue(null);
+    }
+}
+// The javafx properties are now initialised - no more NPE risk from uninitialised
+// fields. resetForNewSelection() clears selected & player but NOT enemyMokepon.
+
+--- state/Inventory.java (NOW IMPLEMENTED) ---
+package au.edu.unimelb.swen.oop.mokepon.state;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import java.util.HashMap;
+
+public class Inventory {
+
+    private HashMap<ItemType, IntegerProperty> itemMap = new HashMap<>();
+
+    public Inventory() {
+        for (ItemType itemType : ItemType.values()) {
+            itemMap.put(itemType, new SimpleIntegerProperty(0));
+        }
+    }
+
+    public void add(ItemType itemType) {
+        IntegerProperty itemNum = itemMap.get(itemType);
+        itemNum.setValue(itemNum.getValue() + 1);
+    }
+
+    public int getCount(ItemType itemType) {
+        return itemMap.get(itemType).getValue();
+    }
+
+    public boolean use(ItemType itemType) {
+        IntegerProperty itemNum = itemMap.get(itemType);
+        if (itemNum.getValue() <= 0) return false;
+        itemNum.setValue(itemNum.getValue() - 1);
+        return true;
+    }
+
+    public void clear() {
+        itemMap.values().forEach(item -> {
+            item.setValue(0);
+        });
+    }
+}
+// Fully implemented. Effect of using an item (heal/poison/coffee) is NOT applied
+// here - use() only decrements the count.
+
+================================================================================
+SECTION 8 - model package
+================================================================================
+
+--- model/MokeponType.java (enum with type-sprite helper) ---
+package au.edu.unimelb.swen.oop.mokepon.model;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import javafx.scene.image.Image;
+
+import java.util.Locale;
+
+public enum MokeponType {
+    NORMAL, FIRE, ICE, WATER, LIGHTNING;
+
+    private static final String TYPEIMGPREFIX = "/assets/sprite_";
+
+    public static Image getTypeImg(MokeponType mokeponType) {
+        if (mokeponType == null) return null;
+        return ImageLoader.load(TYPEIMGPREFIX + mokeponType.toString().toLowerCase(Locale.ROOT) + ".png", 32, 32);
+    }
+}
+// NOTE: enum imports a util/UI class (ImageLoader) and returns a JavaFX Image -
+// couples the model layer to JavaFX. No type-effectiveness (elemental weakness)
+// logic exists yet.
+
+--- model/Mokepon.java ---
+package au.edu.unimelb.swen.oop.mokepon.model;
+
+import java.util.ArrayList;
+
+public class Mokepon {
+
+    // immutable base stats
+    private String name;
+    private String imgURL;
+    private int maxHP;
+    private int maxEnergy;
+    private int baseStrength;
+    private int baseAccuracy;
+    private int baseDefence;
+    private int baseDodge;
+    private ArrayList<String> skillList;
+    private MokeponType mokeponType;
+
+    // mutable battle stats
+    private int currentHP;
+    private int currentEnergy;
+    private int currentStrength;
+    private int currentAccuracy;
+    private int currentDefence;
+    private int currentDodge;
+
+    public Mokepon(
+            String name, String imgURL, int maxHP, int maxEnergy,
+            int baseStrength, int baseAccuracy, int baseDefence, int baseDodge,
+            ArrayList<String> skillList, MokeponType mokeponType) {
+        this.name = name;
+        this.imgURL = imgURL;
+        this.maxHP = maxHP;
+        this.maxEnergy = maxEnergy;
+        this.baseStrength = baseStrength;
+        this.baseAccuracy = baseAccuracy;
+        this.baseDefence = baseDefence;
+        this.baseDodge = baseDodge;
+        this.skillList = skillList;
+        this.mokeponType = mokeponType;
+        // NOTE: currentHP/currentEnergy/current* still left at 0
+    }
+
+    public String toString() {
+        String skills = String.join(", ", skillList);
+        return "name : " + name + "\nimgURL : " + imgURL + "\nmaxHP : " + maxHP
+             + "\nmaxEnergy : " + maxEnergy + "\nbaseStrength : " + baseStrength
+             + "\nbaseAccuracy : " + baseAccuracy + "\nbaseDefence : " + baseDefence
+             + "\nbaseDodge : " + baseDodge + "\nskills : " + skills;
+    }
+
+    public boolean equals(Mokepon other) {
+        boolean skillsAreSame = true;
+        for (int i = 0; i < this.skillList.size(); i++) {
+            if (!this.skillList.get(i).equals(other.skillList.get(i))) {
+                skillsAreSame = false;
+                break;
+            }
+        }
+        return this.name.equals(other.getName()) &&      // now uses .equals (fixed)
+               this.imgURL.equals(other.getImgURL()) &&
+               skillsAreSame;
+    }
+    // NOTE: overloads equals WITHOUT @Override / hashCode -> violates equals/hashCode
+    // contract; equality also ignores maxHP/energy/stats/type.
+
+    // base-stat getters
+    public String getName() { return this.name; }
+    public String getImgURL() { return this.imgURL; }
+    public int getMaxHP() { return this.maxHP; }
+    public int getMaxEnergy() { return this.maxEnergy; }
+    public int getBaseStrength() { return this.baseStrength; }
+    public int getBaseAccuracy() { return this.baseAccuracy; }
+    public int getBaseDefence() { return this.baseDefence; }
+    public int getBaseDodge() { return this.baseDodge; }
+    public ArrayList<String> getSkills() { return this.skillList; }
+    public MokeponType getMokeponType() { return mokeponType; }
+
+    // current-stat getters
+    public int getCurrentHP() { return this.currentHP; }
+    public int getCurrentEnergy() { return this.currentEnergy; }
+    public int getCurrentStrength() { return this.currentStrength; }
+    public int getCurrentAccuracy() { return this.currentAccuracy; }
+    public int getCurrentDefence() { return this.currentDefence; }
+    public int getCurrentDodge() { return currentDodge; }
+
+    // setters (clamped)
+    public void setCurrentHP(int hp) { if (hp < 0) hp = 0; this.currentHP = hp; }
+    public void setCurrentEnergy(int energy) { if (energy < 0) energy = 0; this.currentEnergy = energy; }
+    public void setCurrentDefence(int defence) {
+        if (defence < 0) defence = 0;
+        else if (defence > 100) defence = 100;
+        this.currentDefence = defence;    // FIXED (previously wrote to currentEnergy)
+    }
+
+    public void takeDamage(int damage) {
+        if (this.currentHP <= damage) this.currentHP = 0;
+        else this.currentHP -= damage;
+    }
+    public void healToMax() { this.currentHP = this.maxHP; }
+    public void restoreEnergyToMax() { this.currentEnergy = this.maxEnergy; }
+    public void resetBattleStats() {
+        healToMax(); restoreEnergyToMax();
+        this.setCurrentDefence(this.baseDefence);
+    }
+
+    public Mokepon copy() {
+        return new Mokepon(
+                this.name, this.imgURL, this.maxHP, this.maxEnergy,
+                this.baseStrength, this.baseAccuracy, this.baseDefence, this.baseDodge,
+                new ArrayList<>(this.skillList), this.mokeponType   // now deep-copies skillList
+        );
+    }
+}
+
+KNOWN REMAINING ISSUES:
+  1. equals() does not override Object.equals / hashCode (contract violation).
+  2. Constructor leaves currentHP/currentEnergy/current* at 0 (not set to max/base).
+  3. current* getters exist but no setter for currentStrength/currentAccuracy/
+     currentDodge - buff/debuff updates cannot be applied.
+  4. Only setCurrentDefence() has a setter besides HP/Energy.
+(Fixed vs prior version: setCurrentDefence no longer writes to currentEnergy;
+ equals() no longer uses '==' on Strings; copy() now deep-copies skillList.)
+
+================================================================================
+SECTION 9 - event package
+================================================================================
+
+--- event/EventBus.java (NOW IMPLEMENTED - topic-based pub/sub) ---
+package au.edu.unimelb.swen.oop.mokepon.event;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+public class EventBus {
+
+    private HashMap<Class<?>, ArrayList<Consumer<?>>> subscriberListMap = new HashMap<>();
+
+    public <T> void subscribe(Class<T> eventType, Consumer<T> handler) {
+        subscriberListMap.computeIfAbsent(eventType, _ -> new ArrayList<>()).add(handler);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> void publish(T event) {
+        ArrayList<Consumer<?>> handlerList = subscriberListMap.get(event.getClass());
+        if (handlerList == null) return;
+
+        handlerList.forEach(handler -> {
+            ((Consumer<T>)handler).accept(event);
+        });
+    }
+}
+// Uses the unnamed variable '_' in the lambda (Java 21+). Routes by exact runtime
+// class of the event; subclasses of an event type will not match a supertype
+// subscription.
+
+================================================================================
+SECTION 10 - view package (facade / root views)
+================================================================================
+
+--- view/GameBgView.java (facade over BgView; provides menu + background) ---
+package au.edu.unimelb.swen.oop.mokepon.view;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.BgView;
+import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
+
+public class GameBgView {
+
+    private BgView bgView;
+
+    public GameBgView(BgView bgView) {
+        this.bgView = bgView;
+        bgView.enable(2);                                  // enable menu item #2 (Exit)
+        bgView.node().setLayoutX(ScreenPosition.SCREENLEFT);
+        bgView.node().setLayoutY(ScreenPosition.SCREENTOP);
+    }
+
+    public Node getBgViewRoot() {
+        return bgView.node();
+    }
+
+    public MenuItem getMenuItem(int index) {
+        return bgView.getMenuItemArr()[index];
+    }
+}
+// NOTE: 'enable(2)' is a magic index (Exit). Leaks BgView details via getMenuItem.
+
+--- view/MokeponSelectView.java (composes list + detail; positions them) ---
+package au.edu.unimelb.swen.oop.mokepon.view;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
+import javafx.scene.Group;
+import javafx.scene.Node;
+
+public class MokeponSelectView {
+
+    private MokeponListView mokeponListView;
+    private MokeponDetailView mokeponDetailView;
+    private Group mokeponSelectRoot = new Group();
+
+    public MokeponSelectView(MokeponListView mokeponListView, MokeponDetailView mokeponDetailView) {
+        this.mokeponListView = mokeponListView;
+        this.mokeponDetailView = mokeponDetailView;
+
+        Node mokeponList = this.mokeponListView.node();
+        mokeponList.setLayoutX(0.044444 * ScreenPosition.SCREENWIDTH);
+        mokeponList.setLayoutY(0.135982 * ScreenPosition.SCREENHEIGHT - 60);
+        Node mokeponDetail = this.mokeponDetailView.node();
+        mokeponDetail.setLayoutX(0.627778 * ScreenPosition.SCREENWIDTH - 215);
+        mokeponDetail.setLayoutY(0.347826 * ScreenPosition.SCREENHEIGHT - 230);
+
+        this.mokeponSelectRoot.setLayoutX(ScreenPosition.SCREENLEFT);
+        this.mokeponSelectRoot.setLayoutY(ScreenPosition.SCREENTOP);
+        this.mokeponSelectRoot.getChildren().addAll(mokeponList, mokeponDetail);
+    }
+
+    public Group getMokeponSelectRoot() { return mokeponSelectRoot; }
+    public MokeponListView getMokeponListView() { return mokeponListView; }
+    public MokeponDetailView getMokeponDetailView() { return mokeponDetailView; }
+}
+// NOTE: imports FxMokeponDetailView/FxMokeponListView but never uses them
+// (fields typed as interfaces - the concrete default-construction was removed).
+
+--- view/MokeponBattleView.java (EMPTY) ---
+package au.edu.unimelb.swen.oop.mokepon.view;
+
+public class MokeponBattleView {
+    // COMPLETELY EMPTY class (no fields, no methods)
+}
+
+================================================================================
+SECTION 11 - view/view_interface package (abstractions)
+================================================================================
+
+--- view/view_interface/View.java (root UI abstraction) ---
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface;
+
+import javafx.scene.Node;
+
+public interface View {
+    public Node node();
+}
+
+--- view/view_interface/bg/BgView.java ---
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg;
+
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+import javafx.scene.control.MenuItem;
+import java.util.function.Consumer;
+
+public interface BgView extends View {
+    public void enable(int index);
+    public void disable(int index);
+    public MenuItem[] getMenuItemArr();
+}
+// NOTE: imports Consumer but does not use it; getMenuItemArr() exposes MenuItem[]
+// (a JavaFX type) through the interface, reducing the abstraction value.
+
+--- view/view_interface/select/MokeponListView.java ---
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public interface MokeponListView extends View {
+    public void setItems(ArrayList<Mokepon> mokeponList, Consumer<Mokepon> onSelect);
+    public String getSelectedButtonName();
+    public void select(Mokepon mokepon);
+    public void clearSelection();
+}
+
+--- view/view_interface/select/MokeponDetailView.java ---
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+public interface MokeponDetailView extends View {
+    public void show(Mokepon mokepon);
+    public void clear();
+}
+
+--- view/view_interface/select/MokeponChooseView.java (NOTYET USED elsewhere) ---
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+import javafx.beans.property.ObjectProperty;
+import java.util.function.Consumer;
+
+public interface MokeponChooseView extends View {
+    public void setPlayerMokepon(
+            ObjectProperty<Mokepon> selectedMokepon,
+            ObjectProperty<Mokepon> playerMokepon,
+            Consumer<Object> onChoose);
+}
+// NOTE: leaks JavaFX ObjectProperty through the interface; Consumer<Object> is
+// untyped (should be Consumer<Mokepon> or a Runnable).
+
+================================================================================
+SECTION 12 - view/fx package (JavaFX implementations)
+================================================================================
+
+--- view/fx/bg/FxBgView.java ---
+package au.edu.unimelb.swen.oop.mokepon.view.fx.bg;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.BgView;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import java.util.function.Consumer;
+
+public class FxBgView implements BgView {
+
+    private Group bgRoot = new Group();
+    private Image bgImg = ImageLoader.load("/assets/bg.png", ScreenPosition.BGWIDTH, ScreenPosition.BGHEIGHT, false);
+    private Menu menu = new Menu("Game");
+    private MenuBar menuBar = new MenuBar();
+    private MenuItem[] menuItemArr = {
+            new MenuItem("Reset"), new MenuItem("Restart Battle"), new MenuItem("Exit ")
+    };
+
+    public FxBgView() {
+        menuItemArr[0].setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        menuItemArr[1].setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
+        menuItemArr[2].setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
+
+        for (MenuItem menuItem : menuItemArr) {
+            menuItem.setDisable(true);
+            menu.getItems().add(menuItem);
+        }
+        menuBar.getMenus().add(menu);
+        menuBar.setLayoutX(ScreenPosition.SCREENLEFT);
+        menuBar.setLayoutY(ScreenPosition.SCREENTOP);
+        menuBar.setStyle("-fx-fill: #ececec;" +
+                "-fx-pref-width: " + ScreenPosition.SCREENWIDTH + ";" +
+                "-fx-pref-height: " + ScreenPosition.MENUBARHEIGHT + ";" +
+                "-fx-text-fill: #94807a;");
+
+        ImageView bgImgView = new ImageView(bgImg);
+        bgImgView.setLayoutX(ScreenPosition.SCREENLEFT);
+        bgImgView.setLayoutY(ScreenPosition.SCREENTOP + ScreenPosition.MENUBARHEIGHT);
+
+        bgRoot.getChildren().addAll(bgImgView, menuBar);
+    }
+
+    public void setAction(int index, Consumer<Integer> onClick) {
+        menuItemArr[index].setOnAction(_ -> onClick.accept(index));
+    }
+
+    @Override public Node node() { return bgRoot; }
+    @Override public void enable(int index) { menuItemArr[index].setDisable(false); }
+    @Override public void disable(int index) { menuItemArr[index].setDisable(true); }
+    @Override public MenuItem[] getMenuItemArr() { return menuItemArr; }
+}
+// NOTE: setAction() is a public method NOT declared on the BgView interface, so
+// callers holding a BgView reference cannot use it. Menu items start disabled;
+// GameBgView.enable(2) enables only "Exit".
+// MenuItem labels have trailing space ("Exit ") inconsistent with others.
+
+--- view/fx/select/FxMokeponListView.java ---
+package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.function.Consumer;
+
+public class FxMokeponListView implements MokeponListView {
+
+    private Text mokeponSelectTitle = new Text("Choose your Mokepon");
+    private ScrollPane scrollPane = new ScrollPane();
+    private VBox listBox = new VBox(10);
+    private VBox selectBlock = new VBox(20);
+    private HashMap<Mokepon, Button> buttonMap = new LinkedHashMap<>();
+    private Font btnFont = FontLoader.getGostischFont(20);
+    private Font titleFont = FontLoader.getGostischFont(34);
+    private Button selectedButton;
+
+    public FxMokeponListView() {
+        listBox.setAlignment(Pos.CENTER);
+        scrollPane.setContent(listBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setBackground(Background.EMPTY);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.skinProperty().addListener((observer, oldSkin, newSkin) -> {
+            Node viewport = scrollPane.lookup(".viewport");
+            if (viewport != null) viewport.setStyle("-fx-background-color: transparent;");
+            Node scrollBar = scrollPane.lookup(".scroll-bar");
+            if (scrollBar != null) scrollBar.setStyle("-fx-background-color: transparent;");
+        });
+        scrollPane.setPrefSize(300, 600);
+
+        mokeponSelectTitle.setFont(titleFont);
+        selectBlock.getChildren().addAll(mokeponSelectTitle, scrollPane);
+        selectBlock.setAlignment(Pos.CENTER);
+    }
+
+    @Override public Node node() { return selectBlock; }
+
+    @Override
+    public void setItems(ArrayList<Mokepon> mokeponList, Consumer<Mokepon> onSelect) {
+        listBox.getChildren().clear();
+        buttonMap.clear();
+        for (Mokepon mokepon : mokeponList) {
+            Button nameBtn = new Button(mokepon.getName());
+            nameBtn.setFont(btnFont);
+            nameBtn.setStyle("-fx-background-radius: 999px;" +
+                    "-fx-background-color: #d3d3d3;" + "-fx-text-fill: #000000;");
+            nameBtn.setOpacity(0.2);
+            nameBtn.setOnMouseEntered(click -> nameBtn.setOpacity(0.5));
+            nameBtn.setOnMouseExited(click -> nameBtn.setOpacity(0.2));
+            nameBtn.setOnMouseClicked(click -> nameBtn.setOpacity(0.75));
+            nameBtn.setPrefSize(280, 25);
+            nameBtn.setOnAction(event -> onSelect.accept(mokepon));
+            buttonMap.put(mokepon, nameBtn);
+            listBox.getChildren().add(nameBtn);
+        }
+    }
+
+    @Override public String getSelectedButtonName() { return selectedButton.getText(); }   // NPE if none
+
+    @Override
+    public void select(Mokepon mokepon) {
+        clearSelection();
+        selectedButton = buttonMap.get(mokepon);
+    }
+
+    @Override public void clearSelection() { selectedButton = null; }
+}
+// NOTE: Now includes a title Text and hover/click opacity effects. titleFont size
+// 34 differs from detail title. select()/clearSelection() still only track a
+// reference (no persistent visual highlight beyond the click opacity).
+
+--- view/fx/select/FxMokeponDetailView.java ---
+package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import java.util.ArrayList;
+import static au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition.*;
+
+public class FxMokeponDetailView implements MokeponDetailView {
+
+    private final static Font font = FontLoader.getGostischFont(30);
+
+    private StackPane mokeponImgBlock = new StackPane();
+    private ImageView mokeponImgView = new ImageView(ImageLoader.load("/assets/scroll.png", 256, 256));
+    private Circle mokeponImgViewBg = new Circle(0.127778 * SCREENWIDTH);
+
+    private HBox mokeponNameBlock = new HBox(10);
+    private Text mokeponName = new Text("Select your Mokepon");
+    private ImageView mokeponTypeImgView = new ImageView();
+
+    private StackPane attrDetailBlock = new StackPane();
+    private ImageView scrollImgView = new ImageView(
+            ImageLoader.load(ImageLoader.scrollURL, 0.32 * SCREENWIDTH + 20, 0.43 * SCREENHEIGHT - 40, false));
+    private final String[] attrArr = {
+            "HP", "Energy", "Strength", "Accuracy", "Defence", "Dodge", "Skills", "Type"
+    };
+    GridPane attrTxtTable = new GridPane(30, 12);
+    private ArrayList<Text> attrTxtList = new ArrayList<>();
+
+    private VBox mokeponDetailBlock = new VBox(10);
+
+    public FxMokeponDetailView() {
+        mokeponImgView.setImage(null);
+        mokeponImgViewBg.setStyle("-fx-fill: #9a837c;" + "-fx-stroke: #000000;" + "-fx-stroke-width: 2px;");
+        mokeponImgBlock.getChildren().addAll(mokeponImgViewBg, mokeponImgView);
+
+        mokeponName.setFont(font);
+        mokeponName.setStyle("-fx-fill: #000000;" + "-fx-stroke: #ffffff;" + "-fx-stroke-width: 2px;");
+        mokeponNameBlock.getChildren().addAll(mokeponName, mokeponTypeImgView);
+        mokeponNameBlock.setAlignment(Pos.CENTER);
+
+        for (int i = 0; i < attrArr.length; i++) {
+            Text attrTxt = new Text(attrArr[i] + ":");
+            attrTxt.setFont(Font.font("default", 17));
+            Text appendTxt = new Text();
+            appendTxt.setFont(Font.font("default", 16));
+            attrTxtList.add(appendTxt);
+
+            if (i == attrArr.length - 1) {        // i == 7 (last): insert a blank spacer row
+                attrTxtTable.add(new Text(), 0, i);
+                attrTxtTable.add(new Text(), 1, i);
+                i++;                               // then increment so the Type row lands at i=8
+            }
+            attrTxtTable.add(attrTxt, 0, i);
+            attrTxtTable.add(appendTxt, 1, i);
+        }
+        attrTxtTable.setLayoutX(0.488372 * SCREENWIDTH + 4);
+        attrTxtTable.setLayoutY(0.63125 * SCREENHEIGHT + 5);
+        attrTxtTable.setAlignment(Pos.CENTER_LEFT);
+        attrTxtTable.setMaxSize(0.32 * SCREENWIDTH + 20, 0.43 * SCREENHEIGHT - 40);
+
+        attrDetailBlock.getChildren().addAll(scrollImgView, attrTxtTable);
+        attrDetailBlock.setAlignment(Pos.CENTER);
+
+        mokeponDetailBlock.getChildren().addAll(mokeponImgBlock, mokeponNameBlock, attrDetailBlock);
+        mokeponDetailBlock.setAlignment(Pos.CENTER);
+    }
+
+    public ImageView getMokeponImgView() { return mokeponImgView; }
+    public Text getMokeponName() { return mokeponName; }
+    public void setMokeponImgView(Image newImg) { mokeponImgView.setImage(newImg); }
+    public void setMokeponName(String newName) {
+        if (newName == null || newName.isBlank()) newName = "Select your Mokepon";
+        mokeponName.setText(newName);
+    }
+    public void setMokeponTypeImgView(MokeponType mokeponType) {
+        mokeponTypeImgView.setImage(MokeponType.getTypeImg(mokeponType));
+    }
+
+    @Override public Node node() { return mokeponDetailBlock; }
+
+    @Override
+    public void show(Mokepon mokepon) {
+        if (mokepon == null) {
+            clear();
+        } else {
+            setMokeponImgView(ImageLoader.load("/assets/" + mokepon.getName() + ".png", 256, 256));
+            setMokeponName(mokepon.getName());
+            setMokeponTypeImgView(mokepon.getMokeponType());
+            attrTxtList.get(0).setText(mokepon.getMaxHP() + "");
+            attrTxtList.get(1).setText(mokepon.getMaxEnergy() + "");
+            attrTxtList.get(2).setText(mokepon.getBaseStrength() + "");
+            attrTxtList.get(3).setText(mokepon.getBaseAccuracy() + "");
+            attrTxtList.get(4).setText(mokepon.getBaseDefence() + "");
+            attrTxtList.get(5).setText(mokepon.getBaseDodge() + "");
+            attrTxtList.get(6).setText(String.join(", ", mokepon.getSkills()));
+            attrTxtList.get(7).setText(mokepon.getMokeponType() + "");
+        }
+    }
+
+    @Override
+    public void clear() {
+        setMokeponImgView(null);
+        setMokeponName(null);
+        setMokeponTypeImgView(null);
+        attrTxtList.forEach(text -> text.setText(""));
+    }
+}
+// NOTE: Now renders the full 8-attribute table + type icon (feature added).
+// attrArr has 8 entries; the loop special-cases the last index to add a spacer
+// row and shifts Type to row 8 (a slightly hacky grid layout).
+// 'import javafx.scene.text.FontWeight' is unused. attrTxtTable/attrDetailBlock
+// lack 'private'.
+
+--- view/fx/select/FxMokeponChooseView.java (implements MokeponChooseView; not wired) ---
+package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import java.util.function.Consumer;
+
+public class FxMokeponChooseView implements MokeponChooseView {
+
+    private Button mokeponChooseBtn = new Button("Choose Mokepon");
+
+    public FxMokeponChooseView() {
+        mokeponChooseBtn.setStyle("-fx-background-color: #d3d3d3;" +
+                "-fx-text-fill: #000000;" + "-fx-wrap-text: true;" +
+                "-fx-text-alignment: center;" + "-fx-max-width: 160;" +
+                "-fx-min-height: 170;" + "-fx-background-radius: 15;");
+        mokeponChooseBtn.setOpacity(0.2);
+        mokeponChooseBtn.setOnMouseEntered(enter -> mokeponChooseBtn.setOpacity(0.5));
+        mokeponChooseBtn.setOnMouseExited(exit -> mokeponChooseBtn.setOpacity(0.2));
+        mokeponChooseBtn.setOnMouseClicked(click -> mokeponChooseBtn.setOpacity(0.75));
+        mokeponChooseBtn.setFont(FontLoader.getGostischFont(24));
+        mokeponChooseBtn.setLayoutX(1045);
+        mokeponChooseBtn.setLayoutY(515);
+    }
+
+    @Override public Node node() { return mokeponChooseBtn; }
+
+    @Override
+    public void setPlayerMokepon(
+            ObjectProperty<Mokepon> selectedMokepon,
+            ObjectProperty<Mokepon> playerMokepon,
+            Consumer<Object> onChoose) {
+        playerMokepon.setValue(selectedMokepon.getValue());
+        mokeponChooseBtn.setOnAction(event -> onChoose.accept(null));
+    }
+}
+// NOTE: This is the old "Choose Mokepon" start button, refactored into a View,
+// but it is NOT referenced by Main or any controller yet (dead-ish code).
+// setPlayerMokepon() copies the selection immediately AND sets an action - the
+// method mixes setup and effect.
+
+================================================================================
+SECTION 13 - util packages
+================================================================================
+
+--- util/ScreenPosition.java (screen constants + centering helpers) ---
+package au.edu.unimelb.swen.oop.mokepon.util;
+
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
+
+public class ScreenPosition {
+
+    public static final Rectangle2D SCREENBOUNDS = Screen.getPrimary().getBounds();
+    public static final double BGWIDTH = 1280;
+    public static final double BGHEIGHT = 768;
+    public static final double MENUBARHEIGHT = 15;
+    public static final double SCREENWIDTH = BGWIDTH;
+    public static final double SCREENHEIGHT = BGHEIGHT + MENUBARHEIGHT;
+    public static final double SCREENLEFT = SCREENBOUNDS.getMinX();
+    public static final double SCREENTOP = SCREENBOUNDS.getMinY();
+
+    public static double relativeCenterX(double idealX, double lengthX) { return idealX - (lengthX / 2); }
+    public static double relativeCenterY(double idealY, double lengthY) { return idealY - (lengthY / 2); }
+
+    private ScreenPosition() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+}
+// NOTE: relativeCenterX/Y are declared but no longer used anywhere (older code
+// used them; new views compute layout inline). SCREENBOUNDS computed at
+// class-load; requires JavaFX toolkit for Screen.getPrimary().
+
+--- util/FontLoader.java (font loading with size-keyed cache) ---
+package au.edu.unimelb.swen.oop.mokepon.util;
+
+import javafx.scene.text.Font;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.function.Function;
+
+public class FontLoader {
+
+    private static HashMap<Integer, Font> fontCacheMap = new HashMap<>();
+    private final static String GOSTISCH_FONT_URL = "/assets/GrenzeGotisch-Black.ttf";
+
+    public static Font getGostischFont(int size) {
+        Function<Integer, Font> fontGenerator = fontSize -> {
+            Font resultFont = new Font(fontSize);
+            try (InputStream inputFile = FontLoader.class.getResourceAsStream(GOSTISCH_FONT_URL)) {
+                resultFont = Font.loadFont(inputFile, fontSize);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                return resultFont;
+            }
+        };
+        return fontCacheMap.computeIfAbsent(size, fontGenerator);
+    }
+}
+// NOTE: uses computeIfAbsent (cleaner than before). The 'finally { return ... }'
+// inside the lambda is unusual (try/finally returning a value). Method name has
+// typo "Gostisch". Class has no private constructor guard; cache is static.
+
+--- util/ImageLoader.java (image loading, null-safe) ---
+package au.edu.unimelb.swen.oop.mokepon.util;
+
+import javafx.scene.image.Image;
+
+public class ImageLoader {
+
+    public final static String scrollURL = "/assets/scroll.png";
+
+    public static Image load(String url, double width, double height) {
+        if (url == null || url.isBlank()) return null;
+        try {
+            return new Image(url, width, height, true, false);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    public static Image load(String url, double width, double height, boolean preserveRatio) {
+        if (url == null || url.isBlank()) return null;
+        try {
+            return new Image(url, width, height, preserveRatio, false);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+}
+// NOTE: two overloads; the 3-arg version hardcodes preserveRatio=true. Both
+// swallow IllegalArgumentException and return null.
+
+--- util/random/RandomSource.java (interface - abstracts randomness for tests) ---
+package au.edu.unimelb.swen.oop.mokepon.util.random;
+
+public interface RandomSource {
+    public int nextInt(int start, int range);
+    public double nextDouble(double start, double range);
+}
+
+--- util/random/JavaRandomSource.java ---
+package au.edu.unimelb.swen.oop.mokepon.util.random;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+public class JavaRandomSource implements RandomSource {
+
+    @Override
+    public int nextInt(int start, int range) {
+        return ThreadLocalRandom.current().nextInt(start, start + range);
+    }
+
+    @Override
+    public double nextDouble(double start, double range) {
+        return ThreadLocalRandom.current().nextDouble(start, start + range);
+    }
+}
+// NOTE: nextInt(start, range) returns a value in [start, start+range).
+// nextDouble(start, range) returns a value in [start, start+range). Good for DIP
+// (BattleService depends on the RandomSource interface, not on JavaRandomSource).
+
+================================================================================
+SECTION 14 - data package
+================================================================================
+
+--- data/GameDataLoader.java (abstract generic base) ---
+package au.edu.unimelb.swen.oop.mokepon.data;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;   // imported but unused
+import java.util.LinkedHashMap;
+import java.util.Properties;
+
+public abstract class GameDataLoader<T, V> {
+
+    private final Properties gameData;
+
+    public GameDataLoader(Properties gameData) {
+        this.gameData = gameData;
+    }
+
+    public abstract V load(T obj);
+
+    public abstract LinkedHashMap<T, V> loadAll();
+}
+
+--- data/MokeponLoader.java (reads all mokepon.N.* keys) ---
+package au.edu.unimelb.swen.oop.mokepon.data;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
+import java.util.*;
+
+public class MokeponLoader extends GameDataLoader<String, Mokepon> {
+
+    private LinkedHashMap<String, Mokepon> mokeponMap = new LinkedHashMap<>();
+    private final static int MAXMOKEPONNUM = 50;
+
+    public MokeponLoader(Properties gameData) {
+        super(gameData);
+        String propertyPrefix;
+        int mokeponCount = 0;
+        while (mokeponCount < MAXMOKEPONNUM) {
+            propertyPrefix = "mokepon." + mokeponCount + ".";
+            try {
+                String name = gameData.getProperty(propertyPrefix + "name");
+                String imgURL = gameData.getProperty(propertyPrefix + "image");
+                String hp = gameData.getProperty(propertyPrefix + "hp");
+                String energy = gameData.getProperty(propertyPrefix + "energy");
+                String strength = gameData.getProperty(propertyPrefix + "strength");
+                String accuracy = gameData.getProperty(propertyPrefix + "accuracy");
+                String defence = gameData.getProperty(propertyPrefix + "defence");
+                String dodge = gameData.getProperty(propertyPrefix + "dodge");
+                String skillStr = gameData.getProperty(propertyPrefix + "skills");
+                String type = gameData.getProperty(propertyPrefix + "type");
+                ArrayList<String> skillStrList = new ArrayList<>();
+                Collections.addAll(skillStrList, skillStr.split("\\|"));
+
+                mokeponMap.put(name, new Mokepon(name, imgURL, Integer.parseInt(hp), Integer.parseInt(energy),
+                        Integer.parseInt(strength), Integer.parseInt(accuracy), Integer.parseInt(defence),
+                        Integer.parseInt(dodge), skillStrList, MokeponType.valueOf(type)));
+                mokeponCount++;
+            } catch (Exception e) {
+                break;
+            }
+        }
+    }
+
+    @Override public Mokepon load(String obj) { return mokeponMap.get(obj); }
+    @Override public LinkedHashMap<String, Mokepon> loadAll() { return mokeponMap; }
+}
+// NOTE: parsing loop stops at first exception (relies on contiguous indices).
+// Reads `type` and maps to MokeponType.valueOf(...). Argument order is now
+// (strength, accuracy, defence, dodge) matching the Mokepon constructor
+// (baseDefence, baseDodge) - the previous dodge/defence swap appears FIXED.
+// Swallows per-entry parse errors silently (break).
+
+--- data/TileLoader.java (STILL STUB) ---
+package au.edu.unimelb.swen.oop.mokepon.data;
+
+import java.util.LinkedHashMap;
+import java.util.Properties;
+
+public class TileLoader extends GameDataLoader<Integer, Object> {
+
+    public TileLoader(Properties gameData) { super(gameData); }
+
+    @Override public Object load(Integer obj) { return null; }                  // STUB
+    @Override public LinkedHashMap<Integer, Object> loadAll() { return null; }  // STUB
+}
+// NOTE: uses Object as the value type (not yet modelled as a Tile class).
+
+================================================================================
+SECTION 15 - game data file (src/main/resources/mokepon.game) - STRUCTURE
+================================================================================
+The mokepon.game file is a Java .properties file (547 lines). Keys observed
+(samples below). Values with '|' separators indicate multi-value fields.
+
+MOKEPON ENTRIES (mokepon.<N>.X), indices N = 0.. (loader caps at 50):
+    mokepon.<N>.name     e.g. Sealance
+    mokepon.<N>.image    e.g. /assets/Sealance.png
+    mokepon.<N>.hp / energy / strength / accuracy / defence / dodge   (ints)
+    mokepon.<N>.skills   e.g. Bite|Tackle|Bunker|Wait   (split on '|')
+    mokepon.<N>.type     WATER | NORMAL | ICE | FIRE | LIGHTNING
+  (Sample types seen: mokepon.0.type=WATER, mokepon.2.type=NORMAL, mokepon.4.type=ICE)
+
+OTHER KEYS:
+    mokepon.type.fire / ice / water / lightning = asset sprite paths
+    items.coffee / heal / poison               = asset sprite paths
+    map.tiles.0 .. map.tiles.19                = 20 tile-row strings (letters)
+    map.tiles.images.<barrier|forest|grass|ocean|path|rocks|water> = tile image paths
+    map.player.image / map.player.startingPos  = e.g. 10,18
+    map.buttons.up/down/left/right             = sprite paths
+    map.mokeponRandom.0..3 (coords), .image, .colour = white
+    map.mokeponStrong.0..2  , .image, .colour = red
+    map.mokeponWeak.0..2    , .image, .colour = lime
+    map.exit.image / .colour(magenta) / .location(6,0)
+    map.items.image; map.items.0/.1/.2.type(HEALTH/POISON/COFFEE) + .location
+
+IMPORTANT: Only the mokepon.* keys are consumed by code (MokeponLoader). The
+map.* and items.* keys have NO implementing classes yet (only the TileLoader
+stub exists). This confirms an intended OVERWORLD feature (map traversal,
+encounters, items, exit) NOT yet implemented. The `type` key is now consumed and
+mapped to the MokeponType enum, but NO type-effectiveness / weakness logic
+exists.
+
+================================================================================
+SECTION 16 - ARCHITECTURE, PATTERNS & KNOWN DEFECTS (for the analysis model)
+================================================================================
+
+1. REFACTOR STATE
+   This version is a PARTIALLY-WIRED refactor. The SELECT screen path is
+   functional: Main (composition root) -> MokeponLoader -> FxMokeponListView /
+   FxMokeponDetailView -> MokeponSelectView -> MokeponSelectController ->
+   GameState properties. The BATTLE screen, OVERWORLD screen, all battle logic,
+   all skill effects, and screen switching are still STUBS.
+
+2. DESIGN PATTERNS PRESENT
+   - Strategy:            Skill interface + 10 concrete Skill classes.
+   - Repository/Factory:  GameDataLoader abstract base + MokeponLoader/TileLoader.
+   - MVC/MVP (approx.):   View interfaces (view_interface.*) + Fx implementations
+                          (view.fx.*) + Controllers (controller.*).
+   - Facade:              GameBgView, MokeponSelectView compose sub-views.
+   - Observer:            EventBus (topic/class-keyed pub-sub) + JavaFX property
+                          listeners (selectedMokeponProperty().addListener).
+   - Dependency Inversion: Controllers depend on view INTERFACES; BattleService
+                          depends on RandomSource interface, not JavaRandomSource.
+   - State machine shell: ScreenState enum + ScreenManager.
+
+3. REMAINING / HARD-CODED ISSUES TO FLAG
+   - ScreenManager.switchTo(): calls stage.getScene().setRoot(null) and never
+     sets any view root -> switching screens would blank the window. Controllers
+     expose no node() to supply.
+   - MokeponSelectController.onChooseClicked(): behaves as DESELECT, not a
+     confirm; the choose->battle transition (playerMokepon, fightCount,
+     switchTo(BATTLE)) is unimplemented.
+   - BattleController: all methods empty; method name typo runEnrmyTurn().
+   - BattleService.useEnemyRandomSkill(): selects a random index but discards it
+     and returns null; checkBattleEnd() returns null; skillMap unused.
+   - BattleResult getters (getMessageList/getOutcome) return null despite a
+     constructor that stores them; field 'ended' unused.
+   - All 10 Skill.execute() return null (no battle effects).
+   - Mokepon.equals() overloads without @Override/hashCode; constructor leaves
+     current* stats at 0; no setters for currentStrength/Accuracy/Dodge.
+   - FxMokeponListView.getSelectedButtonName(): NPE if nothing selected;
+     select()/clearSelection() don't persist a visual highlight.
+   - FxBgView.setAction() is public but not on the BgView interface (inaccessible
+     via the interface); menu items start disabled (only "Exit" enabled).
+   - FxMokeponChooseView (Choose Mokepon button) is implemented but not wired
+     into Main/controllers (effectively dead code).
+   - GameBgView uses magic index enable(2); leaks MenuItem via getMenuItem().
+   - Local variable named 'mokeponList' shadows java.util.List.
+   - Unused imports: ScreenManager(Screen), GameDataLoader(Mokepon),
+     BgView(Consumer), FxMokeponDetailView(FontWeight), MokeponSelectView(Fx*).
+   - FontLoader method name typo "Gostisch"; Manager switch uses LinkedHashMap
+     while field typed HashMap.
+
+4. FEATURE GAPS (data present, code missing)
+   - Type system: types loaded but no weakness/effectiveness logic.
+   - Full skill pool: 10 skill classes exist but none have effects.
+   - Overworld/map: map.* data with no Tile/Map/Player classes (TileLoader stub).
+   - Items/inventory: Inventory stores counts; item effects not applied.
+   - Menus: only "Exit" enabled; Reset / Restart Battle not implemented.
+
+================================================================================
+END OF SUMMARY
+================================================================================
