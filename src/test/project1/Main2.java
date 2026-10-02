@@ -1,6 +1,6 @@
-package au.edu.unimelb.swen.oop.mokepon;
+package project1;
 
-import au.edu.unimelb.swen.oop.mokepon.Backend.Mokepon;
+import project1.Backend.Mokepon;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,28 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
-import au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.GameWindow;
-
-import javax.swing.*;
-
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.GotischFont.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ImageMethod.*;
-import static au.edu.unimelb.swen.oop.mokepon.Backend.RandomMethod.*;
-
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.BGBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.BGBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.SelectScreen.SelectBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.SelectScreen.SelectBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.SelectScreen.DisplayBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.BattleScreen.EnemyBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.BattleScreen.EnemyBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.BattleScreen.SelfBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.BattleScreen.SelfBlock.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.BattleScreen.BattleLog.*;
+import project1.UIElement.Utils.GameWindow;
 
 
-public class Main extends Application {
+public class Main2 extends Application {
 
     protected static final String[] attrArr = {"HP", "Energy", "Strength", "Accuracy", "Defence", "Dodge", "Skills"};
     protected static final int maxMokeponNum = 50;
@@ -103,11 +85,11 @@ public class Main extends Application {
          * ========================================================================================= */
 
         // 1. game window and font
-        Font selectTitleFont = createGotischFont(34, new Main());
-        Font selectBtnFont = createGotischFont(20, new Main());
-        Font startBtnFont = createGotischFont(24, new Main());
-        Font battleNameFont = createGotischFont(28,  new Main());
-        Font actionBtnFont = createGotischFont(18,  new Main());
+        Font selectTitleFont = createGotischFont(34, new Main2());
+        Font selectBtnFont = createGotischFont(20, new Main2());
+        Font startBtnFont = createGotischFont(24, new Main2());
+        Font battleNameFont = createGotischFont(28,  new Main2());
+        Font actionBtnFont = createGotischFont(18,  new Main2());
 
         GameWindow gameWindow = new GameWindow();
         Pane mainRoot = new Pane();
@@ -141,7 +123,6 @@ public class Main extends Application {
         ObjectProperty<Button> displayTrigger = new SimpleObjectProperty<>(null);
         ArrayList<Button> selectBtnList = new ArrayList<>();
         ScrollPane buttonBlock = createSelectButtonBlock(mokeponList, selectBtnFont, selectBtnList);
-        buttonBlock.setId("selectBtnBlock");
         selectBlock.getChildren().addAll(selectTitle, buttonBlock);
 
         // -- Attributes & Image Display Block

@@ -1,4 +1,4 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI;
+package project1.UIElement.DynamicUI;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -6,7 +6,7 @@ import javafx.scene.control.MenuItem;
 
 import java.util.ArrayList;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
+import static project1.UIElement.Utils.ScreenPosition.*;
 
 public class BGBlock {
 

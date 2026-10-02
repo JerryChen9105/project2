@@ -1,7 +1,6 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.SelectScreen;
+package project1.UIElement.DynamicUI.SelectScreen;
 
-import au.edu.unimelb.swen.oop.mokepon.Backend.Mokepon;
-import javafx.geometry.Insets;
+import project1.Backend.Mokepon;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -9,17 +8,16 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.SelectScreen.DisplayBlock.scrollHeight;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.SelectScreen.DisplayBlock.scrollWidth;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.screenHeight;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.screenWidth;
+import static project1.UIElement.StaticUI.SelectScreen.DisplayBlock.scrollHeight;
+import static project1.UIElement.StaticUI.SelectScreen.DisplayBlock.scrollWidth;
+import static project1.UIElement.Utils.ScreenPosition.screenHeight;
+import static project1.UIElement.Utils.ScreenPosition.screenWidth;
 
 public class SelectBlock {
 
@@ -34,8 +32,6 @@ public class SelectBlock {
             btnBlock.getChildren().add(nameBtn);
             selectBtnList.add(nameBtn);
         }
-        /*btnBlock.setLayoutX(titleX);
-        btnBlock.setLayoutY(titleY - 25);*/
         btnBlock.setAlignment(Pos.CENTER);
 
         ScrollPane scrollPane = new ScrollPane(btnBlock);

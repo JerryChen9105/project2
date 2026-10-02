@@ -1,11 +1,11 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.Utils;
+package project1.UIElement.Utils;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
+import static project1.UIElement.Utils.ScreenPosition.*;
 
 public class GameWindow extends Stage {
 

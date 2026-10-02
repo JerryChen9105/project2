@@ -1,6 +1,6 @@
-package au.edu.unimelb.swen.oop.mokepon.Backend;
+package project1.Backend;
 
-import static au.edu.unimelb.swen.oop.mokepon.Backend.RandomMethod.*;
+import static project1.Backend.RandomMethod.*;
 
 public class Mokepon {
 

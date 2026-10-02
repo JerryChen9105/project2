@@ -1,9 +1,0 @@
-selectBtnBlock {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-}
-
-selectBtnBlock > .viewport {
-    -fx-background-color: transparent;
-}

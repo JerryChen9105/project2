@@ -1,4 +1,4 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.BattleScreen;
+package project1.UIElement.DynamicUI.BattleScreen;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.ProgressBar;

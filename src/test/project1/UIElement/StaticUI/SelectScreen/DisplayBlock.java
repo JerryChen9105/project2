@@ -1,22 +1,22 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.SelectScreen;
+package project1.UIElement.StaticUI.SelectScreen;
 
-import au.edu.unimelb.swen.oop.mokepon.Main;
+import project1.Main2;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.GotischFont.createGotischFont;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ImageMethod.createImageView;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ImageMethod.setLocation;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
+import static project1.UIElement.Utils.GotischFont.createGotischFont;
+import static project1.UIElement.Utils.ImageMethod.createImageView;
+import static project1.UIElement.Utils.ImageMethod.setLocation;
+import static project1.UIElement.Utils.ScreenPosition.*;
 
 public class DisplayBlock {
 
     public static double displayX = 0.627778 * screenWidth;
     public static double displayY = 0.347826 * screenHeight - 40;
     public static double displayCircleRadius = 0.127778 * screenWidth;
-    public static Font mokeponNameFont = createGotischFont(30, new Main());
+    public static Font mokeponNameFont = createGotischFont(30, new Main2());
 
     public static String scrollURL = "/assets/scroll.png";
     public static double scrollWidth = (0.32 * screenWidth) + 20;

@@ -1,8 +1,8 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.BattleScreen;
+package project1.UIElement.StaticUI.BattleScreen;
 
 import javafx.scene.image.ImageView;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ImageMethod.createImageView;
+import static project1.UIElement.Utils.ImageMethod.createImageView;
 
 public class EnemyBlock {
 

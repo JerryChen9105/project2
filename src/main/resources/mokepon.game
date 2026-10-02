@@ -6,7 +6,7 @@ mokepon.0.strength=55
 mokepon.0.accuracy=70
 mokepon.0.defence=75
 mokepon.0.dodge=45
-mokepon.0.skills=Bite|Tackle|Bunker|Wait
+#mokepon.0.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.1.name=Sharkoon
 mokepon.1.image=assets/Sharkoon.png
@@ -16,7 +16,7 @@ mokepon.1.strength=80
 mokepon.1.accuracy=65
 mokepon.1.defence=45
 mokepon.1.dodge=70
-mokepon.1.skills=Bite|Tackle|Bunker|Wait
+#mokepon.1.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.2.name=Puffume
 mokepon.2.image=assets/Puffume.png
@@ -26,7 +26,7 @@ mokepon.2.strength=42
 mokepon.2.accuracy=88
 mokepon.2.defence=38
 mokepon.2.dodge=82
-mokepon.2.skills=Bite|Tackle|Bunker|Wait
+#mokepon.2.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.3.name=Fumubble
 mokepon.3.image=assets/Fumubble.png
@@ -36,7 +36,7 @@ mokepon.3.strength=48
 mokepon.3.accuracy=78
 mokepon.3.defence=50
 mokepon.3.dodge=76
-mokepon.3.skills=Bite|Tackle|Bunker|Wait
+#mokepon.3.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.4.name=Pengloom
 mokepon.4.image=assets/Pengloom.png
@@ -46,7 +46,7 @@ mokepon.4.strength=50
 mokepon.4.accuracy=80
 mokepon.4.defence=55
 mokepon.4.dodge=75
-mokepon.4.skills=Bite|Tackle|Bunker|Wait
+#mokepon.4.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.5.name=Nightwing
 mokepon.5.image=assets/Nightwing.png
@@ -56,7 +56,7 @@ mokepon.5.strength=68
 mokepon.5.accuracy=83
 mokepon.5.defence=42
 mokepon.5.dodge=86
-mokepon.5.skills=Bite|Tackle|Bunker|Wait
+#mokepon.5.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.6.name=Grubeye
 mokepon.6.image=assets/Grubeye.png
@@ -66,7 +66,7 @@ mokepon.6.strength=58
 mokepon.6.accuracy=72
 mokepon.6.defence=67
 mokepon.6.dodge=54
-mokepon.6.skills=Bite|Tackle|Bunker|Wait
+#mokepon.6.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.7.name=Shellurk
 mokepon.7.image=assets/Shellurk.png
@@ -76,7 +76,7 @@ mokepon.7.strength=52
 mokepon.7.accuracy=62
 mokepon.7.defence=92
 mokepon.7.dodge=28
-mokepon.7.skills=Bite|Tackle|Bunker|Wait
+#mokepon.7.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.8.name=Needrake
 mokepon.8.image=assets/Needrake.png
@@ -86,7 +86,7 @@ mokepon.8.strength=74
 mokepon.8.accuracy=77
 mokepon.8.defence=48
 mokepon.8.dodge=72
-mokepon.8.skills=Bite|Tackle|Bunker|Wait
+#mokepon.8.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.9.name=Mothique
 mokepon.9.image=assets/Mothique.png
@@ -96,7 +96,7 @@ mokepon.9.strength=46
 mokepon.9.accuracy=91
 mokepon.9.defence=40
 mokepon.9.dodge=88
-mokepon.9.skills=Bite|Tackle|Bunker|Wait
+#mokepon.9.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.10.name=Glacicorn
 mokepon.10.image=assets/Glacicorn.png
@@ -106,7 +106,7 @@ mokepon.10.strength=70
 mokepon.10.accuracy=60
 mokepon.10.defence=85
 mokepon.10.dodge=35
-mokepon.10.skills=Bite|Tackle|Bunker|Wait
+#mokepon.10.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.11.name=Frostback
 mokepon.11.image=assets/Frostback.png
@@ -116,7 +116,7 @@ mokepon.11.strength=72
 mokepon.11.accuracy=58
 mokepon.11.defence=88
 mokepon.11.dodge=30
-mokepon.11.skills=Bite|Tackle|Bunker|Wait
+#mokepon.11.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.12.name=Owlet
 mokepon.12.image=assets/Owlet.png
@@ -126,7 +126,7 @@ mokepon.12.strength=44
 mokepon.12.accuracy=84
 mokepon.12.defence=36
 mokepon.12.dodge=89
-mokepon.12.skills=Bite|Tackle|Bunker|Wait
+#mokepon.12.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.13.name=Owlume
 mokepon.13.image=assets/Owlume.png
@@ -136,7 +136,7 @@ mokepon.13.strength=62
 mokepon.13.accuracy=86
 mokepon.13.defence=52
 mokepon.13.dodge=78
-mokepon.13.skills=Bite|Tackle|Bunker|Wait
+#mokepon.13.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.14.name=Impike
 mokepon.14.image=assets/Impike.png
@@ -146,7 +146,7 @@ mokepon.14.strength=76
 mokepon.14.accuracy=74
 mokepon.14.defence=45
 mokepon.14.dodge=70
-mokepon.14.skills=Bite|Tackle|Bunker|Wait
+#mokepon.14.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.15.name=Hexwing
 mokepon.15.image=assets/Hexwing.png
@@ -156,7 +156,7 @@ mokepon.15.strength=64
 mokepon.15.accuracy=89
 mokepon.15.defence=47
 mokepon.15.dodge=80
-mokepon.15.skills=Bite|Tackle|Bunker|Wait
+#mokepon.15.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.16.name=Tuskice
 mokepon.16.image=assets/Tuskice.png
@@ -166,7 +166,7 @@ mokepon.16.strength=78
 mokepon.16.accuracy=63
 mokepon.16.defence=84
 mokepon.16.dodge=32
-mokepon.16.skills=Bite|Tackle|Bunker|Wait
+#mokepon.16.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.17.name=Mammagma
 mokepon.17.image=assets/Mammagma.png
@@ -176,7 +176,7 @@ mokepon.17.strength=82
 mokepon.17.accuracy=61
 mokepon.17.defence=90
 mokepon.17.dodge=25
-mokepon.17.skills=Bite|Tackle|Bunker|Wait
+#mokepon.17.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.18.name=Cragjaw
 mokepon.18.image=assets/Cragjaw.png
@@ -186,7 +186,7 @@ mokepon.18.strength=86
 mokepon.18.accuracy=59
 mokepon.18.defence=87
 mokepon.18.dodge=27
-mokepon.18.skills=Bite|Tackle|Bunker|Wait
+#mokepon.18.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.19.name=Ironshell
 mokepon.19.image=assets/Ironshell.png
@@ -196,7 +196,7 @@ mokepon.19.strength=60
 mokepon.19.accuracy=55
 mokepon.19.defence=96
 mokepon.19.dodge=20
-mokepon.19.skills=Bite|Tackle|Bunker|Wait
+#mokepon.19.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.20.name=Sprigkid
 mokepon.20.image=assets/Sprigkid.png
@@ -206,7 +206,7 @@ mokepon.20.strength=49
 mokepon.20.accuracy=82
 mokepon.20.defence=43
 mokepon.20.dodge=84
-mokepon.20.skills=Bite|Tackle|Bunker|Wait
+#mokepon.20.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.21.name=Staghorn
 mokepon.21.image=assets/Staghorn.png
@@ -216,7 +216,7 @@ mokepon.21.strength=75
 mokepon.21.accuracy=71
 mokepon.21.defence=70
 mokepon.21.dodge=58
-mokepon.21.skills=Bite|Tackle|Bunker|Wait
+#mokepon.21.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.22.name=Sabrefrost
 mokepon.22.image=assets/Sabrefrost.png
@@ -226,7 +226,7 @@ mokepon.22.strength=81
 mokepon.22.accuracy=76
 mokepon.22.defence=68
 mokepon.22.dodge=64
-mokepon.22.skills=Bite|Tackle|Bunker|Wait
+#mokepon.22.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.23.name=Glacifang
 mokepon.23.image=assets/Glacifang.png
@@ -236,7 +236,7 @@ mokepon.23.strength=79
 mokepon.23.accuracy=79
 mokepon.23.defence=61
 mokepon.23.dodge=69
-mokepon.23.skills=Bite|Tackle|Bunker|Wait
+#mokepon.23.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.24.name=Shoalfin
 mokepon.24.image=assets/Shoalfin.png
@@ -246,7 +246,7 @@ mokepon.24.strength=57
 mokepon.24.accuracy=85
 mokepon.24.defence=46
 mokepon.24.dodge=81
-mokepon.24.skills=Bite|Tackle|Bunker|Wait
+#mokepon.24.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.25.name=Voltusk
 mokepon.25.image=assets/Voltusk.png
@@ -256,7 +256,7 @@ mokepon.25.strength=84
 mokepon.25.accuracy=82
 mokepon.25.defence=63
 mokepon.25.dodge=66
-mokepon.25.skills=Bite|Tackle|Bunker|Wait
+#mokepon.25.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.26.name=Wisperia
 mokepon.26.image=assets/Wisperia.png
@@ -266,7 +266,7 @@ mokepon.26.strength=45
 mokepon.26.accuracy=94
 mokepon.26.defence=39
 mokepon.26.dodge=92
-mokepon.26.skills=Bite|Tackle|Bunker|Wait
+#mokepon.26.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.27.name=Cindrake
 mokepon.27.image=assets/Cindrake.png
@@ -276,7 +276,7 @@ mokepon.27.strength=77
 mokepon.27.accuracy=75
 mokepon.27.defence=56
 mokepon.27.dodge=73
-mokepon.27.skills=Bite|Tackle|Bunker|Wait
+#mokepon.27.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.28.name=Bubbore
 mokepon.28.image=assets/Bubbore.png
@@ -286,7 +286,7 @@ mokepon.28.strength=66
 mokepon.28.accuracy=73
 mokepon.28.defence=74
 mokepon.28.dodge=55
-mokepon.28.skills=Bite|Tackle|Bunker|Wait
+#mokepon.28.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.29.name=Mosswraith
 mokepon.29.image=assets/Mosswraith.png
@@ -296,7 +296,7 @@ mokepon.29.strength=63
 mokepon.29.accuracy=87
 mokepon.29.defence=58
 mokepon.29.dodge=77
-mokepon.29.skills=Bite|Tackle|Bunker|Wait
+#mokepon.29.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.30.name=Emberbat
 mokepon.30.image=assets/Emberbat.png
@@ -306,7 +306,7 @@ mokepon.30.strength=65
 mokepon.30.accuracy=85
 mokepon.30.defence=35
 mokepon.30.dodge=90
-mokepon.30.skills=Bite|Tackle|Bunker|Wait
+#mokepon.30.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.31.name=Flarebat
 mokepon.31.image=assets/Flarebat.png
@@ -316,7 +316,7 @@ mokepon.31.strength=71
 mokepon.31.accuracy=88
 mokepon.31.defence=41
 mokepon.31.dodge=87
-mokepon.31.skills=Bite|Tackle|Bunker|Wait
+#mokepon.31.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.32.name=Pyrovern
 mokepon.32.image=assets/Pyrovern.png
@@ -326,7 +326,7 @@ mokepon.32.strength=89
 mokepon.32.accuracy=80
 mokepon.32.defence=65
 mokepon.32.dodge=60
-mokepon.32.skills=Bite|Tackle|Bunker|Wait
+#mokepon.32.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.33.name=Skydart
 mokepon.33.image=assets/Skydart.png
@@ -336,7 +336,7 @@ mokepon.33.strength=69
 mokepon.33.accuracy=92
 mokepon.33.defence=44
 mokepon.33.dodge=91
-mokepon.33.skills=Bite|Tackle|Bunker|Wait
+#mokepon.33.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.34.name=Galecrest
 mokepon.34.image=assets/Galecrest.png
@@ -346,7 +346,7 @@ mokepon.34.strength=73
 mokepon.34.accuracy=86
 mokepon.34.defence=59
 mokepon.34.dodge=79
-mokepon.34.skills=Bite|Tackle|Bunker|Wait
+#mokepon.34.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.35.name=Stormtalon
 mokepon.35.image=assets/Stormtalon.png
@@ -356,7 +356,7 @@ mokepon.35.strength=90
 mokepon.35.accuracy=84
 mokepon.35.defence=70
 mokepon.35.dodge=68
-mokepon.35.skills=Bite|Tackle|Bunker|Wait
+#mokepon.35.skills=Bite|Tackle|Bunker|Wait
 
 mokepon.0.type=WATER
 mokepon.1.type=WATER

@@ -1,9 +1,9 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI.BattleScreen;
+package project1.UIElement.StaticUI.BattleScreen;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
+import static project1.UIElement.Utils.ScreenPosition.*;
 
 public class BattleLog {
 

@@ -1,4 +1,4 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.Utils;
+package project1.UIElement.Utils;
 
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;

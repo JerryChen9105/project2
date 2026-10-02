@@ -1,11 +1,11 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.StaticUI;
+package project1.UIElement.StaticUI;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ImageMethod.*;
+import static project1.UIElement.Utils.ScreenPosition.*;
+import static project1.UIElement.Utils.ImageMethod.*;
 
 public class BGBlock {
 

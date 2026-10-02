@@ -1,4 +1,4 @@
-package au.edu.unimelb.swen.oop.mokepon.UIElement.DynamicUI.BattleScreen;
+package project1.UIElement.DynamicUI.BattleScreen;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,8 +10,8 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.*;
-import static au.edu.unimelb.swen.oop.mokepon.UIElement.Utils.ScreenPosition.menuBarHeight;
+import static project1.UIElement.Utils.ScreenPosition.*;
+import static project1.UIElement.Utils.ScreenPosition.menuBarHeight;
 
 public class SelfBlock {
 
