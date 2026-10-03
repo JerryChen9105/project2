@@ -149,6 +149,18 @@ public class Mokepon {
         this.currentDefence = defence;
     }
 
+    public void setCurrentStrength(int strength) {
+        this.currentStrength = strength;
+    }
+
+    public void setCurrentAccuracy(int accuracy) {
+        this.currentAccuracy = accuracy;
+    }
+
+    public void setCurrentDodge(int dodge) {
+        this.currentDodge = dodge;
+    }
+
 
     public void takeDamage(int damage) {
         if (this.currentHP <= damage) this.currentHP = 0;

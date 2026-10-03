@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class BattleResult {
 
     private ArrayList<String> messageList;
-    private boolean ended;
     private BattleOutcome outcome;
 
 
@@ -17,7 +16,7 @@ public class BattleResult {
 
 
     public ArrayList<String> getMessageList() {
-        return null;
+        return messageList;
     }
 
     public boolean isEnded() {
@@ -25,7 +24,7 @@ public class BattleResult {
     }
 
     public BattleOutcome getOutcome() {
-        return null;
+        return outcome;
     }
 
 }

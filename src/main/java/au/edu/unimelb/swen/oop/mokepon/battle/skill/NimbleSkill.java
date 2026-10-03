@@ -1,8 +1,12 @@
 package au.edu.unimelb.swen.oop.mokepon.battle.skill;
 
 import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
 import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.GainCalculator;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+import java.util.ArrayList;
 
 public class NimbleSkill implements Skill {
 
@@ -13,7 +17,21 @@ public class NimbleSkill implements Skill {
 
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
-        return null;
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Nimble!\n");
+        if (user.getCurrentDodge() >= 100) {
+            user.setCurrentDodge(100);
+            messageList.add("\tBut their dodge is filled.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+        int dodgeImcrement = GainCalculator.calculate(1, 9);
+        user.setCurrentDodge(user.getCurrentDodge() + dodgeImcrement);
+        if (user.getCurrentDodge() > 100) {
+            dodgeImcrement = user.getCurrentDodge() - 100;
+            user.setCurrentDodge(100);
+        }
+        messageList.add("\tThey raised their dodge by " + dodgeImcrement + " points!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
     }
 
     @Override

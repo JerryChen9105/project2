@@ -1,7 +1,6 @@
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle;
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface;
 
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
 
 public interface BattleEnemyView extends View {
 

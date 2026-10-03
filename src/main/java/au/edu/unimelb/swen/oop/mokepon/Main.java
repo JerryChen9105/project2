@@ -5,19 +5,21 @@ import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
 import au.edu.unimelb.swen.oop.mokepon.controller.MokeponSelectController;
 import au.edu.unimelb.swen.oop.mokepon.controller.ScreenController;
+import au.edu.unimelb.swen.oop.mokepon.data.ItemLoader;
 import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
+import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
 import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
 import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 import au.edu.unimelb.swen.oop.mokepon.view.GameBgView;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.bg.FxBgView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.bg.FxGameMenuView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponChooseView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.BgView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
@@ -31,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 public class Main extends Application {
 
@@ -49,14 +52,20 @@ public class Main extends Application {
         gameState = new GameState();
         randomSource = new JavaRandomSource();
         eventBus = new EventBus();
-        gameBgView = new GameBgView(new FxBgView());
+        gameBgView = new GameBgView(new FxGameMenuView());
+
+        Consumer<ChooseMokeponEvent> chooseMokeponEventConsumer = event -> {};
+        eventBus.subscribe(ChooseMokeponEvent.class, chooseMokeponEventConsumer);
 
 
 
         Properties gameProperty = loadPropertiesFromArgument();
 
+        ItemType.setItemLoader(new ItemLoader(gameProperty));
+
         MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
         ArrayList<Mokepon> mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());
+
 
 
 

@@ -2,6 +2,7 @@ package au.edu.unimelb.swen.oop.mokepon.controller;
 
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
+import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
@@ -91,7 +92,7 @@ public class MokeponSelectController implements ScreenController {
         Mokepon enemyMokepon = mokeponList.get(randomSource.nextInt(0, mokeponList.size()));
         state.setEnemyMokepon(enemyMokepon);
 
-        //eventBus.publish(new ChooseMokeponEvent(selectedMokepon, enemyMokepon));
+        eventBus.publish(new ChooseMokeponEvent(selectedMokepon, enemyMokepon, state));
         screenManager.switchTo(ScreenState.BATTLE);
     }
 }

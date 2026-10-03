@@ -1,32 +1,32 @@
 package au.edu.unimelb.swen.oop.mokepon.view;
 
 import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.BgView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 
 public class GameBgView {
 
-    private BgView bgView;
+    private GameMenuView gameMenuView;
 
 
-    public GameBgView(BgView bgView) {
-        this.bgView = bgView;
+    public GameBgView(GameMenuView gameMenuView) {
+        this.gameMenuView = gameMenuView;
 
 
-        bgView.enable(2);
+        gameMenuView.enable(2);
 
 
-        bgView.node().setLayoutX(ScreenPosition.SCREENLEFT);
-        bgView.node().setLayoutY(ScreenPosition.SCREENTOP);
+        gameMenuView.node().setLayoutX(ScreenPosition.SCREENLEFT);
+        gameMenuView.node().setLayoutY(ScreenPosition.SCREENTOP);
     }
 
     public Node getBgViewRoot() {
-        return bgView.node();
+        return gameMenuView.node();
     }
 
     public MenuItem getMenuItem(int index) {
-        return bgView.getMenuItemArr()[index];
+        return gameMenuView.getMenuItemArr()[index];
     }
 
 }

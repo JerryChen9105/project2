@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public abstract class GameDataLoader<T, V> {
 
-    private final Properties gameData;
+    private Properties gameData;
 
 
     public GameDataLoader(Properties gameData) {

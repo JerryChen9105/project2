@@ -2,7 +2,7 @@ package au.edu.unimelb.swen.oop.mokepon.view.fx.bg;
 
 import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.BgView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
@@ -16,7 +16,7 @@ import javafx.scene.input.KeyCombination;
 
 import java.util.function.Consumer;
 
-public class FxBgView implements BgView {
+public class FxGameMenuView implements GameMenuView {
 
     private Group bgRoot = new Group();
 
@@ -30,7 +30,7 @@ public class FxBgView implements BgView {
     };
 
 
-    public FxBgView() {
+    public FxGameMenuView() {
 
         menuItemArr[0].setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         menuItemArr[1].setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));

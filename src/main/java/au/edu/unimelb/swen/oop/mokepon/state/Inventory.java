@@ -3,11 +3,11 @@ package au.edu.unimelb.swen.oop.mokepon.state;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Inventory {
 
-    private HashMap<ItemType, IntegerProperty> itemMap = new HashMap<>();
+    private LinkedHashMap<ItemType, IntegerProperty> itemMap = new LinkedHashMap<>();
 
 
     public Inventory() {
@@ -16,6 +16,10 @@ public class Inventory {
         }
     }
 
+
+    public LinkedHashMap<ItemType, IntegerProperty> getItemMap() {
+        return itemMap;
+    }
 
     public void add(ItemType itemType) {
         IntegerProperty itemNum = itemMap.get(itemType);

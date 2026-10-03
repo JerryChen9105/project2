@@ -1,8 +1,13 @@
 package au.edu.unimelb.swen.oop.mokepon.battle.skill;
 
 import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
 import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.DamageCalculator;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.HitCalculator;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+import java.util.ArrayList;
 
 public class BiteSkill implements Skill {
 
@@ -13,7 +18,18 @@ public class BiteSkill implements Skill {
 
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
-        return null;
+        boolean hit = HitCalculator.check(user, target);
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Bite!\n");
+        if (!hit) {
+            messageList.add("\tBut they missed.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        int damage = DamageCalculator.calculate(user, target, 1.0);
+        target.takeDamage(damage);
+        messageList.add("\tHit " + target.getName() + " for " + damage + " damage!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
     }
 
     @Override
