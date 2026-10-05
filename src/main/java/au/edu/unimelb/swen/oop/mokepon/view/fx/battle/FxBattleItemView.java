@@ -2,6 +2,7 @@ package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
 
 import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.ItemImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleItemView;
 import javafx.beans.property.IntegerProperty;
 import javafx.geometry.Pos;
@@ -27,7 +28,7 @@ public class FxBattleItemView implements BattleItemView {
 
     public FxBattleItemView() {
         for (ItemType itemType : ItemType.values()) {
-            Button itemBtn = new Button("0", new ImageView(ItemType.getItemImg(itemType)));
+            Button itemBtn = new Button("0", new ImageView(ItemImageLoader.getItemImg(itemType)));
             itemBtn.setOpacity(0.2);
             itemBtn.setStyle("-fx-pref-width: 50;" +
                     "-fx-pref-height: 75;" +

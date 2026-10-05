@@ -1,7 +1,7 @@
 package au.edu.unimelb.swen.oop.mokepon.data;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.MokeponType;
 
 import java.util.*;
 
@@ -47,7 +47,6 @@ public class MokeponLoader extends GameDataLoader<String, Mokepon> {
         return mokeponMap.get(obj);
     }
 
-    @Override
     public LinkedHashMap<String, Mokepon> loadAll() {
         return mokeponMap;
     }

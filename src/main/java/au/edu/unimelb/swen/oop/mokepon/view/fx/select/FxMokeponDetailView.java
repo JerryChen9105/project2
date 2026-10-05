@@ -1,9 +1,10 @@
 package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.MokeponType;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
 import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.MokeponTypeImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -15,7 +16,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class FxMokeponDetailView implements MokeponDetailView {
     }
 
     public void setMokeponTypeImgView(MokeponType mokeponType) {
-        mokeponTypeImgView.setImage(MokeponType.getTypeImg(mokeponType));
+        mokeponTypeImgView.setImage(MokeponTypeImageLoader.getTypeImg(mokeponType));
     }
 
 

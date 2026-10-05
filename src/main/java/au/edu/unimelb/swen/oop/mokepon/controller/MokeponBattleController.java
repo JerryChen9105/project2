@@ -1,16 +1,19 @@
 package au.edu.unimelb.swen.oop.mokepon.controller;
 
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
-import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
-import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
-import au.edu.unimelb.swen.oop.mokepon.battle.BattleService;
-import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleService;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.SkillRegistry;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
 import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponBattleView;
 import javafx.scene.Node;
+
+import java.util.ArrayList;
 
 public class MokeponBattleController implements ScreenController {
 
@@ -46,7 +49,11 @@ public class MokeponBattleController implements ScreenController {
         Mokepon enemy = state.getEnemyMokepon();
         view.getSelfCard().show(self);
         view.getEnemyCard().show(enemy);
-        view.getSkillPanel().setSkills(self.getSkills(), this::onSkillClicked);
+        ArrayList<Skill> skillList = new ArrayList<>();
+        self.getSkills().forEach(skillName -> {
+            skillList.add(SkillRegistry.getSkill(skillName));
+        });
+        view.getSkillView().setSkills(skillList, this::onSkillClicked);
         view.getLogView().clear();
         view.getLogView().append("Player's " + self.getName()
                 + " begins a fight against enemy " + enemy.getName() + "!");
@@ -64,7 +71,7 @@ public class MokeponBattleController implements ScreenController {
 
     @Override
     public Node getRoot() {
-        return null;
+        return view.getMokeponBattleRoot();
     }
 
     private void onSkillClicked(Skill skill) {

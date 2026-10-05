@@ -1,11 +1,10 @@
 package au.edu.unimelb.swen.oop.mokepon.state;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
 
 public class GameState {
 

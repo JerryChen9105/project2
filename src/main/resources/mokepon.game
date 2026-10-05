@@ -401,7 +401,7 @@ mokepon.type.water=assets/sprite_water.png
 mokepon.type.lightning=assets/sprite_lightning.png
 
 items.coffee=assets/sprite_coffee.png
-items.heal=assets/sprite_heal.png
+items.health=assets/sprite_heal.png
 items.poison=assets/sprite_poison.png
 
 mokepon.0.skills=Bite|Lance|Aim|Bunker

@@ -1,6 +1,6 @@
 package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
 import javafx.geometry.Pos;

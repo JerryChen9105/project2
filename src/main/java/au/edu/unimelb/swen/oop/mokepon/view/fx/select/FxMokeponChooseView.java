@@ -1,13 +1,9 @@
 package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-
-import java.util.function.Consumer;
 
 public class FxMokeponChooseView implements MokeponChooseView {
 

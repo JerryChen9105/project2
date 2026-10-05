@@ -1,13 +1,11 @@
 package au.edu.unimelb.swen.oop.mokepon.data;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
 public abstract class GameDataLoader<T, V> {
 
-    private Properties gameData;
+    private static Properties gameData = GameData.getGameData();
 
 
     public GameDataLoader(Properties gameData) {

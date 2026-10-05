@@ -4,7 +4,7 @@ import au.edu.unimelb.swen.oop.mokepon.app.GameWindow;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
 import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
 import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
 import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
@@ -52,29 +52,12 @@ public class TestMain extends Application {
 
 
 
-        /*MokeponListView fxMokeponListView = new FxMokeponListView();
-        MokeponDetailView fxMokeponDetailView = new FxMokeponDetailView();
-        MokeponChooseView fxMokeponChooseView = new FxMokeponChooseView();
 
-        MokeponSelectView mokeponSelectView = new MokeponSelectView(
-                fxMokeponListView, fxMokeponDetailView, fxMokeponChooseView
-        );
-
-        ScreenController mokeponSelectController = new MokeponSelectController(
-                mokeponSelectView, gameState, mokeponList, eventBus, randomSource, screenManager
-        );*/
-
-
-
-
-
-
-        mokeponSelectController.init();
 
 
         Group mainRoot = (Group) gameBgView.getBgViewRoot();
         mainRoot.getChildren().addAll(
-                mokeponSelectView.getMokeponSelectRoot()
+
         );
         Scene scene = new Scene(mainRoot);
         primaryStage.setScene(scene);

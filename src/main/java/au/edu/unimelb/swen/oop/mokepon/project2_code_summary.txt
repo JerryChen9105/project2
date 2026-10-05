@@ -1,115 +1,156 @@
-ï»¿================================================================================
-SWEN20003 PROJECT 2 - MOKEPON EXTENDED
-FULL CODE SUMMARY (for external project analysis)
+================================================================================
+MOKEPON PROJECT - COMPLETE CODE SUMMARY
+Package root: au.edu.unimelb.swen.oop.mokepon
 ================================================================================
 
-PURPOSE OF THIS DOCUMENT
---------------------------------------------------------------------------------
-This file contains a full scan/transcription of every Java source file under:
-    src/main/java/au/edu/unimelb/swen/oop/mokepon/
-It is intended to be handed to another AI / reviewer for a complete project
-analysis. It includes the module descriptor, every class/interface/enum, their
-fields, constructors and method SIGNATURES (and bodies where present), plus a
-structural overview of the architecture and a list of known defects.
-
-NOTE ON COMPLETENESS:
-- Many classes are still SKELETONS: they contain method signatures with empty
-  bodies (or bodies returning null). This is an in-progress refactor. Every such
-  placeholder is preserved verbatim below so the analysis reflects the true
-  current state of the code.
-- This file describes CODE AS WRITTEN. Behaviour that is stubbed out is marked.
+This document contains the complete source code and structure of the Mokepon
+project for analysis by other AIs.
 
 ================================================================================
-SECTION 0 - PROJECT META
+PROJECT STRUCTURE
 ================================================================================
 
-Build system : Gradle (Kotlin DSL), JavaFX plugin 0.1.0, Java toolchain 25
-JavaFX version : 25 (module: javafx.controls)
-Main module : au.edu.unimelb.swen.oop.mokepon
-Main class : au.edu.unimelb.swen.oop.mokepon.Main
-Run arg : data=src/main/resources/mokepon.game
-Test deps : JUnit 5 (junit-bom 6.0.0) - test sources currently empty
-
-Package root layout (src/main/java/au/edu/unimelb/swen/oop/mokepon/):
-    Main.java
-    app/            GameWindow, ScreenManager, ScreenState
-    controller/     ScreenController, MokeponSelectController, BattleController
-    battle/         BattleService, BattleContext, BattleResult, BattleOutcome
-    battle/skill/   Skill + 10 concrete skill classes
-    state/          GameState, Inventory, ItemType
-    model/          Mokepon, MokeponType
-    event/          EventBus
-    view/           GameBgView, MokeponSelectView, MokeponBattleView
-    view/view_interface/            View
-    view/view_interface/bg/         BgView
-    view/view_interface/select/     MokeponListView, MokeponDetailView, MokeponChooseView
-    view/fx/bg/                     FxBgView
-    view/fx/select/                 FxMokeponListView, FxMokeponDetailView, FxMokeponChooseView
-    util/           ScreenPosition, FontLoader, ImageLoader
-    util/random/    RandomSource, JavaRandomSource
-    data/           GameDataLoader (abstract), MokeponLoader, TileLoader
-
-Resources (src/main/resources/):
-    mokepon.game   (key-value game data, see Section 15)
-    style.css
-    assets/*       (~60 PNG sprites/tiles + GrenzeGotisch-Black.ttf font)
-
-ARCHITECTURAL SUMMARY (one paragraph):
-The project has been refactored from a single monolithic Main class into a
-layered MVC/MVP-style architecture with clear separation: model (Mokepon,
-MokeponType), state (GameState with JavaFX properties, Inventory), data loaders
-(GameDataLoader abstract base + MokeponLoader + TileLoader stub), a battle
-subsystem (BattleService + Skill strategy classes), an event system (EventBus
-topic-based pub/sub), view INTERFACES under view/view_interface.* with JavaFX
-implementations under view/fx.*, screen FACADES in view.* (GameBgView,
-MokeponSelectView, MokeponBattleView), controllers (ScreenController + concrete
-controllers), and an app shell (GameWindow extends Stage, ScreenManager,
-ScreenState enum). The SELECT screen is now largely wired and functional
-(loader -> view -> controller -> state properties -> detail display). The BATTLE
-and OVERWORLD screens plus battle logic remain stubbed/empty.
-
-CHANGES SINCE A PRIOR SUMMARY (for reference): GameWindow added; ScreenManager
-now takes a Stage and implements register/switchTo; GameState/Inventory/EventBus
-now initialise their properties (previously NullPointer-prone); Mokepon gained
-current* getters/setters and a MokeponType; MokeponType enum added with type
-sprite loading; view package reorganised into bg/select sub-packages with
-dedicated interfaces and Fx implementations; FxMokeponDetailView now renders
-attributes + type icon; MokeponSelectController and Main are now wired.
+au.edu.unimelb.swen.oop.mokepon
+©À©¤©¤ Main.java
+©À©¤©¤ TestMain.java
+©À©¤©¤ app/
+©¦   ©À©¤©¤ GameWindow.java
+©¦   ©À©¤©¤ ScreenManager.java
+©¦   ©¸©¤©¤ ScreenState.java
+©À©¤©¤ controller/
+©¦   ©À©¤©¤ ScreenController.java
+©¦   ©À©¤©¤ MokeponBattleController.java
+©¦   ©¸©¤©¤ MokeponSelectController.java
+©À©¤©¤ battle/
+©¦   ©À©¤©¤ BattleContext.java
+©¦   ©À©¤©¤ BattleOutcome.java
+©¦   ©À©¤©¤ BattleResult.java
+©¦   ©À©¤©¤ BattleService.java
+©¦   ©À©¤©¤ SkillRegistry.java
+©¦   ©À©¤©¤ effect/
+©¦   ©¦   ©À©¤©¤ Effect.java
+©¦   ©¦   ©À©¤©¤ StunEffect.java
+©¦   ©¦   ©À©¤©¤ BleedEffect.java
+©¦   ©¦   ©¸©¤©¤ BlindEffect.java
+©¦   ©¸©¤©¤ skill/
+©¦       ©À©¤©¤ Skill.java
+©¦       ©À©¤©¤ AimSkill.java
+©¦       ©À©¤©¤ BiteSkill.java
+©¦       ©À©¤©¤ StunSkill.java
+©¦       ©À©¤©¤ WaitSkill.java
+©¦       ©À©¤©¤ LanceSkill.java
+©¦       ©À©¤©¤ SwoleSkill.java
+©¦       ©À©¤©¤ BunkerSkill.java
+©¦       ©À©¤©¤ NimbleSkill.java
+©¦       ©À©¤©¤ TackleSkill.java
+©¦       ©À©¤©¤ PocketSandSkill.java
+©¦       ©¸©¤©¤ util/
+©¦           ©À©¤©¤ HitCalculator.java
+©¦           ©À©¤©¤ GainCalculator.java
+©¦           ©¸©¤©¤ DamageCalculator.java
+©À©¤©¤ data/
+©¦   ©À©¤©¤ GameDataLoader.java
+©¦   ©À©¤©¤ ItemLoader.java
+©¦   ©À©¤©¤ TileLoader.java
+©¦   ©¸©¤©¤ MokeponLoader.java
+©À©¤©¤ event/
+©¦   ©À©¤©¤ EventBus.java
+©¦   ©¸©¤©¤ ChooseMokeponEvent.java
+©À©¤©¤ model/
+©¦   ©À©¤©¤ Mokepon.java
+©¦   ©¸©¤©¤ MokeponType.java
+©À©¤©¤ state/
+©¦   ©À©¤©¤ GameState.java
+©¦   ©À©¤©¤ Inventory.java
+©¦   ©¸©¤©¤ ItemType.java
+©À©¤©¤ util/
+©¦   ©À©¤©¤ FontLoader.java
+©¦   ©À©¤©¤ ImageLoader.java
+©¦   ©À©¤©¤ ScreenPosition.java
+©¦   ©¸©¤©¤ random/
+©¦       ©À©¤©¤ RandomSource.java
+©¦       ©¸©¤©¤ JavaRandomSource.java
+©¸©¤©¤ view/
+    ©À©¤©¤ GameBgView.java
+    ©À©¤©¤ MokeponBattleView.java
+    ©À©¤©¤ MokeponSelectView.java
+    ©À©¤©¤ fx/
+    ©¦   ©À©¤©¤ bg/
+    ©¦   ©¦   ©¸©¤©¤ FxGameMenuView.java
+    ©¦   ©À©¤©¤ select/
+    ©¦   ©¦   ©À©¤©¤ FxMokeponListView.java
+    ©¦   ©¦   ©À©¤©¤ FxMokeponChooseView.java
+    ©¦   ©¦   ©¸©¤©¤ FxMokeponDetailView.java
+    ©¦   ©¸©¤©¤ battle/
+    ©¦       ©À©¤©¤ FxBattleLogView.java
+    ©¦       ©À©¤©¤ FxBattleCardView.java
+    ©¦       ©À©¤©¤ FxBattleItemView.java
+    ©¦       ©¸©¤©¤ FxBattleSkillView.java
+    ©¸©¤©¤ view_interface/
+        ©À©¤©¤ View.java
+        ©À©¤©¤ bg/
+        ©¦   ©À©¤©¤ TextControl.java
+        ©¦   ©À©¤©¤ GameMenuView.java
+        ©¦   ©¸©¤©¤ ButtonControl.java
+        ©À©¤©¤ select/
+        ©¦   ©À©¤©¤ MokeponListView.java
+        ©¦   ©À©¤©¤ MokeponChooseView.java
+        ©¦   ©¸©¤©¤ MokeponDetailView.java
+        ©¸©¤©¤ battle/
+            ©À©¤©¤ BattleLogView.java
+            ©À©¤©¤ BattleCardView.java
+            ©À©¤©¤ BattleItemView.java
+            ©¸©¤©¤ BattleSkillView.java
 
 ================================================================================
-SECTION 1 - module-info.java
+FILE: au/edu/unimelb/swen/oop/mokepon/Main.java
 ================================================================================
 
-module au.edu.unimelb.swen.oop.mokepon {
-    requires javafx.graphics;
-    requires java.desktop;
-    requires javafx.controls;
-    exports au.edu.unimelb.swen.oop.mokepon to javafx.graphics;
-}
-
-================================================================================
-SECTION 2 - Main.java  (Application entry point - NOW WIRED)
-================================================================================
 package au.edu.unimelb.swen.oop.mokepon;
 
-imports:
-    app.GameWindow, app.ScreenManager, app.ScreenState,
-    controller.MokeponSelectController, controller.ScreenController,
-    data.MokeponLoader, event.EventBus, model.Mokepon, state.GameState,
-    view.GameBgView, view.MokeponSelectView, view.fx.bg.FxBgView,
-    view.fx.select.FxMokeponDetailView, view.fx.select.FxMokeponListView,
-    view.view_interface.bg.BgView, view.view_interface.select.MokeponDetailView,
-    view.view_interface.select.MokeponListView,
-    javafx.application.Application, javafx.scene.Group, javafx.scene.Scene,
-    javafx.stage.Stage, java.io.IOException, java.nio.file.Files,
-    java.nio.file.Path, java.util.ArrayList, java.util.Properties
+import au.edu.unimelb.swen.oop.mokepon.app.GameWindow;
+import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
+import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
+import au.edu.unimelb.swen.oop.mokepon.controller.MokeponSelectController;
+import au.edu.unimelb.swen.oop.mokepon.controller.ScreenController;
+import au.edu.unimelb.swen.oop.mokepon.data.ItemImgLoader;
+import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
+import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
+import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
+import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
+import au.edu.unimelb.swen.oop.mokepon.view.GameBgView;
+import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.bg.FxGameMenuView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponChooseView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.function.Consumer;
 
 public class Main extends Application {
 
     private ScreenManager screenManager;
     private GameState gameState;
+    private RandomSource randomSource;
     private EventBus eventBus;
     private GameBgView gameBgView;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -117,32 +158,60 @@ public class Main extends Application {
         primaryStage = new GameWindow();
         screenManager = new ScreenManager(primaryStage);
         gameState = new GameState();
+        randomSource = new JavaRandomSource();
         eventBus = new EventBus();
-        gameBgView = new GameBgView(new FxBgView());
+        gameBgView = new GameBgView(new FxGameMenuView());
+
+        Consumer<ChooseMokeponEvent> chooseMokeponEventConsumer = event -> {};
+        eventBus.subscribe(ChooseMokeponEvent.class, chooseMokeponEventConsumer);
+
+
 
         Properties gameProperty = loadPropertiesFromArgument();
+
+        ItemType.setItemLoader(new ItemLoader(gameProperty));
 
         MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
         ArrayList<Mokepon> mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());
 
+
+
+
+
+
         MokeponListView fxMokeponListView = new FxMokeponListView();
         MokeponDetailView fxMokeponDetailView = new FxMokeponDetailView();
+        MokeponChooseView fxMokeponChooseView = new FxMokeponChooseView();
 
-        MokeponSelectView mokeponSelectView = new MokeponSelectView(fxMokeponListView, fxMokeponDetailView);
+        MokeponSelectView mokeponSelectView = new MokeponSelectView(
+                fxMokeponListView, fxMokeponDetailView, fxMokeponChooseView
+        );
 
         ScreenController mokeponSelectController = new MokeponSelectController(
-                mokeponSelectView, gameState, mokeponList, eventBus
+                mokeponSelectView, gameState, mokeponList, eventBus, randomSource, screenManager
         );
+
+
+
+
+
 
         screenManager.register(ScreenState.SELECT, mokeponSelectController);
 
+
+
+
         mokeponSelectController.init();
 
-        Group mainRoot = new Group();
-        mainRoot.getChildren().addAll(gameBgView.getBgViewRoot(), mokeponSelectView.getMokeponSelectRoot());
+
+        Group mainRoot = (Group) gameBgView.getBgViewRoot();
+        mainRoot.getChildren().addAll(
+                mokeponSelectView.getMokeponSelectRoot()
+        );
         Scene scene = new Scene(mainRoot);
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
     private Properties loadPropertiesFromArgument() throws IOException {
@@ -163,29 +232,120 @@ public class Main extends Application {
     }
 }
 
-OBSERVATIONS:
-- start() is now a real composition root: creates GameWindow, ScreenManager,
-  GameState, EventBus, background, loaders, views, controller; registers SELECT;
-  builds the scene graph and shows the stage.
-- NOTE: local variable named 'mokeponList' shadows the java.util.List interface
-  name (compiles, but poor style). Also FxMokeponListView/FxMokeponDetailView are
-  constructed here as the concrete classes but referenced via interface types.
-- NOTE: mainRoot adds bg root first then select root (correct z-order).
-- NOTE: ScreenManager.switchTo() is NOT called here; SELECT is shown by directly
-  adding its root to the scene. So ScreenManager is only used for register().
-
 ================================================================================
-SECTION 3 - app package
+FILE: au/edu/unimelb/swen/oop/mokepon/TestMain.java
 ================================================================================
 
---- app/ScreenState.java (enum) ---
-package au.edu.unimelb.swen.oop.mokepon.app;
+package au.edu.unimelb.swen.oop.mokepon;
 
-public enum ScreenState {
-    SELECT, BATTLE, OVERWORLD
+import au.edu.unimelb.swen.oop.mokepon.app.GameWindow;
+import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
+import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
+import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
+import au.edu.unimelb.swen.oop.mokepon.view.GameBgView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.bg.FxGameMenuView;
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Properties;
+
+public class TestMain extends Application {
+
+
+    private ScreenManager screenManager;
+    private GameState gameState;
+    private RandomSource randomSource;
+    private EventBus eventBus;
+    private GameBgView gameBgView;
+
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        primaryStage = new GameWindow();
+        screenManager = new ScreenManager(primaryStage);
+        gameState = new GameState();
+        randomSource = new JavaRandomSource();
+        eventBus = new EventBus();
+        gameBgView = new GameBgView(new FxGameMenuView());
+
+
+
+        Properties gameProperty = loadPropertiesFromArgument();
+
+        MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
+        ArrayList<Mokepon> mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());
+
+
+
+
+
+        /*MokeponListView fxMokeponListView = new FxMokeponListView();
+        MokeponDetailView fxMokeponDetailView = new FxMokeponDetailView();
+        MokeponChooseView fxMokeponChooseView = new FxMokeponChooseView();
+
+        MokeponSelectView mokeponSelectView = new MokeponSelectView(
+                fxMokeponListView, fxMokeponDetailView, fxMokeponChooseView
+        );
+
+        ScreenController mokeponSelectController = new MokeponSelectController(
+                mokeponSelectView, gameState, mokeponList, eventBus, randomSource, screenManager
+        );*/
+
+
+
+
+
+
+        mokeponSelectController.init();
+
+
+        Group mainRoot = (Group) gameBgView.getBgViewRoot();
+        mainRoot.getChildren().addAll(
+                mokeponSelectView.getMokeponSelectRoot()
+        );
+        Scene scene = new Scene(mainRoot);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+
+    }
+
+
+    private Properties loadPropertiesFromArgument() throws IOException {
+        String argument = getParameters().getRaw().getFirst();
+        if (!argument.startsWith("data=")) {
+            throw new IllegalArgumentException("Missing expected argument in the form data=relativeFilePath");
+        }
+
+        Properties properties = new Properties();
+        try (var input = Files.newInputStream(Path.of(argument.substring("data=".length())))) {
+            properties.load(input);
+        }
+        return properties;
+    }
+
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+
 }
 
---- app/GameWindow.java (extends javafx.stage.Stage) ---
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/app/GameWindow.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.app;
 
 import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
@@ -201,16 +361,21 @@ public class GameWindow extends Stage {
         setResizable(false);
         setWidth(ScreenPosition.SCREENWIDTH);
         setHeight(ScreenPosition.SCREENHEIGHT);
-        setScene(new Scene(new Pane(), ScreenPosition.SCREENWIDTH,
-                ScreenPosition.SCREENHEIGHT, Color.LIGHTGREY));
+        setScene(new Scene(new Pane(), ScreenPosition.SCREENWIDTH, ScreenPosition.SCREENHEIGHT, Color.LIGHTGREY));
     }
+
 }
 
---- app/ScreenManager.java (screen navigation shell) ---
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/app/ScreenManager.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.app;
 
 import au.edu.unimelb.swen.oop.mokepon.controller.ScreenController;
-import javafx.stage.Screen;        // NOTE: imported but unused
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
@@ -227,6 +392,7 @@ public class ScreenManager {
         currentScreenState = null;
     }
 
+
     public void register(ScreenState screenState, ScreenController screenController) {
         this.controllerMap.put(screenState, screenController);
     }
@@ -240,7 +406,9 @@ public class ScreenManager {
 
         targetController.show();
         currentScreenState = screenState;
-        stage.getScene().setRoot(null); // add view.node()  <-- TODO / INCOMPLETE
+
+        Parent currentRoot = stage.getScene().getRoot();
+        //stage.getScene().setRoot(null); // add view.node()
     }
 
     public ScreenState getCurrentScreenState() {
@@ -248,36 +416,139 @@ public class ScreenManager {
     }
 }
 
-OBSERVATIONS:
-- register() now works; switchTo() shows target & hides previous, and updates
-  currentScreenState.
-- BUG/TODO: switchTo() calls stage.getScene().setRoot(null) â€” it CLEARS the scene
-  root and never re-attaches any view node. The comment "// add view.node()"
-  marks it unfinished. A Controller currently exposes no node() accessor.
-- 'import javafx.stage.Screen' unused.
-- HashMap declared, LinkedHashMap instantiated (keeps insertion order - intentional
-  for deterministic iteration, but field type is the less specific interface).
-
 ================================================================================
-SECTION 4 - controller package
+FILE: au/edu/unimelb/swen/oop/mokepon/app/ScreenState.java
 ================================================================================
 
---- controller/ScreenController.java (interface) ---
-package au.edu.unimelb.swen.oop.mokepon.controller;
+package au.edu.unimelb.swen.oop.mokepon.app;
 
-public interface ScreenController {
-    public void init();
-    public void show();
-    public void hide();
+public enum ScreenState {
+    SELECT, BATTLE, OVERWORLD
 }
 
---- controller/MokeponSelectController.java (NOW IMPLEMENTED) ---
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/controller/ScreenController.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.controller;
 
+import javafx.scene.Node;
+
+public interface ScreenController {
+
+    public void init();
+
+    public void show();
+
+    public void hide();
+
+    public Node getRoot();
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/controller/MokeponBattleController.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.controller;
+
+import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleService;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
+import au.edu.unimelb.swen.oop.mokepon.view.MokeponBattleView;
+import javafx.scene.Node;
+
+public class MokeponBattleController implements ScreenController {
+
+    private MokeponBattleView view;
+    private GameState state;
+    private BattleService battleService;
+    private EventBus eventBus;
+    private BattleContext context = new BattleContext();
+    private RandomSource randomSource;
+    private ScreenManager screenManager;
+
+
+    public MokeponBattleController(MokeponBattleView view,
+                                   GameState state,
+                                   BattleService battleService,
+                                   EventBus eventBus,
+                                   BattleContext context,
+                                   RandomSource randomSource,
+                                   ScreenManager screenManager) {
+        this.view = view;
+        this.state = state;
+        this.battleService = battleService;
+        this.eventBus = eventBus;
+        this.context = context;
+        this.randomSource = randomSource;
+        this.screenManager = screenManager;
+    }
+
+
+    @Override
+    public void init() {
+        Mokepon self = state.getPlayerMokepon();
+        Mokepon enemy = state.getEnemyMokepon();
+        view.getSelfCard().show(self);
+        view.getEnemyCard().show(enemy);
+        view.getSkillView().setSkills(self.getSkills(), this::onSkillClicked);
+        view.getLogView().clear();
+        view.getLogView().append("Player's " + self.getName()
+                + " begins a fight against enemy " + enemy.getName() + "!");
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public Node getRoot() {
+        return view.getMokeponBattleRoot();
+    }
+
+    private void onSkillClicked(Skill skill) {
+
+    }
+
+    private void runEnrmyTurn() {
+
+    }
+
+    private void handleBattleEnd(BattleOutcome battleOutcome) {
+
+    }
+
+}
+
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/controller/MokeponSelectController.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.controller;
+
+import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
+import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
+import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
+import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
+import javafx.scene.Node;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -288,17 +559,25 @@ public class MokeponSelectController implements ScreenController {
     private GameState state;
     private ArrayList<Mokepon> mokeponList;
     private EventBus eventBus;
+    private RandomSource randomSource;
+    private ScreenManager screenManager;
+
 
     public MokeponSelectController(
             MokeponSelectView view,
             GameState state,
             ArrayList<Mokepon> mokeponList,
-            EventBus eventBus) {
+            EventBus eventBus,
+            RandomSource randomSource,
+            ScreenManager screenManager) {
         this.view = view;
         this.state = state;
         this.mokeponList = mokeponList;
         this.eventBus = eventBus;
+        this.randomSource = randomSource;
+        this.screenManager = screenManager;
     }
+
 
     @Override
     public void init() {
@@ -306,7 +585,7 @@ public class MokeponSelectController implements ScreenController {
             if ((state.getSelectedMokepon() == null) || !state.getSelectedMokepon().equals(mokepon)) {
                 onMokeponSelected(mokepon);
             } else {
-                onChooseClicked();
+                onMokeponCancelSelected();
             }
         };
         view.getMokeponListView().setItems(mokeponList, btnClickEvent);
@@ -328,110 +607,40 @@ public class MokeponSelectController implements ScreenController {
         view.getMokeponSelectRoot().setVisible(false);
     }
 
+    @Override
+    public Node getRoot() {
+        return view.getMokeponSelectRoot();
+    }
+
     private void onMokeponSelected(Mokepon mokepon) {
         state.setSelectedMokepon(mokepon);
+        view.getMokeponListView().select(mokepon);
         view.getMokeponDetailView().show(mokepon);
     }
 
-    private void onChooseClicked() {
+    private void onMokeponCancelSelected() {
         state.setSelectedMokepon(null);
         view.getMokeponDetailView().clear();
     }
-}
 
-OBSERVATIONS:
-- init() wires the list view with a callback and subscribes to selectedMokepon
-  changes.
-- The click callback implements a toggle: first click selects, second click on
-  the SAME already-selected mokepon triggers onChooseClicked().
-- BUG/LOGIC: onChooseClicked() sets selectedMokepon to null and clears the
-  detail view, i.e. it behaves like a DESELECT rather than a confirm/choose.
-  The intended "choose -> go to battle" behaviour (increment fightCount, set
-  playerMokepon, switchTo BATTLE) is NOT implemented.
-- onMokeponSelected() does not call view.getMokeponListView().select(mokepon),
-  so the list view's internal selectedButton is never set (getSelectedButtonName
-  would still NPE).
+    private void onChooseClicked() {
+        Mokepon selectedMokepon = state.getSelectedMokepon();
+        if (selectedMokepon == null) return;
 
---- controller/BattleController.java (STILL STUB) ---
-package au.edu.unimelb.swen.oop.mokepon.controller;
+        state.setPlayerMokepon(selectedMokepon);
 
-import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
-import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
-import au.edu.unimelb.swen.oop.mokepon.battle.BattleService;
-import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
-import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
-import au.edu.unimelb.swen.oop.mokepon.state.GameState;
-import au.edu.unimelb.swen.oop.mokepon.view.MokeponBattleView;
+        Mokepon enemyMokepon = mokeponList.get(randomSource.nextInt(0, mokeponList.size()));
+        state.setEnemyMokepon(enemyMokepon);
 
-public class BattleController implements ScreenController {
-
-    private MokeponBattleView view;
-    private GameState state;
-    private BattleService battleService;
-    private EventBus eventBus;
-    private BattleContext context;
-
-    @Override public void init() { /* STUB - empty */ }
-    @Override public void show() { /* STUB - empty */ }
-    @Override public void hide() { /* STUB - empty */ }
-
-    private void onSkillClicked(Skill skill) {
-        // STUB - empty
-    }
-
-    private void runEnrmyTurn() {          // NOTE: method name typo "Enrmy"
-        // STUB - empty
-    }
-
-    private void handleBattleEnd(BattleOutcome battleOutcome) {
-        // STUB - empty
+        eventBus.publish(new ChooseMokeponEvent(selectedMokepon, enemyMokepon, state));
+        screenManager.switchTo(ScreenState.BATTLE);
     }
 }
 
 ================================================================================
-SECTION 5 - battle package
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/BattleContext.java
 ================================================================================
 
---- battle/BattleOutcome.java (enum) ---
-package au.edu.unimelb.swen.oop.mokepon.battle;
-
-public enum BattleOutcome {
-    ONGOING, PLAYER_WIN, PLAYER_LOSE
-}
-
---- battle/BattleResult.java (PARTIAL) ---
-package au.edu.unimelb.swen.oop.mokepon.battle;
-
-import java.util.ArrayList;
-
-public class BattleResult {
-
-    private ArrayList<String> messageList;
-    private boolean ended;
-    private BattleOutcome outcome;
-
-    public BattleResult(ArrayList<String> messageList, BattleOutcome outcome) {
-        this.messageList = messageList;
-        this.outcome = outcome;
-    }
-
-    public ArrayList<String> getMessageList() {
-        return null;   // STUB - should return messageList
-    }
-
-    public boolean isEnded() {
-        return this.outcome != BattleOutcome.ONGOING;
-    }
-
-    public BattleOutcome getOutcome() {
-        return null;   // STUB - should return outcome
-    }
-}
-
-NOTE: constructor now stores messageList/outcome, but getters are still stubs
-returning null. 'ended' field is declared and never used.
-
---- battle/BattleContext.java (NOW INITIALISED) ---
 package au.edu.unimelb.swen.oop.mokepon.battle;
 
 import java.util.ArrayList;
@@ -440,9 +649,12 @@ public class BattleContext {
 
     ArrayList<String> logList;
 
+
+
     public BattleContext() {
         logList = new ArrayList<>();
     }
+
 
     public void log(String logMessage) {
         logList.add(logMessage);
@@ -451,53 +663,255 @@ public class BattleContext {
     public ArrayList<String> getLogList() {
         return logList;
     }
-}
-// NOTE: logList is package-private (no modifier) - inconsistent encapsulation.
 
---- battle/BattleService.java (PARTIAL) ---
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/BattleOutcome.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+public enum BattleOutcome {
+    ONGOING, PLAYER_WIN, PLAYER_LOSE
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/BattleResult.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+import java.util.ArrayList;
+
+public class BattleResult {
+
+    private ArrayList<String> messageList;
+    private BattleOutcome outcome;
+
+
+    public BattleResult(ArrayList<String> messageList, BattleOutcome outcome) {
+        this.messageList = messageList;
+        this.outcome = outcome;
+    }
+
+
+
+    public ArrayList<String> getMessageList() {
+        return messageList;
+    }
+
+    public boolean isEnded() {
+        return this.outcome != BattleOutcome.ONGOING;
+    }
+
+    public BattleOutcome getOutcome() {
+        return outcome;
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/BattleService.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.battle;
 
 import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BattleService {
 
     private RandomSource randomSource;
-    private HashMap<String, Skill> skillMap = new HashMap<>();   // declared, never populated
+
+    private HashMap<String, Skill> skillMap = new HashMap<>();
 
     public BattleService(RandomSource randomSource) {
         this.randomSource = randomSource;
     }
 
+
     public BattleResult useSkill(Skill skill, Mokepon self, Mokepon other, BattleContext battleContext) {
-        return skill.execute(self, other, battleContext);   // delegates to skill
+        if (self.getCurrentEnergy() < skill.getEnergyCost()) {
+            ArrayList<String> messageList = new ArrayList<>();
+            messageList.add(self.getName() + " do not have enough energy for " + skill.getName() + "!");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        self.setCurrentEnergy(self.getCurrentEnergy() - skill.getEnergyCost());
+        BattleResult skillResult = skill.execute(self, other, battleContext);
+        BattleOutcome outcome = checkBattleEnd(self, other);
+        if (outcome != BattleOutcome.ONGOING) return new BattleResult(skillResult.getMessageList(), outcome);
+        return skillResult;
     }
 
     public BattleResult useEnemyRandomSkill(Mokepon self, Mokepon other, BattleContext battleContext) {
         int randonSkillInt = randomSource.nextInt(0, self.getSkills().size());
-        return null; // add code   <-- TODO: enemy skill selection not finished
+        Skill skill = SkillRegistry.getSkill(self.getSkills().get(randonSkillInt));
+        return useSkill(skill, self, other, battleContext);
     }
 
     public BattleOutcome checkBattleEnd(Mokepon self, Mokepon other) {
-        return null;   // STUB
+        if (other.getCurrentHP() <= 0) return BattleOutcome.PLAYER_WIN;
+        if (self.getCurrentHP() <= 0) return BattleOutcome.PLAYER_LOSE;
+        return BattleOutcome.ONGOING;
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/SkillRegistry.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class SkillRegistry {
+
+    private static final HashMap<String, Skill> skillMap = (HashMap<String, Skill>) Map.of(
+            "Bite", new BiteSkill(),
+            "Tackle", new TackleSkill(),
+            "Bunker", new BunkerSkill(),
+            "Wait", new WaitSkill(),
+            "Aim", new AimSkill(),
+            "Swole", new SwoleSkill(),
+            "Nimble", new NimbleSkill(),
+            "Lance", new LanceSkill(),
+            "Stun", new StunSkill(),
+            "Pocket Sand", new PocketSandSkill()
+    );
+
+    public static Skill getSkill(String name) {
+        return skillMap.get(name);
+    }
+
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/effect/Effect.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.effect;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public interface Effect {
+
+    public void onTurnEnd(Mokepon owner, BattleContext battleContext);
+
+    public boolean isExpired();
+
+    public String getName();
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/effect/StunEffect.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.effect;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public class StunEffect implements Effect {
+
+
+
+
+
+    @Override
+    public void onTurnEnd(Mokepon owner, BattleContext battleContext) {
+
+    }
+
+    @Override
+    public boolean isExpired() {
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return "Stun";
     }
 }
 
-OBSERVATIONS:
-- RandomSource is now injected via constructor (good DIP), but Main does not yet
-  construct a BattleService.
-- skillMap declared but never used/populated.
-- useEnemyRandomSkill() picks a random index but discards it and returns null.
-- typo local: 'randonSkillInt'.
-- checkBattleEnd() stubbed.
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/effect/BleedEffect.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.effect;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public class BleedEffect implements Effect {
+
+
+
+
+
+    @Override
+    public void onTurnEnd(Mokepon owner, BattleContext battleContext) {
+
+    }
+
+    @Override
+    public boolean isExpired() {
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return "Bleed";
+    }
+}
 
 ================================================================================
-SECTION 6 - battle/skill package
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/effect/BlindEffect.java
 ================================================================================
---- battle/skill/Skill.java (interface - Strategy) ---
+
+package au.edu.unimelb.swen.oop.mokepon.battle.effect;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public class BlindEffect implements Effect {
+
+
+
+
+
+    @Override
+    public void onTurnEnd(Mokepon owner, BattleContext battleContext) {
+
+    }
+
+    @Override
+    public boolean isExpired() {
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return "Blind";
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/Skill.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.battle.skill;
 
 import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
@@ -505,934 +919,498 @@ import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 
 public interface Skill {
+
     public String getName();
     public int getEnergyCost();
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext);
+
 }
 
---- The 10 concrete skills (ALL still STUBS) ---
-Every execute(...) body returns null. Each overrides getName() (hard-coded
-string) and getEnergyCost() (hard-coded int).
-
-Class                | getName() returns | getEnergyCost() | execute()
----------------------+-------------------+-----------------+----------
-BiteSkill            | "Bite"            | 1               | return null;
-TackleSkill          | "Tackle"          | 5               | return null;
-BunkerSkill          | "Bunker"          | 3               | return null;
-WaitSkill            | "Wait"            | -2              | return null;
-LanceSkill           | "Lance"           | 4               | return null;
-StunSkill            | "Stun"            | 4               | return null;
-AimSkill             | "Aim"             | 3               | return null;
-SwoleSkill           | "Swole"           | 3               | return null;
-NimbleSkill          | "Nimble"          | 3               | return null;
-PocketSandSkill      | "Pocket Sand"     | 4               | return null;
-
-(Representative source - all skill files are identical in shape; BiteSkill shown:)
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/AimSkill.java
+================================================================================
 
 package au.edu.unimelb.swen.oop.mokepon.battle.skill;
 
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.GainCalculator;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+import java.util.ArrayList;
+
+public class AimSkill implements Skill {
+
+    @Override
+    public String getName() {
+        return "Aim";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Aim!\n");
+        if (user.getCurrentAccuracy() >= 100) {
+            user.setCurrentAccuracy(100);
+            messageList.add("\tBut their accuracy is filled.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        int accuracyImcrement = GainCalculator.calculate(1, 9);
+        user.setCurrentAccuracy(user.getCurrentAccuracy() + accuracyImcrement);
+        if (user.getCurrentAccuracy() > 100) {
+            accuracyImcrement = user.getCurrentAccuracy() - 100;
+            user.setCurrentAccuracy(100);
+        }
+        messageList.add("\tThey raised their accuracy by " + accuracyImcrement + " points!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 3;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/BiteSkill.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.DamageCalculator;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.HitCalculator;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+import java.util.ArrayList;
+
 public class BiteSkill implements Skill {
-    @Override public String getName() { return "Bite"; }
-    @Override public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+
+    @Override
+    public String getName() {
+        return "Bite";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        boolean hit = HitCalculator.check(user, target);
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Bite!\n");
+        if (!hit) {
+            messageList.add("\tBut they missed.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        int damage = DamageCalculator.calculate(user, target, 1.0);
+        target.takeDamage(damage);
+        messageList.add("\tHit " + target.getName() + " for " + damage + " damage!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 1;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/StunSkill.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public class StunSkill implements Skill {
+
+    @Override
+    public String getName() {
+        return "Stun";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         return null;
     }
-    @Override public int getEnergyCost() { return 1; }
+
+    @Override
+    public int getEnergyCost() {
+        return 4;
+    }
 }
 
-OBSERVATION: Classic Strategy pattern - each skill is a separate class
-implementing a common interface (replaces old switch/if). NONE of the skill
-effects are implemented yet.
-
 ================================================================================
-SECTION 7 - state package
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/WaitSkill.java
 ================================================================================
 
---- state/ItemType.java (enum) ---
-package au.edu.unimelb.swen.oop.mokepon.state;
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
 
-public enum ItemType {
-    HEALTH, COFFEE, POISON
-}
-
---- state/GameState.java (NOW INITIALISED) ---
-package au.edu.unimelb.swen.oop.mokepon.state;
-
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
-public class GameState {
-
-    private ObjectProperty<Mokepon> selectedMokepon = new SimpleObjectProperty<>();
-    private ObjectProperty<Mokepon> playerMokepon = new SimpleObjectProperty<>();
-    private ObjectProperty<Mokepon> enemyMokepon = new SimpleObjectProperty<>();
-    private IntegerProperty fightCount = new SimpleIntegerProperty(0);
-    private Inventory inventory = new Inventory();
-
-    public ObjectProperty<Mokepon> selectedMokeponProperty() { return selectedMokepon; }
-    public Mokepon getSelectedMokepon() { return selectedMokepon.getValue(); }
-    public void setSelectedMokepon(Mokepon mokepon) { selectedMokepon.setValue(mokepon); }
-    public Mokepon getPlayerMokepon() { return playerMokepon.getValue(); }
-    public void setPlayerMokepon(Mokepon mokepon) { playerMokepon.setValue(mokepon); }
-    public Mokepon getEnemyMokepon() { return enemyMokepon.getValue(); }
-    public void setEnemyMokepon(Mokepon mokepon) { enemyMokepon.setValue(mokepon); }
-    public int getFightCount() { return fightCount.getValue(); }
-    public void incrementFightCount() { fightCount.setValue(fightCount.getValue() + 1); }
-    public Inventory getInventory() { return inventory; }
-    public void resetForNewSelection() {
-        selectedMokepon.setValue(null);
-        playerMokepon.setValue(null);
-    }
-}
-// The javafx properties are now initialised - no more NPE risk from uninitialised
-// fields. resetForNewSelection() clears selected & player but NOT enemyMokepon.
-
---- state/Inventory.java (NOW IMPLEMENTED) ---
-package au.edu.unimelb.swen.oop.mokepon.state;
-
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import java.util.HashMap;
-
-public class Inventory {
-
-    private HashMap<ItemType, IntegerProperty> itemMap = new HashMap<>();
-
-    public Inventory() {
-        for (ItemType itemType : ItemType.values()) {
-            itemMap.put(itemType, new SimpleIntegerProperty(0));
-        }
-    }
-
-    public void add(ItemType itemType) {
-        IntegerProperty itemNum = itemMap.get(itemType);
-        itemNum.setValue(itemNum.getValue() + 1);
-    }
-
-    public int getCount(ItemType itemType) {
-        return itemMap.get(itemType).getValue();
-    }
-
-    public boolean use(ItemType itemType) {
-        IntegerProperty itemNum = itemMap.get(itemType);
-        if (itemNum.getValue() <= 0) return false;
-        itemNum.setValue(itemNum.getValue() - 1);
-        return true;
-    }
-
-    public void clear() {
-        itemMap.values().forEach(item -> {
-            item.setValue(0);
-        });
-    }
-}
-// Fully implemented. Effect of using an item (heal/poison/coffee) is NOT applied
-// here - use() only decrements the count.
-
-================================================================================
-SECTION 8 - model package
-================================================================================
-
---- model/MokeponType.java (enum with type-sprite helper) ---
-package au.edu.unimelb.swen.oop.mokepon.model;
-
-import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
-import javafx.scene.image.Image;
-
-import java.util.Locale;
-
-public enum MokeponType {
-    NORMAL, FIRE, ICE, WATER, LIGHTNING;
-
-    private static final String TYPEIMGPREFIX = "/assets/sprite_";
-
-    public static Image getTypeImg(MokeponType mokeponType) {
-        if (mokeponType == null) return null;
-        return ImageLoader.load(TYPEIMGPREFIX + mokeponType.toString().toLowerCase(Locale.ROOT) + ".png", 32, 32);
-    }
-}
-// NOTE: enum imports a util/UI class (ImageLoader) and returns a JavaFX Image -
-// couples the model layer to JavaFX. No type-effectiveness (elemental weakness)
-// logic exists yet.
-
---- model/Mokepon.java ---
-package au.edu.unimelb.swen.oop.mokepon.model;
+import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 
 import java.util.ArrayList;
 
-public class Mokepon {
+public class WaitSkill implements Skill {
 
-    // immutable base stats
-    private String name;
-    private String imgURL;
-    private int maxHP;
-    private int maxEnergy;
-    private int baseStrength;
-    private int baseAccuracy;
-    private int baseDefence;
-    private int baseDodge;
-    private ArrayList<String> skillList;
-    private MokeponType mokeponType;
+    private static final RandomSource randomSource = new JavaRandomSource();
 
-    // mutable battle stats
-    private int currentHP;
-    private int currentEnergy;
-    private int currentStrength;
-    private int currentAccuracy;
-    private int currentDefence;
-    private int currentDodge;
-
-    public Mokepon(
-            String name, String imgURL, int maxHP, int maxEnergy,
-            int baseStrength, int baseAccuracy, int baseDefence, int baseDodge,
-            ArrayList<String> skillList, MokeponType mokeponType) {
-        this.name = name;
-        this.imgURL = imgURL;
-        this.maxHP = maxHP;
-        this.maxEnergy = maxEnergy;
-        this.baseStrength = baseStrength;
-        this.baseAccuracy = baseAccuracy;
-        this.baseDefence = baseDefence;
-        this.baseDodge = baseDodge;
-        this.skillList = skillList;
-        this.mokeponType = mokeponType;
-        // NOTE: currentHP/currentEnergy/current* still left at 0
-    }
-
-    public String toString() {
-        String skills = String.join(", ", skillList);
-        return "name : " + name + "\nimgURL : " + imgURL + "\nmaxHP : " + maxHP
-             + "\nmaxEnergy : " + maxEnergy + "\nbaseStrength : " + baseStrength
-             + "\nbaseAccuracy : " + baseAccuracy + "\nbaseDefence : " + baseDefence
-             + "\nbaseDodge : " + baseDodge + "\nskills : " + skills;
-    }
-
-    public boolean equals(Mokepon other) {
-        boolean skillsAreSame = true;
-        for (int i = 0; i < this.skillList.size(); i++) {
-            if (!this.skillList.get(i).equals(other.skillList.get(i))) {
-                skillsAreSame = false;
-                break;
-            }
-        }
-        return this.name.equals(other.getName()) &&      // now uses .equals (fixed)
-               this.imgURL.equals(other.getImgURL()) &&
-               skillsAreSame;
-    }
-    // NOTE: overloads equals WITHOUT @Override / hashCode -> violates equals/hashCode
-    // contract; equality also ignores maxHP/energy/stats/type.
-
-    // base-stat getters
-    public String getName() { return this.name; }
-    public String getImgURL() { return this.imgURL; }
-    public int getMaxHP() { return this.maxHP; }
-    public int getMaxEnergy() { return this.maxEnergy; }
-    public int getBaseStrength() { return this.baseStrength; }
-    public int getBaseAccuracy() { return this.baseAccuracy; }
-    public int getBaseDefence() { return this.baseDefence; }
-    public int getBaseDodge() { return this.baseDodge; }
-    public ArrayList<String> getSkills() { return this.skillList; }
-    public MokeponType getMokeponType() { return mokeponType; }
-
-    // current-stat getters
-    public int getCurrentHP() { return this.currentHP; }
-    public int getCurrentEnergy() { return this.currentEnergy; }
-    public int getCurrentStrength() { return this.currentStrength; }
-    public int getCurrentAccuracy() { return this.currentAccuracy; }
-    public int getCurrentDefence() { return this.currentDefence; }
-    public int getCurrentDodge() { return currentDodge; }
-
-    // setters (clamped)
-    public void setCurrentHP(int hp) { if (hp < 0) hp = 0; this.currentHP = hp; }
-    public void setCurrentEnergy(int energy) { if (energy < 0) energy = 0; this.currentEnergy = energy; }
-    public void setCurrentDefence(int defence) {
-        if (defence < 0) defence = 0;
-        else if (defence > 100) defence = 100;
-        this.currentDefence = defence;    // FIXED (previously wrote to currentEnergy)
-    }
-
-    public void takeDamage(int damage) {
-        if (this.currentHP <= damage) this.currentHP = 0;
-        else this.currentHP -= damage;
-    }
-    public void healToMax() { this.currentHP = this.maxHP; }
-    public void restoreEnergyToMax() { this.currentEnergy = this.maxEnergy; }
-    public void resetBattleStats() {
-        healToMax(); restoreEnergyToMax();
-        this.setCurrentDefence(this.baseDefence);
-    }
-
-    public Mokepon copy() {
-        return new Mokepon(
-                this.name, this.imgURL, this.maxHP, this.maxEnergy,
-                this.baseStrength, this.baseAccuracy, this.baseDefence, this.baseDodge,
-                new ArrayList<>(this.skillList), this.mokeponType   // now deep-copies skillList
-        );
-    }
-}
-
-KNOWN REMAINING ISSUES:
-  1. equals() does not override Object.equals / hashCode (contract violation).
-  2. Constructor leaves currentHP/currentEnergy/current* at 0 (not set to max/base).
-  3. current* getters exist but no setter for currentStrength/currentAccuracy/
-     currentDodge - buff/debuff updates cannot be applied.
-  4. Only setCurrentDefence() has a setter besides HP/Energy.
-(Fixed vs prior version: setCurrentDefence no longer writes to currentEnergy;
- equals() no longer uses '==' on Strings; copy() now deep-copies skillList.)
-
-================================================================================
-SECTION 9 - event package
-================================================================================
-
---- event/EventBus.java (NOW IMPLEMENTED - topic-based pub/sub) ---
-package au.edu.unimelb.swen.oop.mokepon.event;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.function.Consumer;
-
-public class EventBus {
-
-    private HashMap<Class<?>, ArrayList<Consumer<?>>> subscriberListMap = new HashMap<>();
-
-    public <T> void subscribe(Class<T> eventType, Consumer<T> handler) {
-        subscriberListMap.computeIfAbsent(eventType, _ -> new ArrayList<>()).add(handler);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> void publish(T event) {
-        ArrayList<Consumer<?>> handlerList = subscriberListMap.get(event.getClass());
-        if (handlerList == null) return;
-
-        handlerList.forEach(handler -> {
-            ((Consumer<T>)handler).accept(event);
-        });
-    }
-}
-// Uses the unnamed variable '_' in the lambda (Java 21+). Routes by exact runtime
-// class of the event; subclasses of an event type will not match a supertype
-// subscription.
-
-================================================================================
-SECTION 10 - view package (facade / root views)
-================================================================================
-
---- view/GameBgView.java (facade over BgView; provides menu + background) ---
-package au.edu.unimelb.swen.oop.mokepon.view;
-
-import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
-import javafx.scene.Node;
-import javafx.scene.control.MenuItem;
-
-public class GameBgView {
-
-    private BgView gameMenuView;
-
-    public GameBgView(BgView gameMenuView) {
-        this.gameMenuView = gameMenuView;
-        gameMenuView.enable(2);                                  // enable menu item #2 (Exit)
-        gameMenuView.node().setLayoutX(ScreenPosition.SCREENLEFT);
-        gameMenuView.node().setLayoutY(ScreenPosition.SCREENTOP);
-    }
-
-    public Node getBgViewRoot() {
-        return gameMenuView.node();
-    }
-
-    public MenuItem getMenuItem(int index) {
-        return gameMenuView.getMenuItemArr()[index];
-    }
-}
-// NOTE: 'enable(2)' is a magic index (Exit). Leaks BgView details via getMenuItem.
-
---- view/MokeponSelectView.java (composes list + detail; positions them) ---
-package au.edu.unimelb.swen.oop.mokepon.view;
-
-import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
-import javafx.scene.Group;
-import javafx.scene.Node;
-
-public class MokeponSelectView {
-
-    private MokeponListView mokeponListView;
-    private MokeponDetailView mokeponDetailView;
-    private Group mokeponSelectRoot = new Group();
-
-    public MokeponSelectView(MokeponListView mokeponListView, MokeponDetailView mokeponDetailView) {
-        this.mokeponListView = mokeponListView;
-        this.mokeponDetailView = mokeponDetailView;
-
-        Node mokeponList = this.mokeponListView.node();
-        mokeponList.setLayoutX(0.044444 * ScreenPosition.SCREENWIDTH);
-        mokeponList.setLayoutY(0.135982 * ScreenPosition.SCREENHEIGHT - 60);
-        Node mokeponDetail = this.mokeponDetailView.node();
-        mokeponDetail.setLayoutX(0.627778 * ScreenPosition.SCREENWIDTH - 215);
-        mokeponDetail.setLayoutY(0.347826 * ScreenPosition.SCREENHEIGHT - 230);
-
-        this.mokeponSelectRoot.setLayoutX(ScreenPosition.SCREENLEFT);
-        this.mokeponSelectRoot.setLayoutY(ScreenPosition.SCREENTOP);
-        this.mokeponSelectRoot.getChildren().addAll(mokeponList, mokeponDetail);
-    }
-
-    public Group getMokeponSelectRoot() { return mokeponSelectRoot; }
-    public MokeponListView getMokeponListView() { return mokeponListView; }
-    public MokeponDetailView getMokeponDetailView() { return mokeponDetailView; }
-}
-// NOTE: imports FxMokeponDetailView/FxMokeponListView but never uses them
-// (fields typed as interfaces - the concrete default-construction was removed).
-
---- view/MokeponBattleView.java (EMPTY) ---
-package au.edu.unimelb.swen.oop.mokepon.view;
-
-public class MokeponBattleView {
-    // COMPLETELY EMPTY class (no fields, no methods)
-}
-
-================================================================================
-SECTION 11 - view/view_interface package (abstractions)
-================================================================================
-
---- view/view_interface/View.java (root UI abstraction) ---
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface;
-
-import javafx.scene.Node;
-
-public interface View {
-    public Node node();
-}
-
---- view/view_interface/bg/BgView.java ---
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg;
-
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
-import javafx.scene.control.MenuItem;
-import java.util.function.Consumer;
-
-public interface BgView extends View {
-    public void enable(int index);
-    public void disable(int index);
-    public MenuItem[] getMenuItemArr();
-}
-// NOTE: imports Consumer but does not use it; getMenuItemArr() exposes MenuItem[]
-// (a JavaFX type) through the interface, reducing the abstraction value.
-
---- view/view_interface/select/MokeponListView.java ---
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
-
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
-public interface MokeponListView extends View {
-    public void setItems(ArrayList<Mokepon> mokeponList, Consumer<Mokepon> onSelect);
-    public String getSelectedButtonName();
-    public void select(Mokepon mokepon);
-    public void clearSelection();
-}
-
---- view/view_interface/select/MokeponDetailView.java ---
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
-
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
-
-public interface MokeponDetailView extends View {
-    public void show(Mokepon mokepon);
-    public void clear();
-}
-
---- view/view_interface/select/MokeponChooseView.java (NOTYET USED elsewhere) ---
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
-
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
-import javafx.beans.property.ObjectProperty;
-import java.util.function.Consumer;
-
-public interface MokeponChooseView extends View {
-    public void setPlayerMokepon(
-            ObjectProperty<Mokepon> selectedMokepon,
-            ObjectProperty<Mokepon> playerMokepon,
-            Consumer<Object> onChoose);
-}
-// NOTE: leaks JavaFX ObjectProperty through the interface; Consumer<Object> is
-// untyped (should be Consumer<Mokepon> or a Runnable).
-
-================================================================================
-SECTION 12 - view/fx package (JavaFX implementations)
-================================================================================
-
---- view/fx/bg/FxBgView.java ---
-package au.edu.unimelb.swen.oop.mokepon.view.fx.bg;
-
-import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
-import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import java.util.function.Consumer;
-
-public class FxBgView implements BgView {
-
-    private Group bgRoot = new Group();
-    private Image bgImg = ImageLoader.load("/assets/bg.png", ScreenPosition.BGWIDTH, ScreenPosition.BGHEIGHT, false);
-    private Menu menu = new Menu("Game");
-    private MenuBar menuBar = new MenuBar();
-    private MenuItem[] menuItemArr = {
-            new MenuItem("Reset"), new MenuItem("Restart Battle"), new MenuItem("Exit ")
+    private static final String[] logTextArr = {
+            "They get a little more bored.",
+            "They wonder if this is a good strategy.",
+            "They think about what they will have for dinner."
     };
 
-    public FxBgView() {
-        menuItemArr[0].setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
-        menuItemArr[1].setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-        menuItemArr[2].setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
 
-        for (MenuItem menuItem : menuItemArr) {
-            menuItem.setDisable(true);
-            menu.getItems().add(menuItem);
+    @Override
+    public String getName() {
+        return "Wait";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Wait!\n");
+        if (user.getCurrentEnergy() >= user.getMaxEnergy()) {
+            user.setCurrentDefence(user.getMaxEnergy());
+            messageList.add("\tBut their energy is filled.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
-        menuBar.getMenus().add(menu);
-        menuBar.setLayoutX(ScreenPosition.SCREENLEFT);
-        menuBar.setLayoutY(ScreenPosition.SCREENTOP);
-        menuBar.setStyle("-fx-fill: #ececec;" +
-                "-fx-pref-width: " + ScreenPosition.SCREENWIDTH + ";" +
-                "-fx-pref-height: " + ScreenPosition.MENUBARHEIGHT + ";" +
-                "-fx-text-fill: #94807a;");
-
-        ImageView bgImgView = new ImageView(bgImg);
-        bgImgView.setLayoutX(ScreenPosition.SCREENLEFT);
-        bgImgView.setLayoutY(ScreenPosition.SCREENTOP + ScreenPosition.MENUBARHEIGHT);
-
-        bgRoot.getChildren().addAll(bgImgView, menuBar);
+        int index = randomSource.nextInt(0, 3);
+        messageList.add("\t" + logTextArr[index] + "\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
     }
 
-    public void setAction(int index, Consumer<Integer> onClick) {
-        menuItemArr[index].setOnAction(_ -> onClick.accept(index));
+    @Override
+    public int getEnergyCost() {
+        return -2;
     }
-
-    @Override public Node node() { return bgRoot; }
-    @Override public void enable(int index) { menuItemArr[index].setDisable(false); }
-    @Override public void disable(int index) { menuItemArr[index].setDisable(true); }
-    @Override public MenuItem[] getMenuItemArr() { return menuItemArr; }
 }
-// NOTE: setAction() is a public method NOT declared on the BgView interface, so
-// callers holding a BgView reference cannot use it. Menu items start disabled;
-// GameBgView.enable(2) enables only "Exit".
-// MenuItem labels have trailing space ("Exit ") inconsistent with others.
 
---- view/fx/select/FxMokeponListView.java ---
-package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/LanceSkill.java
+================================================================================
 
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+
+public class LanceSkill implements Skill {
+
+    @Override
+    public String getName() {
+        return "Lance";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        return null;
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 4;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/SwoleSkill.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.GainCalculator;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.function.Consumer;
 
-public class FxMokeponListView implements MokeponListView {
-
-    private Text mokeponSelectTitle = new Text("Choose your Mokepon");
-    private ScrollPane scrollPane = new ScrollPane();
-    private VBox listBox = new VBox(10);
-    private VBox selectBlock = new VBox(20);
-    private HashMap<Mokepon, Button> buttonMap = new LinkedHashMap<>();
-    private Font btnFont = FontLoader.getGostischFont(20);
-    private Font titleFont = FontLoader.getGostischFont(34);
-    private Button selectedButton;
-
-    public FxMokeponListView() {
-        listBox.setAlignment(Pos.CENTER);
-        scrollPane.setContent(listBox);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setBackground(Background.EMPTY);
-        scrollPane.setStyle("-fx-background-color: transparent;");
-        scrollPane.skinProperty().addListener((observer, oldSkin, newSkin) -> {
-            Node viewport = scrollPane.lookup(".viewport");
-            if (viewport != null) viewport.setStyle("-fx-background-color: transparent;");
-            Node scrollBar = scrollPane.lookup(".scroll-bar");
-            if (scrollBar != null) scrollBar.setStyle("-fx-background-color: transparent;");
-        });
-        scrollPane.setPrefSize(300, 600);
-
-        mokeponSelectTitle.setFont(titleFont);
-        selectBlock.getChildren().addAll(mokeponSelectTitle, scrollPane);
-        selectBlock.setAlignment(Pos.CENTER);
-    }
-
-    @Override public Node node() { return selectBlock; }
+public class SwoleSkill implements Skill {
 
     @Override
-    public void setItems(ArrayList<Mokepon> mokeponList, Consumer<Mokepon> onSelect) {
-        listBox.getChildren().clear();
-        buttonMap.clear();
-        for (Mokepon mokepon : mokeponList) {
-            Button nameBtn = new Button(mokepon.getName());
-            nameBtn.setFont(btnFont);
-            nameBtn.setStyle("-fx-background-radius: 999px;" +
-                    "-fx-background-color: #d3d3d3;" + "-fx-text-fill: #000000;");
-            nameBtn.setOpacity(0.2);
-            nameBtn.setOnMouseEntered(click -> nameBtn.setOpacity(0.5));
-            nameBtn.setOnMouseExited(click -> nameBtn.setOpacity(0.2));
-            nameBtn.setOnMouseClicked(click -> nameBtn.setOpacity(0.75));
-            nameBtn.setPrefSize(280, 25);
-            nameBtn.setOnAction(event -> onSelect.accept(mokepon));
-            buttonMap.put(mokepon, nameBtn);
-            listBox.getChildren().add(nameBtn);
+    public String getName() {
+        return "Swole";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Swole!\n");
+        if (user.getCurrentStrength() >= 100) {
+            user.setCurrentStrength(100);
+            messageList.add("\tBut their strength is filled.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
-    }
 
-    @Override public String getSelectedButtonName() { return selectedButton.getText(); }   // NPE if none
+        int strengthImcrement = GainCalculator.calculate(1, 9);
+        user.setCurrentStrength(user.getCurrentStrength() + strengthImcrement);
+        if (user.getCurrentStrength() > 100) {
+            strengthImcrement = user.getCurrentStrength() - 100;
+            user.setCurrentStrength(100);
+        }
+        messageList.add("\tThey raised their strength by " + strengthImcrement + " points!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
+    }
 
     @Override
-    public void select(Mokepon mokepon) {
-        clearSelection();
-        selectedButton = buttonMap.get(mokepon);
+    public int getEnergyCost() {
+        return 3;
     }
-
-    @Override public void clearSelection() { selectedButton = null; }
 }
-// NOTE: Now includes a title Text and hover/click opacity effects. titleFont size
-// 34 differs from detail title. select()/clearSelection() still only track a
-// reference (no persistent visual highlight beyond the click opacity).
 
---- view/fx/select/FxMokeponDetailView.java ---
-package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/BunkerSkill.java
+================================================================================
 
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.GainCalculator;
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
-import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
-import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+
 import java.util.ArrayList;
-import static au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition.*;
 
-public class FxMokeponDetailView implements MokeponDetailView {
-
-    private final static Font font = FontLoader.getGostischFont(30);
-
-    private StackPane mokeponImgBlock = new StackPane();
-    private ImageView mokeponImgView = new ImageView(ImageLoader.load("/assets/scroll.png", 256, 256));
-    private Circle mokeponImgViewBg = new Circle(0.127778 * SCREENWIDTH);
-
-    private HBox mokeponNameBlock = new HBox(10);
-    private Text mokeponName = new Text("Select your Mokepon");
-    private ImageView mokeponTypeImgView = new ImageView();
-
-    private StackPane attrDetailBlock = new StackPane();
-    private ImageView scrollImgView = new ImageView(
-            ImageLoader.load(ImageLoader.scrollURL, 0.32 * SCREENWIDTH + 20, 0.43 * SCREENHEIGHT - 40, false));
-    private final String[] attrArr = {
-            "HP", "Energy", "Strength", "Accuracy", "Defence", "Dodge", "Skills", "Type"
-    };
-    GridPane attrTxtTable = new GridPane(30, 12);
-    private ArrayList<Text> attrTxtList = new ArrayList<>();
-
-    private VBox mokeponDetailBlock = new VBox(10);
-
-    public FxMokeponDetailView() {
-        mokeponImgView.setImage(null);
-        mokeponImgViewBg.setStyle("-fx-fill: #9a837c;" + "-fx-stroke: #000000;" + "-fx-stroke-width: 2px;");
-        mokeponImgBlock.getChildren().addAll(mokeponImgViewBg, mokeponImgView);
-
-        mokeponName.setFont(font);
-        mokeponName.setStyle("-fx-fill: #000000;" + "-fx-stroke: #ffffff;" + "-fx-stroke-width: 2px;");
-        mokeponNameBlock.getChildren().addAll(mokeponName, mokeponTypeImgView);
-        mokeponNameBlock.setAlignment(Pos.CENTER);
-
-        for (int i = 0; i < attrArr.length; i++) {
-            Text attrTxt = new Text(attrArr[i] + ":");
-            attrTxt.setFont(Font.font("default", 17));
-            Text appendTxt = new Text();
-            appendTxt.setFont(Font.font("default", 16));
-            attrTxtList.add(appendTxt);
-
-            if (i == attrArr.length - 1) {        // i == 7 (last): insert a blank spacer row
-                attrTxtTable.add(new Text(), 0, i);
-                attrTxtTable.add(new Text(), 1, i);
-                i++;                               // then increment so the Type row lands at i=8
-            }
-            attrTxtTable.add(attrTxt, 0, i);
-            attrTxtTable.add(appendTxt, 1, i);
-        }
-        attrTxtTable.setLayoutX(0.488372 * SCREENWIDTH + 4);
-        attrTxtTable.setLayoutY(0.63125 * SCREENHEIGHT + 5);
-        attrTxtTable.setAlignment(Pos.CENTER_LEFT);
-        attrTxtTable.setMaxSize(0.32 * SCREENWIDTH + 20, 0.43 * SCREENHEIGHT - 40);
-
-        attrDetailBlock.getChildren().addAll(scrollImgView, attrTxtTable);
-        attrDetailBlock.setAlignment(Pos.CENTER);
-
-        mokeponDetailBlock.getChildren().addAll(mokeponImgBlock, mokeponNameBlock, attrDetailBlock);
-        mokeponDetailBlock.setAlignment(Pos.CENTER);
-    }
-
-    public ImageView getMokeponImgView() { return mokeponImgView; }
-    public Text getMokeponName() { return mokeponName; }
-    public void setMokeponImgView(Image newImg) { mokeponImgView.setImage(newImg); }
-    public void setMokeponName(String newName) {
-        if (newName == null || newName.isBlank()) newName = "Select your Mokepon";
-        mokeponName.setText(newName);
-    }
-    public void setMokeponTypeImgView(MokeponType mokeponType) {
-        mokeponTypeImgView.setImage(MokeponType.getTypeImg(mokeponType));
-    }
-
-    @Override public Node node() { return mokeponDetailBlock; }
+public class BunkerSkill implements Skill {
 
     @Override
-    public void show(Mokepon mokepon) {
-        if (mokepon == null) {
-            clear();
-        } else {
-            setMokeponImgView(ImageLoader.load("/assets/" + mokepon.getName() + ".png", 256, 256));
-            setMokeponName(mokepon.getName());
-            setMokeponTypeImgView(mokepon.getMokeponType());
-            attrTxtList.get(0).setText(mokepon.getMaxHP() + "");
-            attrTxtList.get(1).setText(mokepon.getMaxEnergy() + "");
-            attrTxtList.get(2).setText(mokepon.getBaseStrength() + "");
-            attrTxtList.get(3).setText(mokepon.getBaseAccuracy() + "");
-            attrTxtList.get(4).setText(mokepon.getBaseDefence() + "");
-            attrTxtList.get(5).setText(mokepon.getBaseDodge() + "");
-            attrTxtList.get(6).setText(String.join(", ", mokepon.getSkills()));
-            attrTxtList.get(7).setText(mokepon.getMokeponType() + "");
-        }
+    public String getName() {
+        return "Bunker";
     }
 
     @Override
-    public void clear() {
-        setMokeponImgView(null);
-        setMokeponName(null);
-        setMokeponTypeImgView(null);
-        attrTxtList.forEach(text -> text.setText(""));
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Bunker!\n");
+        if (user.getCurrentDefence() >= 100) {
+            user.setCurrentDefence(100);
+            messageList.add("\tBut their defence is filled.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        int defenceImcrement = GainCalculator.calculate(1, 9);
+        user.setCurrentDefence(user.getCurrentDefence() + defenceImcrement);
+        if (user.getCurrentDefence() > 100) {
+            defenceImcrement = user.getCurrentDefence() - 100;
+            user.setCurrentDefence(100);
+        }
+        messageList.add("\tThey raised their defence by " + defenceImcrement + " points!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 3;
     }
 }
-// NOTE: Now renders the full 8-attribute table + type icon (feature added).
-// attrArr has 8 entries; the loop special-cases the last index to add a spacer
-// row and shifts Type to row 8 (a slightly hacky grid layout).
-// 'import javafx.scene.text.FontWeight' is unused. attrTxtTable/attrDetailBlock
-// lack 'private'.
 
---- view/fx/select/FxMokeponChooseView.java (implements MokeponChooseView; not wired) ---
-package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/NimbleSkill.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.GainCalculator;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+import java.util.ArrayList;
+
+public class NimbleSkill implements Skill {
+
+    @Override
+    public String getName() {
+        return "Nimble";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Nimble!\n");
+        if (user.getCurrentDodge() >= 100) {
+            user.setCurrentDodge(100);
+            messageList.add("\tBut their dodge is filled.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+        int dodgeImcrement = GainCalculator.calculate(1, 9);
+        user.setCurrentDodge(user.getCurrentDodge() + dodgeImcrement);
+        if (user.getCurrentDodge() > 100) {
+            dodgeImcrement = user.getCurrentDodge() - 100;
+            user.setCurrentDodge(100);
+        }
+        messageList.add("\tThey raised their dodge by " + dodgeImcrement + " points!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 3;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/TackleSkill.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleOutcome;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.DamageCalculator;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.util.HitCalculator;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+import java.util.ArrayList;
+
+public class TackleSkill implements Skill {
+
+    @Override
+    public String getName() {
+        return "Tackle";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        boolean hit = HitCalculator.check(user, target);
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("\nPlayer's " + user.getName() + " used Tackle!\n");
+        if (!hit) {
+            messageList.add("\tBut they missed.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        int damage = DamageCalculator.calculate(user, target, 2.0);
+        target.takeDamage(damage);
+        messageList.add("\tHit " + target.getName() + " for " + damage + " damage!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 5;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/PocketSandSkill.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.battle.BattleResult;
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public class PocketSandSkill implements Skill {
+
+    @Override
+    public String getName() {
+        return "Pocket Sand";
+    }
+
+    @Override
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+        return null;
+    }
+
+    @Override
+    public int getEnergyCost() {
+        return 4;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/util/HitCalculator.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.battle.skill.util;
 
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import java.util.function.Consumer;
+import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 
-public class FxMokeponChooseView implements MokeponChooseView {
+public class HitCalculator {
 
-    private Button mokeponChooseBtn = new Button("Choose Mokepon");
+    private static final RandomSource randomSource = new JavaRandomSource();
 
-    public FxMokeponChooseView() {
-        mokeponChooseBtn.setStyle("-fx-background-color: #d3d3d3;" +
-                "-fx-text-fill: #000000;" + "-fx-wrap-text: true;" +
-                "-fx-text-alignment: center;" + "-fx-max-width: 160;" +
-                "-fx-min-height: 170;" + "-fx-background-radius: 15;");
-        mokeponChooseBtn.setOpacity(0.2);
-        mokeponChooseBtn.setOnMouseEntered(enter -> mokeponChooseBtn.setOpacity(0.5));
-        mokeponChooseBtn.setOnMouseExited(exit -> mokeponChooseBtn.setOpacity(0.2));
-        mokeponChooseBtn.setOnMouseClicked(click -> mokeponChooseBtn.setOpacity(0.75));
-        mokeponChooseBtn.setFont(FontLoader.getGostischFont(24));
-        mokeponChooseBtn.setLayoutX(1045);
-        mokeponChooseBtn.setLayoutY(515);
+    public static boolean check(Mokepon self, Mokepon other) {
+        double hitProb = Math.pow(self.getCurrentAccuracy(), 2) / (Math.pow(self.getCurrentAccuracy(), 2) + Math.pow(other.getCurrentDodge(), 2));
+        return hitProb >= randomSource.nextDouble(0.0, 1.0);
     }
 
-    @Override public Node node() { return mokeponChooseBtn; }
 
-    @Override
-    public void setPlayerMokepon(
-            ObjectProperty<Mokepon> selectedMokepon,
-            ObjectProperty<Mokepon> playerMokepon,
-            Consumer<Object> onChoose) {
-        playerMokepon.setValue(selectedMokepon.getValue());
-        mokeponChooseBtn.setOnAction(event -> onChoose.accept(null));
-    }
 }
-// NOTE: This is the old "Choose Mokepon" start button, refactored into a View,
-// but it is NOT referenced by Main or any controller yet (dead-ish code).
-// setPlayerMokepon() copies the selection immediately AND sets an action - the
-// method mixes setup and effect.
 
 ================================================================================
-SECTION 13 - util packages
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/util/GainCalculator.java
 ================================================================================
 
---- util/ScreenPosition.java (screen constants + centering helpers) ---
-package au.edu.unimelb.swen.oop.mokepon.util;
+package au.edu.unimelb.swen.oop.mokepon.battle.skill.util;
 
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
+import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
+import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 
-public class ScreenPosition {
+public class GainCalculator {
 
-    public static final Rectangle2D SCREENBOUNDS = Screen.getPrimary().getBounds();
-    public static final double BGWIDTH = 1280;
-    public static final double BGHEIGHT = 768;
-    public static final double MENUBARHEIGHT = 15;
-    public static final double SCREENWIDTH = BGWIDTH;
-    public static final double SCREENHEIGHT = BGHEIGHT + MENUBARHEIGHT;
-    public static final double SCREENLEFT = SCREENBOUNDS.getMinX();
-    public static final double SCREENTOP = SCREENBOUNDS.getMinY();
+    private static final RandomSource randomSource = new JavaRandomSource();
 
-    public static double relativeCenterX(double idealX, double lengthX) { return idealX - (lengthX / 2); }
-    public static double relativeCenterY(double idealY, double lengthY) { return idealY - (lengthY / 2); }
-
-    private ScreenPosition() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    public static int calculate(int start, int range) {
+        return randomSource.nextInt(start, range);
     }
+
+
 }
-// NOTE: relativeCenterX/Y are declared but no longer used anywhere (older code
-// used them; new views compute layout inline). SCREENBOUNDS computed at
-// class-load; requires JavaFX toolkit for Screen.getPrimary().
-
---- util/FontLoader.java (font loading with size-keyed cache) ---
-package au.edu.unimelb.swen.oop.mokepon.util;
-
-import javafx.scene.text.Font;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.function.Function;
-
-public class FontLoader {
-
-    private static HashMap<Integer, Font> fontCacheMap = new HashMap<>();
-    private final static String GOSTISCH_FONT_URL = "/assets/GrenzeGotisch-Black.ttf";
-
-    public static Font getGostischFont(int size) {
-        Function<Integer, Font> fontGenerator = fontSize -> {
-            Font resultFont = new Font(fontSize);
-            try (InputStream inputFile = FontLoader.class.getResourceAsStream(GOSTISCH_FONT_URL)) {
-                resultFont = Font.loadFont(inputFile, fontSize);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                return resultFont;
-            }
-        };
-        return fontCacheMap.computeIfAbsent(size, fontGenerator);
-    }
-}
-// NOTE: uses computeIfAbsent (cleaner than before). The 'finally { return ... }'
-// inside the lambda is unusual (try/finally returning a value). Method name has
-// typo "Gostisch". Class has no private constructor guard; cache is static.
-
---- util/ImageLoader.java (image loading, null-safe) ---
-package au.edu.unimelb.swen.oop.mokepon.util;
-
-import javafx.scene.image.Image;
-
-public class ImageLoader {
-
-    public final static String scrollURL = "/assets/scroll.png";
-
-    public static Image load(String url, double width, double height) {
-        if (url == null || url.isBlank()) return null;
-        try {
-            return new Image(url, width, height, true, false);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    public static Image load(String url, double width, double height, boolean preserveRatio) {
-        if (url == null || url.isBlank()) return null;
-        try {
-            return new Image(url, width, height, preserveRatio, false);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-}
-// NOTE: two overloads; the 3-arg version hardcodes preserveRatio=true. Both
-// swallow IllegalArgumentException and return null.
-
---- util/random/RandomSource.java (interface - abstracts randomness for tests) ---
-package au.edu.unimelb.swen.oop.mokepon.util.random;
-
-public interface RandomSource {
-    public int nextInt(int start, int range);
-    public double nextDouble(double start, double range);
-}
-
---- util/random/JavaRandomSource.java ---
-package au.edu.unimelb.swen.oop.mokepon.util.random;
-
-import java.util.concurrent.ThreadLocalRandom;
-
-public class JavaRandomSource implements RandomSource {
-
-    @Override
-    public int nextInt(int start, int range) {
-        return ThreadLocalRandom.current().nextInt(start, start + range);
-    }
-
-    @Override
-    public double nextDouble(double start, double range) {
-        return ThreadLocalRandom.current().nextDouble(start, start + range);
-    }
-}
-// NOTE: nextInt(start, range) returns a value in [start, start+range).
-// nextDouble(start, range) returns a value in [start, start+range). Good for DIP
-// (BattleService depends on the RandomSource interface, not on JavaRandomSource).
 
 ================================================================================
-SECTION 14 - data package
+FILE: au/edu/unimelb/swen/oop/mokepon/battle/skill/util/DamageCalculator.java
 ================================================================================
 
---- data/GameDataLoader.java (abstract generic base) ---
+package au.edu.unimelb.swen.oop.mokepon.battle.skill.util;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
+public class DamageCalculator {
+
+
+    public static int calculate(Mokepon self, Mokepon other, double damageMultplier) {
+        return (int) (damageMultplier * 50 * self.getCurrentStrength() / other.getCurrentDefence());
+    }
+
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/data/GameDataLoader.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.data;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;   // imported but unused
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
 public abstract class GameDataLoader<T, V> {
 
-    private final Properties gameData;
+    private Properties gameData;
+
 
     public GameDataLoader(Properties gameData) {
         this.gameData = gameData;
@@ -1443,17 +1421,97 @@ public abstract class GameDataLoader<T, V> {
     public abstract LinkedHashMap<T, V> loadAll();
 }
 
---- data/MokeponLoader.java (reads all mokepon.N.* keys) ---
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/data/ItemLoader.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.data;
+
+import javafx.scene.image.Image;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Properties;
+
+public class ItemLoader extends GameDataLoader<String, Image> {
+
+
+    private LinkedHashMap<String, Image> itemImgMap = new LinkedHashMap<>();
+
+    private static final int ITEMLIMIT = 6;
+
+    public ItemLoader(Properties gameData) {
+        super(gameData);
+        String propertyPrefix = "map.items.";
+        int itemCount = 0;
+        while (itemCount < ITEMLIMIT) {
+            try {
+                String type = gameData.getProperty(propertyPrefix + itemCount + "type");
+                String url = gameData.getProperty("item." + type.toLowerCase(Locale.ROOT));
+                itemImgMap.put(type, new Image(url, 32, 32, true, false));
+            } catch (Exception e) {
+                break;
+            }
+        }
+    }
+
+
+    @Override
+    public Image load(String obj) {
+        return itemImgMap.get(obj.toUpperCase(Locale.ROOT));
+    }
+
+    @Override
+    public LinkedHashMap<String, Image> loadAll() {
+        return itemImgMap;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/data/TileLoader.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.data;
+
+import java.util.LinkedHashMap;
+import java.util.Properties;
+
+public class TileLoader extends GameDataLoader<Integer, Object> {
+
+    public TileLoader(Properties gameData) {
+        super(gameData);
+    }
+
+    @Override
+    public Object load(Integer obj) {
+        return null;
+    }
+
+    @Override
+    public LinkedHashMap<Integer, Object> loadAll() {
+        return null;
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/data/MokeponLoader.java
+================================================================================
+
 package au.edu.unimelb.swen.oop.mokepon.data;
 
 import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
+
 import java.util.*;
 
 public class MokeponLoader extends GameDataLoader<String, Mokepon> {
 
     private LinkedHashMap<String, Mokepon> mokeponMap = new LinkedHashMap<>();
+
     private final static int MAXMOKEPONNUM = 50;
+
 
     public MokeponLoader(Properties gameData) {
         super(gameData);
@@ -1485,122 +1543,1744 @@ public class MokeponLoader extends GameDataLoader<String, Mokepon> {
         }
     }
 
-    @Override public Mokepon load(String obj) { return mokeponMap.get(obj); }
-    @Override public LinkedHashMap<String, Mokepon> loadAll() { return mokeponMap; }
-}
-// NOTE: parsing loop stops at first exception (relies on contiguous indices).
-// Reads `type` and maps to MokeponType.valueOf(...). Argument order is now
-// (strength, accuracy, defence, dodge) matching the Mokepon constructor
-// (baseDefence, baseDodge) - the previous dodge/defence swap appears FIXED.
-// Swallows per-entry parse errors silently (break).
+    @Override
+    public Mokepon load(String obj) {
+        return mokeponMap.get(obj);
+    }
 
---- data/TileLoader.java (STILL STUB) ---
-package au.edu.unimelb.swen.oop.mokepon.data;
+    @Override
+    public LinkedHashMap<String, Mokepon> loadAll() {
+        return mokeponMap;
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/event/EventBus.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.event;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+public class EventBus {
+
+    private HashMap<Class<?>, ArrayList<Consumer<?>>> subscriberListMap = new HashMap<>();
+
+    public <T> void subscribe(Class<T> eventType, Consumer<T> handler) {
+        subscriberListMap.computeIfAbsent(eventType, _ -> new ArrayList<>()).add(handler);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> void publish(T event) {
+        ArrayList<Consumer<?>> handlerList = subscriberListMap.get(event.getClass());
+        if (handlerList == null) return;
+
+        handlerList.forEach(handler -> {
+            ((Consumer<T>)handler).accept(event);
+        });
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/event/ChooseMokeponEvent.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.event;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.state.GameState;
+
+public class ChooseMokeponEvent {
+
+    public ChooseMokeponEvent(Mokepon selectedMokepon, Mokepon enemyMokepon, GameState state) {
+        state.setPlayerMokepon(selectedMokepon);
+        state.setEnemyMokepon(enemyMokepon);
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/model/Mokepon.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.model;
+
+
+import java.util.ArrayList;
+
+
+public class Mokepon {
+
+    private String name;
+    private String imgURL;
+    private int maxHP;
+    private int maxEnergy;
+    private int baseStrength;
+    private int baseAccuracy;
+    private int baseDefence;
+    private int baseDodge;
+    private ArrayList<String> skillList;
+    private MokeponType mokeponType;
+
+    private int currentHP;
+    private int currentEnergy;
+    private int currentStrength;
+    private int currentAccuracy;
+    private int currentDefence;
+    private int currentDodge;
+
+
+    public Mokepon(
+            String name, String imgURL, int maxHP, int maxEnergy,
+            int baseStrength, int baseAccuracy, int baseDefence, int baseDodge,
+            ArrayList<String> skillList, MokeponType mokeponType) {
+        this.name = name;
+        this.imgURL = imgURL;
+        this.maxHP = maxHP;
+        this.maxEnergy = maxEnergy;
+        this.baseStrength = baseStrength;
+        this.baseAccuracy = baseAccuracy;
+        this.baseDefence = baseDefence;
+        this.baseDodge = baseDodge;
+        this.skillList = skillList;
+        this.mokeponType = mokeponType;
+    }
+
+    public String toString() {
+        String skills = String.join(", ", skillList);
+        return "name : " + name +
+                "\n" + "imgURL : " + imgURL +
+                "\n" + "maxHP : " + maxHP +
+                "\n" + "maxEnergy : " + maxEnergy +
+                "\n" + "baseStrength : " + baseStrength +
+                "\n" + "baseAccuracy : " + baseAccuracy +
+                "\n" + "baseDefence : " + baseDefence +
+                "\n" + "baseDodge : " + baseDodge +
+                "\n" + "skills : " + skills;
+    }
+
+    public boolean equals(Mokepon other) {
+        boolean skillsAreSame = true;
+        for (int i = 0; i < this.skillList.size(); i++) {
+            if (!this.skillList.get(i).equals(other.skillList.get(i))) {
+                skillsAreSame = false;
+                break;
+            }
+        }
+        return this.name.equals(other.getName()) &&
+                this.imgURL.equals(other.getImgURL()) &&
+                skillsAreSame;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getImgURL() {
+        return this.imgURL;
+    }
+
+    public int getMaxHP() {
+        return this.maxHP;
+    }
+
+    public int getMaxEnergy() {
+        return this.maxEnergy;
+    }
+
+    public int getBaseStrength() {
+        return this.baseStrength;
+    }
+
+    public int getBaseAccuracy() {
+        return this.baseAccuracy;
+    }
+
+    public int getBaseDefence() {
+        return this.baseDefence;
+    }
+
+    public int getBaseDodge() {
+        return this.baseDodge;
+    }
+
+    public ArrayList<String> getSkills() {
+        return this.skillList;
+    }
+
+    public MokeponType getMokeponType() {
+        return mokeponType;
+    }
+
+
+    public int getCurrentHP() {
+        return this.currentHP;
+    }
+
+    public int getCurrentEnergy() {
+        return this.currentEnergy;
+    }
+
+    public int getCurrentStrength() {
+        return this.currentStrength;
+    }
+
+    public int getCurrentAccuracy() {
+        return this.currentAccuracy;
+    }
+
+    public int getCurrentDefence() {
+        return this.currentDefence;
+    }
+
+    public int getCurrentDodge() {
+        return currentDodge;
+    }
+
+
+    public void setCurrentHP(int hp) {
+        if (hp < 0) hp = 0;
+        this.currentHP = hp;
+    }
+
+    public void setCurrentEnergy(int energy) {
+        if (energy < 0) energy = 0;
+        this.currentEnergy = energy;
+    }
+
+    public void setCurrentDefence(int defence) {
+        if (defence < 0) defence = 0;
+        else if (defence > 100) defence = 100;
+        this.currentDefence = defence;
+    }
+
+    public void setCurrentStrength(int strength) {
+        this.currentStrength = strength;
+    }
+
+    public void setCurrentAccuracy(int accuracy) {
+        this.currentAccuracy = accuracy;
+    }
+
+    public void setCurrentDodge(int dodge) {
+        this.currentDodge = dodge;
+    }
+
+
+    public void takeDamage(int damage) {
+        if (this.currentHP <= damage) this.currentHP = 0;
+        else this.currentHP -= damage;
+    }
+
+    public void healToMax() {
+        this.currentHP = this.maxHP;
+    }
+
+    public void restoreEnergyToMax() {
+        this.currentEnergy = this.maxEnergy;
+    }
+
+    public void resetBattleStats() {
+        healToMax();
+        restoreEnergyToMax();
+        this.setCurrentDefence(this.baseDefence);
+    }
+
+
+    public Mokepon copy() {
+        return new Mokepon(
+                this.name, this.imgURL, this.maxHP, this.maxEnergy,
+                this.baseStrength, this.baseAccuracy, this.baseDefence, this.baseDodge,
+                new ArrayList<>(this.skillList), this.mokeponType
+        );
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/model/MokeponType.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.model;
+
+
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import javafx.scene.image.Image;
+
+import java.util.Locale;
+
+public enum MokeponType {
+    NORMAL, FIRE, ICE, WATER, LIGHTNING;
+
+    private static final String TYPEIMGPREFIX = "/assets/sprite_";
+
+    public static Image getTypeImg(MokeponType mokeponType) {
+        if (mokeponType == null) return null;
+        return ImageLoader.load(TYPEIMGPREFIX + mokeponType.toString().toLowerCase(Locale.ROOT) + ".png", 32, 32);
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/state/GameState.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.state;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.Node;
+
+public class GameState {
+
+    private ObjectProperty<Mokepon> selectedMokepon = new SimpleObjectProperty<>();
+    private ObjectProperty<Mokepon> playerMokepon = new SimpleObjectProperty<>();
+    private ObjectProperty<Mokepon> enemyMokepon = new SimpleObjectProperty<>();
+    private IntegerProperty fightCount = new SimpleIntegerProperty(0);
+    private Inventory inventory = new Inventory();
+
+    public ObjectProperty<Mokepon> selectedMokeponProperty() {
+        return selectedMokepon;
+    }
+
+    public Mokepon getSelectedMokepon() {
+        return selectedMokepon.getValue();
+    }
+
+    public void setSelectedMokepon(Mokepon mokepon) {
+        selectedMokepon.setValue(mokepon);
+    }
+
+    public Mokepon getPlayerMokepon() {
+        return playerMokepon.getValue();
+    }
+
+    public void setPlayerMokepon(Mokepon mokepon) {
+        playerMokepon.setValue(mokepon);
+    }
+
+    public Mokepon getEnemyMokepon() {
+        return enemyMokepon.getValue();
+    }
+
+    public void setEnemyMokepon(Mokepon mokepon) {
+        enemyMokepon.setValue(mokepon);
+    }
+
+    public int getFightCount() {
+        return fightCount.getValue();
+    }
+
+    public void incrementFightCount() {
+        fightCount.setValue(fightCount.getValue() + 1);
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void resetForNewSelection() {
+        selectedMokepon.setValue(null);
+        playerMokepon.setValue(null);
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/state/Inventory.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.state;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.LinkedHashMap;
-import java.util.Properties;
 
-public class TileLoader extends GameDataLoader<Integer, Object> {
+public class Inventory {
 
-    public TileLoader(Properties gameData) { super(gameData); }
+    private LinkedHashMap<ItemType, IntegerProperty> itemMap = new LinkedHashMap<>();
 
-    @Override public Object load(Integer obj) { return null; }                  // STUB
-    @Override public LinkedHashMap<Integer, Object> loadAll() { return null; }  // STUB
+
+    public Inventory() {
+        for (ItemType itemType : ItemType.values()) {
+            itemMap.put(itemType, new SimpleIntegerProperty(0));
+        }
+    }
+
+
+    public LinkedHashMap<ItemType, IntegerProperty> getItemMap() {
+        return itemMap;
+    }
+
+    public void add(ItemType itemType) {
+        IntegerProperty itemNum = itemMap.get(itemType);
+        itemNum.setValue(itemNum.getValue() + 1);
+    }
+
+    public int getCount(ItemType itemType) {
+        return itemMap.get(itemType).getValue();
+    }
+
+    public boolean use(ItemType itemType) {
+        IntegerProperty itemNum = itemMap.get(itemType);
+        if (itemNum.getValue() <= 0) return false;
+
+        itemNum.setValue(itemNum.getValue() - 1);
+        return true;
+    }
+
+    public void clear() {
+        itemMap.values().forEach(item -> {
+            item.setValue(0);
+        });
+    }
+
 }
-// NOTE: uses Object as the value type (not yet modelled as a Tile class).
 
 ================================================================================
-SECTION 15 - game data file (src/main/resources/mokepon.game) - STRUCTURE
-================================================================================
-The mokepon.game file is a Java .properties file (547 lines). Keys observed
-(samples below). Values with '|' separators indicate multi-value fields.
-
-MOKEPON ENTRIES (mokepon.<N>.X), indices N = 0.. (loader caps at 50):
-    mokepon.<N>.name     e.g. Sealance
-    mokepon.<N>.image    e.g. /assets/Sealance.png
-    mokepon.<N>.hp / energy / strength / accuracy / defence / dodge   (ints)
-    mokepon.<N>.skills   e.g. Bite|Tackle|Bunker|Wait   (split on '|')
-    mokepon.<N>.type     WATER | NORMAL | ICE | FIRE | LIGHTNING
-  (Sample types seen: mokepon.0.type=WATER, mokepon.2.type=NORMAL, mokepon.4.type=ICE)
-
-OTHER KEYS:
-    mokepon.type.fire / ice / water / lightning = asset sprite paths
-    items.coffee / heal / poison               = asset sprite paths
-    map.tiles.0 .. map.tiles.19                = 20 tile-row strings (letters)
-    map.tiles.images.<barrier|forest|grass|ocean|path|rocks|water> = tile image paths
-    map.player.image / map.player.startingPos  = e.g. 10,18
-    map.buttons.up/down/left/right             = sprite paths
-    map.mokeponRandom.0..3 (coords), .image, .colour = white
-    map.mokeponStrong.0..2  , .image, .colour = red
-    map.mokeponWeak.0..2    , .image, .colour = lime
-    map.exit.image / .colour(magenta) / .location(6,0)
-    map.items.image; map.items.0/.1/.2.type(HEALTH/POISON/COFFEE) + .location
-
-IMPORTANT: Only the mokepon.* keys are consumed by code (MokeponLoader). The
-map.* and items.* keys have NO implementing classes yet (only the TileLoader
-stub exists). This confirms an intended OVERWORLD feature (map traversal,
-encounters, items, exit) NOT yet implemented. The `type` key is now consumed and
-mapped to the MokeponType enum, but NO type-effectiveness / weakness logic
-exists.
-
-================================================================================
-SECTION 16 - ARCHITECTURE, PATTERNS & KNOWN DEFECTS (for the analysis model)
+FILE: au/edu/unimelb/swen/oop/mokepon/state/ItemType.java
 ================================================================================
 
-1. REFACTOR STATE
-   This version is a PARTIALLY-WIRED refactor. The SELECT screen path is
-   functional: Main (composition root) -> MokeponLoader -> FxMokeponListView /
-   FxMokeponDetailView -> MokeponSelectView -> MokeponSelectController ->
-   GameState properties. The BATTLE screen, OVERWORLD screen, all battle logic,
-   all skill effects, and screen switching are still STUBS.
+package au.edu.unimelb.swen.oop.mokepon.state;
 
-2. DESIGN PATTERNS PRESENT
-   - Strategy:            Skill interface + 10 concrete Skill classes.
-   - Repository/Factory:  GameDataLoader abstract base + MokeponLoader/TileLoader.
-   - MVC/MVP (approx.):   View interfaces (view_interface.*) + Fx implementations
-                          (view.fx.*) + Controllers (controller.*).
-   - Facade:              GameBgView, MokeponSelectView compose sub-views.
-   - Observer:            EventBus (topic/class-keyed pub-sub) + JavaFX property
-                          listeners (selectedMokeponProperty().addListener).
-   - Dependency Inversion: Controllers depend on view INTERFACES; BattleService
-                          depends on RandomSource interface, not JavaRandomSource.
-   - State machine shell: ScreenState enum + ScreenManager.
+import au.edu.unimelb.swen.oop.mokepon.data.ItemImgLoader;
+import javafx.scene.image.Image;
 
-3. REMAINING / HARD-CODED ISSUES TO FLAG
-   - ScreenManager.switchTo(): calls stage.getScene().setRoot(null) and never
-     sets any view root -> switching screens would blank the window. Controllers
-     expose no node() to supply.
-   - MokeponSelectController.onChooseClicked(): behaves as DESELECT, not a
-     confirm; the choose->battle transition (playerMokepon, fightCount,
-     switchTo(BATTLE)) is unimplemented.
-   - BattleController: all methods empty; method name typo runEnrmyTurn().
-   - BattleService.useEnemyRandomSkill(): selects a random index but discards it
-     and returns null; checkBattleEnd() returns null; skillMap unused.
-   - BattleResult getters (getMessageList/getOutcome) return null despite a
-     constructor that stores them; field 'ended' unused.
-   - All 10 Skill.execute() return null (no battle effects).
-   - Mokepon.equals() overloads without @Override/hashCode; constructor leaves
-     current* stats at 0; no setters for currentStrength/Accuracy/Dodge.
-   - FxMokeponListView.getSelectedButtonName(): NPE if nothing selected;
-     select()/clearSelection() don't persist a visual highlight.
-   - FxBgView.setAction() is public but not on the BgView interface (inaccessible
-     via the interface); menu items start disabled (only "Exit" enabled).
-   - FxMokeponChooseView (Choose Mokepon button) is implemented but not wired
-     into Main/controllers (effectively dead code).
-   - GameBgView uses magic index enable(2); leaks MenuItem via getMenuItem().
-   - Local variable named 'mokeponList' shadows java.util.List.
-   - Unused imports: ScreenManager(Screen), GameDataLoader(Mokepon),
-     BgView(Consumer), FxMokeponDetailView(FontWeight), MokeponSelectView(Fx*).
-   - FontLoader method name typo "Gostisch"; Manager switch uses LinkedHashMap
-     while field typed HashMap.
+public enum ItemType {
+    HEAL, COFFEE, POISON;
 
-4. FEATURE GAPS (data present, code missing)
-   - Type system: types loaded but no weakness/effectiveness logic.
-   - Full skill pool: 10 skill classes exist but none have effects.
-   - Overworld/map: map.* data with no Tile/Map/Player classes (TileLoader stub).
-   - Items/inventory: Inventory stores counts; item effects not applied.
-   - Menus: only "Exit" enabled; Reset / Restart Battle not implemented.
+    private static ItemLoader itemLoaderInner;
+
+
+    public static void setItemLoader(ItemLoader itemImgLoader) {
+        itemLoaderInner = itemImgLoader;
+    }
+
+
+    public static Image getItemImg(ItemType itemType) {
+        if (itemType == null) return null;
+        return itemLoaderInner.load(itemType.name());
+    }
+
+}
 
 ================================================================================
-END OF SUMMARY
+FILE: au/edu/unimelb/swen/oop/mokepon/util/FontLoader.java
 ================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.util;
+
+import javafx.scene.text.Font;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.function.Function;
+
+public class FontLoader {
+
+    private static HashMap<Integer, Font> fontCacheMap = new HashMap<>();
+
+    private final static String GOSTISCH_FONT_URL = "/assets/GrenzeGotisch-Black.ttf";
+
+
+    public static Font getGostischFont(int size) {
+
+        Function<Integer, Font> fontGenerator = fontSize -> {
+            Font resultFont = new Font(fontSize);
+            try (InputStream inputFile = FontLoader.class.getResourceAsStream(GOSTISCH_FONT_URL)) {
+                resultFont = Font.loadFont(inputFile, fontSize);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                return resultFont;
+            }
+        };
+
+        return fontCacheMap.computeIfAbsent(size, fontGenerator);
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/util/ImageLoader.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.util;
+
+import javafx.scene.image.Image;
+
+public class ImageLoader {
+
+    public final static String scrollURL = "/assets/scroll.png";
+
+
+    public static Image load(String url, double width, double height) {
+        if (url == null || url.isBlank()) return null;
+        try {
+            return new Image(url, width, height, true, false);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+
+    public static Image load(String url, double width, double height, boolean preserveRatio) {
+        if (url == null || url.isBlank()) return null;
+        try {
+            return new Image(url, width, height, preserveRatio, false);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/util/ScreenPosition.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.util;
+
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
+
+public class ScreenPosition {
+
+    public static final Rectangle2D SCREENBOUNDS = Screen.getPrimary().getBounds();
+    public static final double BGWIDTH = 1280;
+    public static final double BGHEIGHT = 768;
+    public static final double MENUBARHEIGHT = 15;
+    public static final double SCREENWIDTH = BGWIDTH;
+    public static final double SCREENHEIGHT = BGHEIGHT + MENUBARHEIGHT;
+    public static final double SCREENLEFT = SCREENBOUNDS.getMinX();
+    public static final double SCREENTOP = SCREENBOUNDS.getMinY();
+
+
+    public static double relativeCenterX(double idealX, double lengthX)
+    {
+        return idealX - (lengthX / 2);
+    }
+
+    public static double relativeCenterY(double idealY, double lengthY)
+    {
+        return idealY - (lengthY / 2);
+    }
+
+    private ScreenPosition()
+    {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/util/random/RandomSource.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.util.random;
+
+public interface RandomSource {
+
+    public int nextInt(int start, int range);
+
+    public double nextDouble(double start, double range);
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/util/random/JavaRandomSource.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.util.random;
+
+
+import java.util.concurrent.ThreadLocalRandom;
+
+public class JavaRandomSource implements RandomSource {
+
+    @Override
+    public int nextInt(int start, int range) {
+        return ThreadLocalRandom.current().nextInt(start, start + range);
+    }
+
+    @Override
+    public double nextDouble(double start, double range) {
+        return ThreadLocalRandom.current().nextDouble(start, start + range);
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/GameBgView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
+import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
+
+public class GameBgView {
+
+    private GameMenuView gameMenuView;
+
+
+    public GameBgView(GameMenuView gameMenuView) {
+        this.gameMenuView = gameMenuView;
+
+
+        gameMenuView.enable(2);
+
+
+        gameMenuView.node().setLayoutX(ScreenPosition.SCREENLEFT);
+        gameMenuView.node().setLayoutY(ScreenPosition.SCREENTOP);
+    }
+
+    public Node getBgViewRoot() {
+        return gameMenuView.node();
+    }
+
+    public MenuItem getMenuItem(int index) {
+        return gameMenuView.getMenuItemArr()[index];
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/MokeponBattleView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleItemView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleLogView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleSkillView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.ButtonControl;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+
+public class MokeponBattleView {
+
+    // main root
+    private Group battleRoot = new Group();
+
+    private BattleLogView battleLogView;
+
+    private ButtonControl buttonControl;
+
+    //============================================
+
+
+    //self block
+    private BattleCardView selfCardView;
+    private BattleSkillView selfSkillView;
+    private BattleItemView selfItemView;
+
+
+    private VBox battleSelfBlock = new VBox(15);
+
+    private HBox selfItemBlock;
+
+    private StackPane selfCardSkillNameBgBlock = new StackPane();
+    private ImageView selfBgImgView = new ImageView();
+    private VBox selfCardSkillNameBlock = new VBox(15);
+
+    private Text selfNameTxt = new Text();
+    private HBox selfCardSkillBlock = new HBox(15);
+
+    private VBox selfCardBlock;
+
+    private VBox selfSkillBlock;
+    //============================================
+
+
+    //enemy block
+    private BattleCardView enemyCardView;
+
+
+    private StackPane battleEnemyBlock = new StackPane();
+
+    private ImageView enemyBgImgView = new ImageView();
+    private VBox enemyCardNameBlock = new VBox(10);
+
+    private Text enemyNameTxt = new Text();
+    private VBox enemyCardBlock;
+    //============================================
+
+
+
+    private Mokepon selfMokepon = null;
+    private Mokepon enemyMokepon = null;
+
+
+
+
+    public MokeponBattleView(BattleCardView selfCardView,
+                        BattleSkillView selfSkillView,
+                        BattleItemView selfItemView,
+                        BattleCardView enemyCardView,
+                        BattleLogView battleLogView,
+                        ButtonControl buttonControl) {
+        this.selfCardView = selfCardView;
+        this.selfSkillView = selfSkillView;
+        this.selfItemView = selfItemView;
+        this.enemyCardView = enemyCardView;
+        this.battleLogView = battleLogView;
+        this.buttonControl = buttonControl;
+
+        this.selfItemBlock = (HBox)this.selfItemView.node();
+        this.selfCardBlock = (VBox)this.selfCardView.node();
+        this.selfSkillBlock = (VBox)this.selfSkillView.node();
+        this.enemyCardBlock = (VBox)this.enemyCardView.node();
+        selfBgImgView.setImage(
+                ImageLoader.load(ImageLoader.scrollURL, 530, 430, false)
+        );
+        enemyBgImgView.setImage(
+                ImageLoader.load(ImageLoader.scrollURL, 320, 420, false)
+        );
+
+        //self block
+        selfCardSkillBlock.getChildren().addAll(this.selfCardBlock, this.selfSkillBlock);
+        selfCardSkillBlock.setAlignment(Pos.CENTER);
+
+        selfCardSkillNameBlock.getChildren().addAll(selfNameTxt, selfCardSkillBlock);
+        selfCardSkillNameBlock.setAlignment(Pos.CENTER);
+
+        selfCardSkillNameBgBlock.getChildren().addAll(selfBgImgView, selfCardSkillNameBlock);
+        selfCardSkillNameBgBlock.setAlignment(Pos.CENTER);
+
+        battleSelfBlock.getChildren().addAll(selfItemBlock, selfCardSkillNameBgBlock);
+        battleSelfBlock.setAlignment(Pos.CENTER);
+        battleSelfBlock.setLayoutX(ScreenPosition.SCREENLEFT + 40);
+        battleSelfBlock.setLayoutY(ScreenPosition.SCREENHEIGHT - 470);
+
+        //enemy block
+        enemyCardNameBlock.getChildren().addAll(enemyNameTxt, enemyCardBlock);
+        enemyCardNameBlock.setAlignment(Pos.CENTER);
+
+        battleEnemyBlock.getChildren().addAll(enemyBgImgView, enemyCardBlock);
+        battleEnemyBlock.setAlignment(Pos.CENTER);
+        battleEnemyBlock.setLayoutX(ScreenPosition.SCREENWIDTH - 460);
+        battleEnemyBlock.setLayoutY(ScreenPosition.SCREENTOP + ScreenPosition.MENUBARHEIGHT + 30);
+
+        //main root
+        battleRoot.getChildren().addAll(battleSelfBlock, battleEnemyBlock);
+        battleRoot.getChildren().addAll(battleLogView.node(), buttonControl.node());
+    }
+
+
+    public Group getMokeponBattleRoot() {
+        return battleRoot;
+    }
+
+    public BattleCardView getSelfCard() {
+        return selfCardView;
+    }
+
+    public BattleCardView getEnemyCard() {
+        return enemyCardView;
+    }
+
+    public BattleSkillView getSkillView() {
+        return selfSkillView;
+    }
+
+    public BattleLogView getLogView() {
+        return battleLogView;
+    }
+
+    public ButtonControl getBackButton() {
+        return buttonControl;
+    }
+
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/MokeponSelectView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
+import javafx.scene.Group;
+import javafx.scene.Node;
+
+public class MokeponSelectView {
+
+    private MokeponListView mokeponListView;
+    private MokeponDetailView mokeponDetailView;
+    private MokeponChooseView mokeponChooseView;
+
+    private Group mokeponSelectRoot = new Group();
+
+
+    public MokeponSelectView(
+            MokeponListView mokeponListView,
+            MokeponDetailView mokeponDetailView,
+            MokeponChooseView mokeponChooseView) {
+        this.mokeponListView = mokeponListView;
+        this.mokeponDetailView = mokeponDetailView;
+        this.mokeponChooseView = mokeponChooseView;
+
+        Node mokeponList = this.mokeponListView.node();
+        mokeponList.setLayoutX(0.044444 * ScreenPosition.SCREENWIDTH);
+        mokeponList.setLayoutY(0.135982 * ScreenPosition.SCREENHEIGHT - 60);
+
+        Node mokeponDetail = this.mokeponDetailView.node();
+        mokeponDetail.setLayoutX(0.627778 * ScreenPosition.SCREENWIDTH - 215);
+        mokeponDetail.setLayoutY(0.347826 * ScreenPosition.SCREENHEIGHT - 230);
+
+        Node mokeponChooseBtn = this.mokeponChooseView.node();
+        mokeponChooseBtn.setLayoutX(0.816406 * ScreenPosition.SCREENWIDTH);
+        mokeponChooseBtn.setLayoutY(0.670572 * ScreenPosition.SCREENHEIGHT);
+
+
+        this.mokeponSelectRoot.setLayoutX(ScreenPosition.SCREENLEFT);
+        this.mokeponSelectRoot.setLayoutY(ScreenPosition.SCREENTOP);
+        this.mokeponSelectRoot.getChildren().addAll(mokeponList, mokeponDetail, mokeponChooseBtn);
+    }
+
+
+    public Group getMokeponSelectRoot() {
+        return mokeponSelectRoot;
+    }
+
+    public MokeponListView getMokeponListView() {
+        return mokeponListView;
+    }
+
+    public MokeponDetailView getMokeponDetailView() {
+        return mokeponDetailView;
+    }
+
+    public MokeponChooseView getMokeponChooseView() {
+        return mokeponChooseView;
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/bg/FxGameMenuView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.bg;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+
+import java.util.function.Consumer;
+
+public class FxGameMenuView implements GameMenuView {
+
+    private Group bgRoot = new Group();
+
+    private Image bgImg = ImageLoader.load("/assets/bg.png", ScreenPosition.BGWIDTH, ScreenPosition.BGHEIGHT, false);
+
+    private Menu menu = new Menu("Game");
+    private MenuBar menuBar = new MenuBar();
+
+    private MenuItem[] menuItemArr = {
+            new MenuItem("Reset"), new MenuItem("Restart Battle"), new MenuItem("Exit ")
+    };
+
+
+    public FxGameMenuView() {
+
+        menuItemArr[0].setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        menuItemArr[1].setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
+        menuItemArr[2].setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
+
+        for (MenuItem menuItem : menuItemArr) {
+            menuItem.setDisable(true);
+            menu.getItems().add(menuItem);
+        }
+        menuBar.getMenus().add(menu);
+        menuBar.setLayoutX(ScreenPosition.SCREENLEFT);
+        menuBar.setLayoutY(ScreenPosition.SCREENTOP);
+        menuBar.setStyle("-fx-fill: #ececec;" +
+                "-fx-pref-width: " + ScreenPosition.SCREENWIDTH + ";" +
+                "-fx-pref-height: " + ScreenPosition.MENUBARHEIGHT + ";" +
+                "-fx-text-fill: #94807a;");
+
+        ImageView bgImgView = new ImageView(bgImg);
+        bgImgView.setLayoutX(ScreenPosition.SCREENLEFT);
+        bgImgView.setLayoutY(ScreenPosition.SCREENTOP + ScreenPosition.MENUBARHEIGHT);
+
+        bgRoot.getChildren().addAll(bgImgView, menuBar);
+    }
+
+    public void setAction(int index, Consumer<Integer> onClick) {
+        menuItemArr[index].setOnAction(_ -> onClick.accept(index));
+    }
+
+
+    @Override
+    public Node node() {
+        return bgRoot;
+    }
+
+    @Override
+    public void enable(int index) {
+        menuItemArr[index].setDisable(false);
+    }
+
+    @Override
+    public void disable(int index) {
+        menuItemArr[index].setDisable(true);
+    }
+
+    @Override
+    public MenuItem[] getMenuItemArr() {
+        return menuItemArr;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/select/FxMokeponListView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.function.Consumer;
+
+public class FxMokeponListView implements MokeponListView {
+
+    private Text mokeponSelectTitle = new Text("Choose your Mokepon");
+
+    private ScrollPane scrollPane = new ScrollPane();
+    private VBox listBox = new VBox(10);
+
+    private VBox selectBlock = new VBox(20);
+
+    private HashMap<Mokepon, Button> buttonMap = new LinkedHashMap<>();
+    private Font btnFont = FontLoader.getGostischFont(20);
+    private Font titleFont = FontLoader.getGostischFont(34);
+    private Button selectedButton;
+
+
+    public FxMokeponListView() {
+        listBox.setAlignment(Pos.CENTER);
+        scrollPane.setContent(listBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setBackground(Background.EMPTY);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.skinProperty().addListener((observer, oldSkin, newSkin) -> {
+            Node viewport = scrollPane.lookup(".viewport");
+            if (viewport != null)
+                viewport.setStyle("-fx-background-color: transparent;");
+
+            Node scrollBar = scrollPane.lookup(".scroll-bar");
+            if (scrollBar != null)
+                scrollBar.setStyle("-fx-background-color: transparent;");
+        });
+        scrollPane.setPrefSize(300, 600);
+
+        mokeponSelectTitle.setFont(titleFont);
+
+        selectBlock.getChildren().addAll(mokeponSelectTitle, scrollPane);
+        selectBlock.setAlignment(Pos.CENTER);
+    }
+
+
+    @Override
+    public Node node() {
+        return selectBlock;
+    }
+
+    @Override
+    public void setItems(ArrayList<Mokepon> mokeponList, Consumer<Mokepon> onSelect) {
+        listBox.getChildren().clear();
+        buttonMap.clear();
+        for (Mokepon mokepon : mokeponList) {
+            Button nameBtn = new Button(mokepon.getName());
+            nameBtn.setFont(btnFont);
+            nameBtn.setStyle("-fx-background-radius: 999px;" +
+                    "-fx-background-color: #d3d3d3;" +
+                    "-fx-text-fill: #000000;"
+            );
+            nameBtn.setOpacity(0.2);
+            nameBtn.setOnMouseEntered(click -> {
+                nameBtn.setOpacity(0.5);
+            });
+            nameBtn.setOnMouseExited(click -> {
+                nameBtn.setOpacity(0.2);
+            });
+            nameBtn.setOnMouseClicked(click -> {
+                nameBtn.setOpacity(0.75);
+            });
+            nameBtn.setPrefSize(280, 25);
+            nameBtn.setOnAction(event -> onSelect.accept(mokepon));
+            buttonMap.put(mokepon, nameBtn);
+            listBox.getChildren().add(nameBtn);
+        }
+    }
+
+    @Override
+    public String getSelectedButtonName() {
+        return selectedButton.getText();
+    }
+
+    @Override
+    public void select(Mokepon mokepon) {
+        clearSelection();
+        selectedButton = buttonMap.get(mokepon);
+    }
+
+    @Override
+    public void clearSelection() {
+        selectedButton = null;
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/select/FxMokeponChooseView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+
+import java.util.function.Consumer;
+
+public class FxMokeponChooseView implements MokeponChooseView {
+
+    private Button mokeponChooseBtn = new Button("Choose Mokepon");
+
+
+    public FxMokeponChooseView() {
+        mokeponChooseBtn.setStyle("-fx-background-color: #d3d3d3;" +
+                "-fx-text-fill: #000000;" +
+                "-fx-wrap-text: true;" +
+                "-fx-text-alignment: center;" +
+                "-fx-max-width: 160;" +
+                "-fx-min-height: 170;" +
+                "-fx-background-radius: 15;");
+        mokeponChooseBtn.setOpacity(0.2);
+        mokeponChooseBtn.setOnMouseEntered(enter -> {
+            mokeponChooseBtn.setOpacity(0.5);
+        });
+        mokeponChooseBtn.setOnMouseExited(exit -> {
+            mokeponChooseBtn.setOpacity(0.2);
+        });
+        mokeponChooseBtn.setOnMouseClicked(click -> {
+            mokeponChooseBtn.setOpacity(0.75);
+        });
+        mokeponChooseBtn.setFont(FontLoader.getGostischFont(24));
+        mokeponChooseBtn.setLayoutX(1045);
+        mokeponChooseBtn.setLayoutY(515);
+    }
+
+
+    @Override
+    public Node node() {
+        return mokeponChooseBtn;
+    }
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/select/FxMokeponDetailView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.model.MokeponType;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+
+import java.util.ArrayList;
+
+import static au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition.*;
+
+public class FxMokeponDetailView implements MokeponDetailView {
+
+    private final static Font font = FontLoader.getGostischFont(30);
+
+    private StackPane mokeponImgBlock = new StackPane();
+    private ImageView mokeponImgView = new ImageView(ImageLoader.load("/assets/scroll.png", 256, 256));
+    private Circle mokeponImgViewBg = new Circle(0.127778 * SCREENWIDTH);
+
+    private HBox mokeponNameBlock = new HBox(10);
+    private Text mokeponName = new Text("Select your Mokepon");
+    private ImageView mokeponTypeImgView = new ImageView();
+
+    private StackPane attrDetailBlock = new StackPane();
+    private ImageView scrollImgView = new ImageView(
+            ImageLoader.load(ImageLoader.scrollURL,
+                    0.32 * SCREENWIDTH + 20,
+                    0.43 * SCREENHEIGHT - 40,
+                    false
+            )
+    );
+    private final String[] attrArr = {
+            "HP", "Energy", "Strength", "Accuracy", "Defence", "Dodge", "Skills", "Type"
+    };
+    GridPane attrTxtTable = new GridPane(30, 12);
+    private ArrayList<Text> attrTxtList = new ArrayList<>();
+
+
+    private VBox mokeponDetailBlock = new VBox(10);
+
+
+    public FxMokeponDetailView() {
+        mokeponImgView.setImage(null);
+        mokeponImgViewBg.setStyle("-fx-fill: #9a837c;" +
+                "-fx-stroke: #000000;" +
+                "-fx-stroke-width: 2px;");
+        mokeponImgBlock.getChildren().addAll(mokeponImgViewBg, mokeponImgView);
+
+
+        mokeponName.setFont(font);
+        mokeponName.setStyle("-fx-fill: #000000;" +
+                "-fx-stroke: #ffffff;" +
+                "-fx-stroke-width: 2px;");
+        mokeponNameBlock.getChildren().addAll(mokeponName, mokeponTypeImgView);
+        mokeponNameBlock.setAlignment(Pos.CENTER);
+
+
+        for (int i = 0; i < attrArr.length; i++) {
+            Text attrTxt = new Text(attrArr[i] + ":");
+            attrTxt.setFont(Font.font("default", 17));
+            Text appendTxt = new Text();
+            appendTxt.setFont(Font.font("default", 16));
+            attrTxtList.add(appendTxt);
+
+            if (i == attrArr.length - 1) {
+                attrTxtTable.add(new Text(), 0, i);
+                attrTxtTable.add(new Text(), 1, i);
+                i++;
+            }
+            attrTxtTable.add(attrTxt, 0, i);
+            attrTxtTable.add(appendTxt, 1, i);
+        }
+        attrTxtTable.setLayoutX(0.488372 * SCREENWIDTH + 4);
+        attrTxtTable.setLayoutY(0.63125 * SCREENHEIGHT + 5);
+        attrTxtTable.setAlignment(Pos.CENTER_LEFT);
+        attrTxtTable.setMaxSize(0.32 * SCREENWIDTH + 20, 0.43 * SCREENHEIGHT - 40);
+
+        attrDetailBlock.getChildren().addAll(scrollImgView, attrTxtTable);
+        attrDetailBlock.setAlignment(Pos.CENTER);
+
+
+
+        mokeponDetailBlock.getChildren().addAll(mokeponImgBlock, mokeponNameBlock, attrDetailBlock);
+        mokeponDetailBlock.setAlignment(Pos.CENTER);
+    }
+
+
+    public ImageView getMokeponImgView() {
+        return mokeponImgView;
+    }
+
+    public Text getMokeponName() {
+        return mokeponName;
+    }
+
+    public void setMokeponImgView(Image newImg) {
+        mokeponImgView.setImage(newImg);
+    }
+
+    public void setMokeponName(String newName) {
+        if (newName == null || newName.isBlank()) newName = "Select your Mokepon";
+        mokeponName.setText(newName);
+    }
+
+    public void setMokeponTypeImgView(MokeponType mokeponType) {
+        mokeponTypeImgView.setImage(MokeponType.getTypeImg(mokeponType));
+    }
+
+
+    @Override
+    public Node node() {
+        return mokeponDetailBlock;
+    }
+
+    @Override
+    public void show(Mokepon mokepon) {
+        if (mokepon == null) {
+            clear();
+        } else {
+            setMokeponImgView(ImageLoader.load("/assets/" + mokepon.getName() + ".png", 256, 256));
+            setMokeponName(mokepon.getName());
+            setMokeponTypeImgView(mokepon.getMokeponType());
+            attrTxtList.get(0).setText(mokepon.getMaxHP() + "");
+            attrTxtList.get(1).setText(mokepon.getMaxEnergy() + "");
+            attrTxtList.get(2).setText(mokepon.getBaseStrength() + "");
+            attrTxtList.get(3).setText(mokepon.getBaseAccuracy() + "");
+            attrTxtList.get(4).setText(mokepon.getBaseDefence() + "");
+            attrTxtList.get(5).setText(mokepon.getBaseDodge() + "");
+            attrTxtList.get(6).setText(String.join(", ", mokepon.getSkills()));
+            attrTxtList.get(7).setText(mokepon.getMokeponType() + "");
+        }
+    }
+
+    @Override
+    public void clear() {
+        setMokeponImgView(null);
+        setMokeponName(null);
+        setMokeponTypeImgView(null);
+        attrTxtList.forEach(text -> {
+            text.setText("");
+        });
+    }
+
+}
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/battle/FxBattleLogView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleLogView;
+import javafx.scene.Node;
+import javafx.scene.control.TextArea;
+import javafx.scene.text.Font;
+
+public class FxBattleLogView implements BattleLogView {
+
+
+    private TextArea battleLogRoot = new TextArea();
+
+
+
+    public FxBattleLogView() {
+        battleLogRoot.setFont(Font.font("default", 15));
+        battleLogRoot.setEditable(false);
+        battleLogRoot.setPrefSize(630, 300);
+        battleLogRoot.setLayoutX(ScreenPosition.SCREENWIDTH - 660);
+        battleLogRoot.setLayoutY(ScreenPosition.SCREENHEIGHT - 335);
+    }
+
+
+
+    @Override
+    public Node node() {
+        return battleLogRoot;
+    }
+
+    @Override
+    public void append(String message) {
+        battleLogRoot.appendText(message);
+    }
+
+    @Override
+    public void clear() {
+        battleLogRoot.clear();
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/battle/FxBattleCardView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+
+public class FxBattleCardView implements BattleCardView {
+
+
+    private VBox battleCardRoot = new VBox(5);
+    private ImageView selfImgView = new ImageView();
+    private StackPane[] selfBarArr = new StackPane[2];
+    private Text[] selfBarTxtArr = new Text[2];
+    private ProgressBar[] selfProgressBarArr = new ProgressBar[2];
+
+    private boolean textVisible = true;
+
+
+    public FxBattleCardView() {
+        selfProgressBarArr[0] = new ProgressBar(1.0);
+        selfProgressBarArr[0].setStyle("-fx-pref-width: 250;" +
+                "-fx-pref-height: 27;" +
+                "-fx-accent: #31c831;");
+        selfBarTxtArr[0].setStyle("-fx-font-size: 16");
+
+        selfProgressBarArr[1] = new ProgressBar(1.0);
+        selfProgressBarArr[1].setStyle("-fx-pref-width: 250;" +
+                "-fx-pref-height: 27;" +
+                "-fx-accent: #3e64d8;");
+        selfProgressBarArr[1].setProgress(1.0);
+        selfBarTxtArr[1].setStyle("-fx-font-size: 16");
+
+        battleCardRoot.getChildren().add(selfImgView);
+        battleCardRoot.getChildren().addAll(selfBarArr);
+        battleCardRoot.setAlignment(Pos.CENTER);
+    }
+
+
+
+    @Override
+    public Node node() {
+        return battleCardRoot;
+    }
+
+    @Override
+    public void show(Mokepon mokepon) {
+        selfImgView.setImage(ImageLoader.load(mokepon.getImgURL(), 256, 256));
+    }
+
+    @Override
+    public void updateHP(int current, int max) {
+        if (textVisible) selfBarTxtArr[0].setText(current + " / " + max);
+        selfProgressBarArr[0].setProgress((double)(current / max));
+    }
+
+    @Override
+    public void updateEnergy(int current, int max) {
+        if (textVisible) selfBarTxtArr[1].setText(current + " / " + max);
+        selfProgressBarArr[1].setProgress((double)(current / max));
+    }
+
+    @Override
+    public void setTextVisible(boolean visible) {
+        textVisible = visible;
+        if (!visible) {
+            for (Text txt : selfBarTxtArr) txt.setText("");
+        }
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/battle/FxBattleItemView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleItemView;
+import javafx.beans.property.IntegerProperty;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.function.Consumer;
+
+public class FxBattleItemView implements BattleItemView {
+
+
+    private HBox battleItemRoot = new HBox(10);
+    private LinkedHashMap<String, Button> itemBtnMap = new LinkedHashMap<>();
+
+    private Font itemFont = FontLoader.getGostischFont(18);
+
+
+    public FxBattleItemView() {
+        for (ItemType itemType : ItemType.values()) {
+            Button itemBtn = new Button("0", new ImageView(ItemType.getItemImg(itemType)));
+            itemBtn.setOpacity(0.2);
+            itemBtn.setStyle("-fx-pref-width: 50;" +
+                    "-fx-pref-height: 75;" +
+                    "-fx-background-color: #d3d3d3;" +
+                    "-fx-background-radius: 25px;" +
+                    "-fx-text-fill: #000000");
+            itemBtn.setFont(itemFont);
+            itemBtnMap.put(itemType.name(), itemBtn);
+        }
+        battleItemRoot.getChildren().addAll(itemBtnMap.values());
+        battleItemRoot.setAlignment(Pos.CENTER);
+    }
+
+
+
+
+    @Override
+    public Node node() {
+        return battleItemRoot;
+    }
+
+    @Override
+    public void setItems(HashMap<ItemType, IntegerProperty> itemDeposit, Consumer<IntegerProperty> onUseItem) {
+        itemDeposit.forEach((itemType, integerProperty) -> {
+            Button itemBtn = itemBtnMap.get(itemType.name());
+            itemBtn.setOnMouseEntered(enter -> {
+                itemBtn.setOpacity(0.5);
+            });
+            itemBtn.setOnMouseExited(exit -> {
+                itemBtn.setOpacity(0.2);
+            });
+            itemBtn.setOnMouseClicked(event -> {
+                itemBtn.setOpacity(0.75);
+                onUseItem.accept(integerProperty);
+            });
+            integerProperty.addListener((observable, oldValue, newValue) -> {
+                if ((Integer)newValue <= 0) {
+                    itemBtn.setDisable(true);
+                } else {
+                    itemBtn.setDisable(false);
+                }
+            });
+        });
+    }
+
+    @Override
+    public void setDisable(boolean disable) {
+        itemBtnMap.values().forEach(itemBtn -> {
+            itemBtn.setDisable(disable);
+        });
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/fx/battle/FxBattleSkillView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.battle.SkillRegistry;
+import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
+import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleSkillView;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public class FxBattleSkillView implements BattleSkillView {
+
+
+    private VBox battleSkillRoot = new VBox(5);
+    private Text skillTitle = new Text("Actions");
+    private ArrayList<Button> skillBtnList = new ArrayList<>();
+
+    private Font skillFont = FontLoader.getGostischFont(18);
+
+
+    public FxBattleSkillView() {
+        battleSkillRoot.getChildren().add(skillTitle);
+        battleSkillRoot.setAlignment(Pos.CENTER);
+    }
+
+
+
+    @Override
+    public Node node() {
+        return battleSkillRoot;
+    }
+
+    @Override
+    public void setSkills(ArrayList<String> skillNameList, Consumer<String> onSkillClicked) {
+        if (skillNameList.size() <= 0) return;
+
+        skillNameList.forEach(skillName -> {
+            Skill skill = SkillRegistry.getSkill(skillName);
+
+            Button skillBtn = new Button(skill.getName() + "[" + skill.getEnergyCost() + "]");
+            skillBtn.setFont(skillFont);
+            skillBtn.setStyle("-fx-pref-width: 120;" +
+                    "-fx-pref-height: 30;" +
+                    "-fx-background-radius: 999px;" +
+                    "-fx-background-color: #d3d3d3;" +
+                    "-fx-text-fill: #000000;");
+            skillBtn.setOpacity(0.2);
+            skillBtn.setOnMouseEntered(enter -> {
+                skillBtn.setOpacity(0.5);
+            });
+            skillBtn.setOnMouseExited(exit -> {
+                skillBtn.setOpacity(0.2);
+            });
+            skillBtn.setOnMouseClicked(ckick -> {
+                skillBtn.setOpacity(0.75);
+                onSkillClicked.accept(skillName);
+            });
+            skillBtnList.add(skillBtn);
+        });
+        battleSkillRoot.getChildren().addAll(skillBtnList);
+    }
+
+    @Override
+    public void setDisabled(boolean disabled) {
+        skillBtnList.forEach(skillBtn -> {
+            skillBtn.setDisable(disabled);
+        });
+    }
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/View.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface;
+
+import javafx.scene.Node;
+
+public interface View {
+
+    public Node node();
+
+}
+
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/bg/TextControl.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg;
+
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+public interface TextControl extends View {
+
+
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/bg/GameMenuView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg;
+
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+import javafx.scene.control.MenuItem;
+
+public interface GameMenuView extends View {
+
+    public void enable(int index);
+
+    public void disable(int index);
+
+    public MenuItem[] getMenuItemArr();
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/bg/ButtonControl.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg;
+
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+public interface ButtonControl extends View {
+
+    public void setText(String btnText);
+    public void setDisabled(boolean disabled);
+    public void setOnAction(Runnable runable);
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/select/MokeponListView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public interface MokeponListView extends View {
+
+    public void setItems(ArrayList<Mokepon> mokeponList, Consumer<Mokepon> onSelect);
+    public String getSelectedButtonName();
+    public void select(Mokepon mokepon);
+    public void clearSelection();
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/select/MokeponChooseView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+import javafx.beans.property.ObjectProperty;
+
+import java.util.function.Consumer;
+
+public interface MokeponChooseView extends View {
+
+
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/select/MokeponDetailView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.select;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+public interface MokeponDetailView extends View {
+
+    public void show(Mokepon mokepon);
+    public void clear();
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/battle/BattleLogView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public interface BattleLogView extends View {
+
+    public void append(String message);
+    public void clear();
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/battle/BattleCardView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+public interface BattleCardView extends View {
+
+    public void show(Mokepon mokepon);
+    public void updateHP(int current, int max);
+    public void updateEnergy(int current, int max);
+    public void setTextVisible(boolean invisible);
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/battle/BattleItemView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+import javafx.beans.property.IntegerProperty;
+
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+public interface BattleItemView extends View {
+
+    public void setItems(HashMap<ItemType, IntegerProperty> itemDeposit, Consumer<IntegerProperty> onUseItem);
+
+    public void setDisable(boolean disable);
+
+}
+
+================================================================================
+FILE: au/edu/unimelb/swen/oop/mokepon/view/view_interface/battle/BattleSkillView.java
+================================================================================
+
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle;
+
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public interface BattleSkillView extends View {
+
+    public void setSkills(ArrayList<String> skillNames, Consumer<String> onSkillClicked);
+    public void setDisabled(boolean disabled);
+
+}
+
+

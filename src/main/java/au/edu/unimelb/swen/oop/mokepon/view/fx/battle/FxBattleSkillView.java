@@ -1,7 +1,6 @@
 package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
 
-import au.edu.unimelb.swen.oop.mokepon.battle.SkillRegistry;
-import au.edu.unimelb.swen.oop.mokepon.battle.skill.Skill;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleSkillView;
 import javafx.geometry.Pos;
@@ -37,12 +36,10 @@ public class FxBattleSkillView implements BattleSkillView {
     }
 
     @Override
-    public void setSkills(ArrayList<String> skillNameList, Consumer<String> onSkillClicked) {
-        if (skillNameList.size() <= 0) return;
+    public void setSkills(ArrayList<Skill> skillList, Consumer<Skill> onSkillClicked) {
+        if (skillList.isEmpty()) return;
 
-        skillNameList.forEach(skillName -> {
-            Skill skill = SkillRegistry.getSkill(skillName);
-
+        skillList.forEach(skill -> {
             Button skillBtn = new Button(skill.getName() + "[" + skill.getEnergyCost() + "]");
             skillBtn.setFont(skillFont);
             skillBtn.setStyle("-fx-pref-width: 120;" +
@@ -59,7 +56,7 @@ public class FxBattleSkillView implements BattleSkillView {
             });
             skillBtn.setOnMouseClicked(ckick -> {
                 skillBtn.setOpacity(0.75);
-                onSkillClicked.accept(skillName);
+                onSkillClicked.accept(skill);
             });
             skillBtnList.add(skillBtn);
         });

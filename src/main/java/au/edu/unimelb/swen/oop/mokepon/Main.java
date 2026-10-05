@@ -5,13 +5,14 @@ import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
 import au.edu.unimelb.swen.oop.mokepon.controller.MokeponSelectController;
 import au.edu.unimelb.swen.oop.mokepon.controller.ScreenController;
-import au.edu.unimelb.swen.oop.mokepon.data.ItemLoader;
+import au.edu.unimelb.swen.oop.mokepon.data.GameData;
+import au.edu.unimelb.swen.oop.mokepon.data.ItemImgLoader;
 import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
 import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
-import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
+import au.edu.unimelb.swen.oop.mokepon.util.ItemImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
 import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 import au.edu.unimelb.swen.oop.mokepon.view.GameBgView;
@@ -61,7 +62,8 @@ public class Main extends Application {
 
         Properties gameProperty = loadPropertiesFromArgument();
 
-        ItemType.setItemLoader(new ItemLoader(gameProperty));
+        GameData.setGameData(gameProperty);
+        ItemImageLoader.setItemLoader(new ItemImgLoader(gameProperty));
 
         MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
         ArrayList<Mokepon> mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());

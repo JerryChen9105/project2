@@ -1,6 +1,6 @@
 package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
 
-import au.edu.unimelb.swen.oop.mokepon.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
 import javafx.geometry.Pos;
@@ -20,6 +20,8 @@ public class FxBattleCardView implements BattleCardView {
     private Text[] selfBarTxtArr = new Text[2];
     private ProgressBar[] selfProgressBarArr = new ProgressBar[2];
 
+    private boolean textVisible = true;
+
 
     public FxBattleCardView() {
         selfProgressBarArr[0] = new ProgressBar(1.0);
@@ -27,6 +29,7 @@ public class FxBattleCardView implements BattleCardView {
                 "-fx-pref-height: 27;" +
                 "-fx-accent: #31c831;");
         selfBarTxtArr[0].setStyle("-fx-font-size: 16");
+        selfBarTxtArr[0] = new Text("- / 0");
 
         selfProgressBarArr[1] = new ProgressBar(1.0);
         selfProgressBarArr[1].setStyle("-fx-pref-width: 250;" +
@@ -34,6 +37,7 @@ public class FxBattleCardView implements BattleCardView {
                 "-fx-accent: #3e64d8;");
         selfProgressBarArr[1].setProgress(1.0);
         selfBarTxtArr[1].setStyle("-fx-font-size: 16");
+        selfBarTxtArr[1] = new Text("- / 0");
 
         battleCardRoot.getChildren().add(selfImgView);
         battleCardRoot.getChildren().addAll(selfBarArr);
@@ -54,11 +58,21 @@ public class FxBattleCardView implements BattleCardView {
 
     @Override
     public void updateHP(int current, int max) {
+        if (textVisible) selfBarTxtArr[0].setText(current + " / " + max);
         selfProgressBarArr[0].setProgress((double)(current / max));
     }
 
     @Override
     public void updateEnergy(int current, int max) {
+        if (textVisible) selfBarTxtArr[1].setText(current + " / " + max);
         selfProgressBarArr[1].setProgress((double)(current / max));
+    }
+
+    @Override
+    public void setTextVisible(boolean visible) {
+        textVisible = visible;
+        if (!visible) {
+            for (Text txt : selfBarTxtArr) txt.setText("");
+        }
     }
 }
