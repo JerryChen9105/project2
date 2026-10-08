@@ -12,7 +12,7 @@ public class GameWindow extends Stage {
         setTitle("Mokepon");
         setResizable(false);
         setWidth(ScreenPosition.SCREENWIDTH);
-        setHeight(ScreenPosition.SCREENHEIGHT);
+        setHeight(ScreenPosition.SCREENHEIGHT + ScreenPosition.WINDOWHEIGHT * 2 + 5);
         setScene(new Scene(new Pane(), ScreenPosition.SCREENWIDTH, ScreenPosition.SCREENHEIGHT, Color.LIGHTGREY));
     }
 

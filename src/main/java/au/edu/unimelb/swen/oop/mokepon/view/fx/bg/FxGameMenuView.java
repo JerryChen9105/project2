@@ -2,6 +2,7 @@ package au.edu.unimelb.swen.oop.mokepon.view.fx.bg;
 
 import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -14,9 +15,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import java.util.function.Consumer;
-
-public class FxGameMenuView implements GameMenuView {
+public class FxGameMenuView implements GameMenuView, View {
 
     private Group bgRoot = new Group();
 
@@ -26,7 +25,7 @@ public class FxGameMenuView implements GameMenuView {
     private MenuBar menuBar = new MenuBar();
 
     private MenuItem[] menuItemArr = {
-            new MenuItem("Reset"), new MenuItem("Restart Battle"), new MenuItem("Exit ")
+            new MenuItem("Run away"), new MenuItem("Main menu"), new MenuItem("Exit")
     };
 
 
@@ -43,22 +42,31 @@ public class FxGameMenuView implements GameMenuView {
         menuBar.getMenus().add(menu);
         menuBar.setLayoutX(ScreenPosition.SCREENLEFT);
         menuBar.setLayoutY(ScreenPosition.SCREENTOP);
-        menuBar.setStyle("-fx-fill: #ececec;" +
-                "-fx-pref-width: " + ScreenPosition.SCREENWIDTH + ";" +
-                "-fx-pref-height: " + ScreenPosition.MENUBARHEIGHT + ";" +
-                "-fx-text-fill: #94807a;");
+        menuBar.setPrefWidth(ScreenPosition.SCREENWIDTH);
+        menuBar.setPrefHeight(ScreenPosition.MENUBARHEIGHT);
+        menuBar.setStyle("-fx-background-color: #ececec; -fx-text-fill: #94807a;");
 
         ImageView bgImgView = new ImageView(bgImg);
         bgImgView.setLayoutX(ScreenPosition.SCREENLEFT);
-        bgImgView.setLayoutY(ScreenPosition.SCREENTOP + ScreenPosition.MENUBARHEIGHT);
+        bgImgView.setLayoutY(ScreenPosition.SCREENTOP + ScreenPosition.MENUBARHEIGHT + ScreenPosition.WINDOWHEIGHT);
 
         bgRoot.getChildren().addAll(bgImgView, menuBar);
     }
 
-    public void setAction(int index, Consumer<Integer> onClick) {
-        menuItemArr[index].setOnAction(_ -> onClick.accept(index));
+    @Override
+    public void setExitAction(Runnable exitClick) {
+        menuItemArr[2].setOnAction(_ -> exitClick.run());
     }
 
+    @Override
+    public void setRunAwayAction(Runnable runAwayAction) {
+        menuItemArr[0].setOnAction(_ -> runAwayAction.run());
+    }
+
+    @Override
+    public void setMainMenuAction(Runnable mainMenuAction) {
+        menuItemArr[1].setOnAction(_ -> mainMenuAction.run());
+    }
 
     @Override
     public Node node() {
@@ -74,9 +82,5 @@ public class FxGameMenuView implements GameMenuView {
     public void disable(int index) {
         menuItemArr[index].setDisable(true);
     }
-
-    @Override
-    public MenuItem[] getMenuItemArr() {
-        return menuItemArr;
-    }
 }
+

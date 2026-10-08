@@ -1,8 +1,6 @@
 package au.edu.unimelb.swen.oop.mokepon.view;
 
 import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
@@ -28,11 +26,11 @@ public class MokeponSelectView {
 
         Node mokeponList = this.mokeponListView.node();
         mokeponList.setLayoutX(0.044444 * ScreenPosition.SCREENWIDTH);
-        mokeponList.setLayoutY(0.135982 * ScreenPosition.SCREENHEIGHT - 60);
+        mokeponList.setLayoutY(0.135982 * ScreenPosition.SCREENHEIGHT - 35);
 
         Node mokeponDetail = this.mokeponDetailView.node();
         mokeponDetail.setLayoutX(0.627778 * ScreenPosition.SCREENWIDTH - 215);
-        mokeponDetail.setLayoutY(0.347826 * ScreenPosition.SCREENHEIGHT - 230);
+        mokeponDetail.setLayoutY(0.347826 * ScreenPosition.SCREENHEIGHT - 225);
 
         Node mokeponChooseBtn = this.mokeponChooseView.node();
         mokeponChooseBtn.setLayoutX(0.816406 * ScreenPosition.SCREENWIDTH);

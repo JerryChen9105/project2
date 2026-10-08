@@ -18,7 +18,7 @@ public class TackleSkill implements Skill {
 
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
-        boolean hit = HitCalculator.check(user, target);
+        boolean hit = HitCalculator.check(user.getMokeponStatus(), target.getMokeponStatus());
         ArrayList<String> messageList = new ArrayList<>();
         messageList.add("\nPlayer's " + user.getName() + " used Tackle!\n");
         if (!hit) {
@@ -26,8 +26,8 @@ public class TackleSkill implements Skill {
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
 
-        int damage = DamageCalculator.calculate(user, target, 2.0);
-        target.takeDamage(damage);
+        int damage = DamageCalculator.calculate(user.getMokeponStatus(), target.getMokeponStatus(), 2.0);
+        target.getMokeponStatus().takeDamage(damage);
         messageList.add("\tHit " + target.getName() + " for " + damage + " damage!\n");
         return new BattleResult(messageList, BattleOutcome.ONGOING);
     }

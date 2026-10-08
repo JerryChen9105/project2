@@ -19,17 +19,17 @@ public class AimSkill implements Skill {
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         ArrayList<String> messageList = new ArrayList<>();
         messageList.add("\nPlayer's " + user.getName() + " used Aim!\n");
-        if (user.getCurrentAccuracy() >= 100) {
-            user.setCurrentAccuracy(100);
+        if (user.getMokeponStatus().getCurrentAccuracy() >= 100) {
+            user.getMokeponStatus().setCurrentAccuracy(100);
             messageList.add("\tBut their accuracy is filled.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
 
         int accuracyImcrement = GainCalculator.calculate(1, 9);
-        user.setCurrentAccuracy(user.getCurrentAccuracy() + accuracyImcrement);
-        if (user.getCurrentAccuracy() > 100) {
-            accuracyImcrement = user.getCurrentAccuracy() - 100;
-            user.setCurrentAccuracy(100);
+        user.getMokeponStatus().setCurrentAccuracy(user.getMokeponStatus().getCurrentAccuracy() + accuracyImcrement);
+        if (user.getMokeponStatus().getCurrentAccuracy() > 100) {
+            accuracyImcrement = user.getMokeponStatus().getCurrentAccuracy() - 100;
+            user.getMokeponStatus().setCurrentAccuracy(100);
         }
         messageList.add("\tThey raised their accuracy by " + accuracyImcrement + " points!\n");
         return new BattleResult(messageList, BattleOutcome.ONGOING);

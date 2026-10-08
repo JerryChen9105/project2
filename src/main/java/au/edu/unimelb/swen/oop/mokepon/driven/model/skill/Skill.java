@@ -11,3 +11,5 @@ public interface Skill {
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext);
 
 }
+
+

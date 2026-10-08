@@ -3,6 +3,8 @@ package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ProgressBar;
@@ -14,30 +16,48 @@ import javafx.scene.text.Text;
 public class FxBattleCardView implements BattleCardView {
 
 
-    private VBox battleCardRoot = new VBox(5);
+    private VBox battleCardRoot = new VBox(4);
     private ImageView selfImgView = new ImageView();
     private StackPane[] selfBarArr = new StackPane[2];
     private Text[] selfBarTxtArr = new Text[2];
     private ProgressBar[] selfProgressBarArr = new ProgressBar[2];
 
+    private int maxHp = 0;
+    private int maxEnergy = 0;
+
+    private IntegerProperty curHp = new SimpleIntegerProperty(1);
+    private IntegerProperty curEnergy = new SimpleIntegerProperty(1);
+
     private boolean textVisible = true;
 
 
     public FxBattleCardView() {
-        selfProgressBarArr[0] = new ProgressBar(1.0);
+
+        for (int i = 0; i < selfBarArr.length; i++) {
+            selfProgressBarArr[i] = new ProgressBar(1.0);
+            selfBarTxtArr[i] = new Text("- / 0");
+            selfBarTxtArr[i].setStyle("-fx-font-size: 16");
+            selfBarArr[i] = new StackPane(selfProgressBarArr[i], selfBarTxtArr[i]);
+        }
+
         selfProgressBarArr[0].setStyle("-fx-pref-width: 250;" +
                 "-fx-pref-height: 27;" +
                 "-fx-accent: #31c831;");
-        selfBarTxtArr[0].setStyle("-fx-font-size: 16");
-        selfBarTxtArr[0] = new Text("- / 0");
 
-        selfProgressBarArr[1] = new ProgressBar(1.0);
         selfProgressBarArr[1].setStyle("-fx-pref-width: 250;" +
                 "-fx-pref-height: 27;" +
                 "-fx-accent: #3e64d8;");
-        selfProgressBarArr[1].setProgress(1.0);
-        selfBarTxtArr[1].setStyle("-fx-font-size: 16");
-        selfBarTxtArr[1] = new Text("- / 0");
+
+        curHp.addListener((observable, oldValue, newValue) -> {
+            if (textVisible) selfBarTxtArr[0].setText(newValue + " / " + maxHp);
+            selfProgressBarArr[0].setProgress(newValue.doubleValue() / maxHp);
+        });
+
+        curEnergy.addListener((observable, oldValue, newValue) -> {
+            if (textVisible) selfBarTxtArr[1].setText(newValue + " / " + maxEnergy);
+            selfProgressBarArr[1].setProgress(newValue.doubleValue() / maxEnergy);
+        });
+
 
         battleCardRoot.getChildren().add(selfImgView);
         battleCardRoot.getChildren().addAll(selfBarArr);
@@ -54,18 +74,18 @@ public class FxBattleCardView implements BattleCardView {
     @Override
     public void show(Mokepon mokepon) {
         selfImgView.setImage(ImageLoader.load(mokepon.getImgURL(), 256, 256));
+        maxHp = mokepon.getMaxHP();
+        maxEnergy = mokepon.getMaxEnergy();
     }
 
     @Override
-    public void updateHP(int current, int max) {
-        if (textVisible) selfBarTxtArr[0].setText(current + " / " + max);
-        selfProgressBarArr[0].setProgress((double)(current / max));
+    public void updateHP(int current) {
+        curHp.setValue(current);
     }
 
     @Override
-    public void updateEnergy(int current, int max) {
-        if (textVisible) selfBarTxtArr[1].setText(current + " / " + max);
-        selfProgressBarArr[1].setProgress((double)(current / max));
+    public void updateEnergy(int current) {
+        curEnergy.setValue(current);
     }
 
     @Override
@@ -76,3 +96,4 @@ public class FxBattleCardView implements BattleCardView {
         }
     }
 }
+

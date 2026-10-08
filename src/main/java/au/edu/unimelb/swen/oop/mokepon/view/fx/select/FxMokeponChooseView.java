@@ -31,6 +31,8 @@ public class FxMokeponChooseView implements MokeponChooseView {
         mokeponChooseBtn.setFont(FontLoader.getGostischFont(24));
         mokeponChooseBtn.setLayoutX(1045);
         mokeponChooseBtn.setLayoutY(515);
+
+
     }
 
 
@@ -39,4 +41,9 @@ public class FxMokeponChooseView implements MokeponChooseView {
         return mokeponChooseBtn;
     }
 
+    @Override
+    public void setChooseAction(Runnable runnable) {
+        mokeponChooseBtn.setOnAction(_ -> runnable.run());
+    }
 }
+

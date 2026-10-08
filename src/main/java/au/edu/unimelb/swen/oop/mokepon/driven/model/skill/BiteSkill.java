@@ -18,16 +18,16 @@ public class BiteSkill implements Skill {
 
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
-        boolean hit = HitCalculator.check(user, target);
+        boolean hit = HitCalculator.check(user.getMokeponStatus(), target.getMokeponStatus());
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("\nPlayer's " + user.getName() + " used Bite!\n");
+        messageList.add("Player's " + user.getName() + " used Bite!\n");
         if (!hit) {
             messageList.add("\tBut they missed.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
 
-        int damage = DamageCalculator.calculate(user, target, 1.0);
-        target.takeDamage(damage);
+        int damage = DamageCalculator.calculate(user.getMokeponStatus(), target.getMokeponStatus(), 1.0);
+        target.getMokeponStatus().takeDamage(damage);
         messageList.add("\tHit " + target.getName() + " for " + damage + " damage!\n");
         return new BattleResult(messageList, BattleOutcome.ONGOING);
     }

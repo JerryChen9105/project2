@@ -1,7 +1,7 @@
 package au.edu.unimelb.swen.oop.mokepon.driven.overworld;
 
-public enum MapStatus {
+public enum EnemyType {
 
-    EMPTY, B, F, G, O, P, R, W
+    Random, Weak, Strong;
 
 }

@@ -7,7 +7,6 @@ public class BattleContext {
     ArrayList<String> logList;
 
 
-
     public BattleContext() {
         logList = new ArrayList<>();
     }
@@ -22,3 +21,5 @@ public class BattleContext {
     }
 
 }
+
+

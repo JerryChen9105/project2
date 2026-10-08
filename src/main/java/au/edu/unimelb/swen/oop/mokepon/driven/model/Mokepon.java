@@ -16,7 +16,6 @@ public class Mokepon {
     private int baseDodge;
     private ArrayList<String> skillList;
     private MokeponType mokeponType;
-    private boolean isStrong;
 
     private MokeponStatus mokeponStatus;
 
@@ -24,7 +23,7 @@ public class Mokepon {
     public Mokepon(
             String name, String imgURL, int maxHP, int maxEnergy,
             int baseStrength, int baseAccuracy, int baseDefence, int baseDodge,
-            ArrayList<String> skillList, MokeponType mokeponType, boolean isStrong) {
+            ArrayList<String> skillList, MokeponType mokeponType) {
         this.name = name;
         this.imgURL = imgURL;
         this.maxHP = maxHP;
@@ -35,7 +34,6 @@ public class Mokepon {
         this.baseDodge = baseDodge;
         this.skillList = skillList;
         this.mokeponType = mokeponType;
-        this.isStrong = isStrong;
         this.mokeponStatus = null;
     }
 
@@ -92,13 +90,10 @@ public class Mokepon {
         return mokeponType;
     }
 
-    public boolean isStrong() {
-        return isStrong;
-    }
-
     public MokeponStatus getMokeponStatus() {
         return mokeponStatus;
     }
+
 
 
     public void setMokeponStatus() {
@@ -119,7 +114,7 @@ public class Mokepon {
     public Mokepon copy() {
         return new Mokepon(name, imgURL, maxHP, maxEnergy,
                 baseStrength, baseAccuracy, baseDefence, baseDodge,
-                new ArrayList<>(skillList), mokeponType, isStrong);
+                new ArrayList<>(skillList), mokeponType);
     }
 
 }

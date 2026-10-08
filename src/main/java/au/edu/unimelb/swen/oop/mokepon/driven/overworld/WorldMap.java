@@ -4,38 +4,60 @@ import java.util.ArrayList;
 
 public class WorldMap {
 
-    private MapStatus[][] mapStatusMatrix;
-    private int maxX = -1, maxY = -1;
-
+    private TileType[][] mapStatusMatrix;
+    private int maxX;
+    private int maxY;
 
     public WorldMap(ArrayList<ArrayList<Character>> worldMapListMatrix) {
-        worldMapListMatrix.forEach(mapStatusList -> {
-            if (mapStatusList.size() > maxX) maxX = mapStatusList.size();
-        });
-        maxY = worldMapListMatrix.size();
+        this.maxY = worldMapListMatrix.size();
+        int maxX = 0;
+        for (ArrayList<Character> row : worldMapListMatrix) {
+            if (row.size() > maxX) maxX = row.size();
+        }
+        this.maxX = maxX;
 
-        mapStatusMatrix = new MapStatus[maxX][maxY];
-        for (int i = 0; i < maxY; i++) {
-            for (int j = 0; i < maxX; j++) {
-                mapStatusMatrix[i][j] = getMapStatus(worldMapListMatrix.get(i).get(j));
+        mapStatusMatrix = new TileType[maxY + 2][maxX + 2];
+
+        for (int y = 0; y < maxY + 2; y++) {
+            for (int x = 0; x < maxX + 2; x++) {
+                mapStatusMatrix[y][x] = TileType.EMPTY;
+            }
+        }
+
+        for (int y = 0; y < maxY; y++) {
+            ArrayList<Character> row = worldMapListMatrix.get(y);
+            for (int x = 0; x < row.size(); x++) {
+                mapStatusMatrix[y + 1][x + 1] = getTileType(row.get(x));
             }
         }
     }
 
-    private MapStatus getMapStatus(char c) {
-        for (MapStatus status : MapStatus.values()) {
-            if (status.name().equals(String.valueOf(c))) return status;
+    private TileType getTileType(char c) {
+        for (TileType tileType : TileType.values()) {
+            if (tileType.getTileChar() == c) return tileType;
         }
-        return MapStatus.EMPTY;
+        return TileType.EMPTY;
     }
 
+    public TileType getTileType(Coordinate coordinate) {
+        int realX = coordinate.getX();
+        int realY = coordinate.getY();
+
+        int mappedX = realX + 1;
+        int mappedY = realY + 1;
+
+        if (mappedX < 0 || mappedX >= maxX + 2 || mappedY < 0 || mappedY >= maxY + 2) {
+            return TileType.EMPTY;
+        }
+        return mapStatusMatrix[mappedY][mappedX];
+    }
 
     public int getMaxX() {
         return maxX;
     }
-
     public int getMaxY() {
         return maxY;
     }
-
 }
+
+

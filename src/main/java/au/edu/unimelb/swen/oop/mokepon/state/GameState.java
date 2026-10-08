@@ -18,6 +18,10 @@ public class GameState {
         return selectedMokepon;
     }
 
+    public IntegerProperty fightCountProperty() {
+        return fightCount;
+    }
+
     public Mokepon getSelectedMokepon() {
         return selectedMokepon.getValue();
     }
@@ -57,6 +61,9 @@ public class GameState {
     public void resetForNewSelection() {
         selectedMokepon.setValue(null);
         playerMokepon.setValue(null);
+        enemyMokepon.setValue(null);
+        inventory.clear();
     }
 
 }
+

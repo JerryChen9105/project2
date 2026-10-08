@@ -14,3 +14,4 @@ public interface MokeponListView extends View {
     public void clearSelection();
 
 }
+

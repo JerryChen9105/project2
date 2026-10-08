@@ -5,7 +5,7 @@ import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
 
 import java.util.function.Consumer;
 
-public interface BattleMarkerView extends View {
+public interface EncounterMarkerView extends View {
 
     public void setTitle(String text);
 
@@ -16,3 +16,4 @@ public interface BattleMarkerView extends View {
     public void setVisible(boolean visible);
 
 }
+

@@ -21,9 +21,8 @@ public class FontLoader {
                 resultFont = Font.loadFont(inputFile, fontSize);
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                return resultFont;
             }
+            return resultFont;
         };
 
         return fontCacheMap.computeIfAbsent(size, fontGenerator);

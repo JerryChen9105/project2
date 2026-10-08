@@ -6,16 +6,17 @@ import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
 import au.edu.unimelb.swen.oop.mokepon.util.ImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.util.MokeponTypeImageLoader;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -38,14 +39,18 @@ public class FxMokeponDetailView implements MokeponDetailView {
     private ImageView scrollImgView = new ImageView(
             ImageLoader.load(ImageLoader.scrollURL,
                     0.32 * SCREENWIDTH + 20,
-                    0.43 * SCREENHEIGHT - 40,
+                    0.43 * SCREENHEIGHT - 35,
                     false
             )
     );
     private final String[] attrArr = {
             "HP", "Energy", "Strength", "Accuracy", "Defence", "Dodge", "Skills", "Type"
     };
-    GridPane attrTxtTable = new GridPane(30, 12);
+
+    private HBox attrTxtTable = new HBox(40);
+    private VBox attrTxtPrefix = new VBox(10);
+    private VBox attrTxtRealValue = new VBox(10);
+
     private ArrayList<Text> attrTxtList = new ArrayList<>();
 
 
@@ -70,27 +75,29 @@ public class FxMokeponDetailView implements MokeponDetailView {
 
         for (int i = 0; i < attrArr.length; i++) {
             Text attrTxt = new Text(attrArr[i] + ":");
-            attrTxt.setFont(Font.font("default", 17));
+            attrTxt.setFont(Font.font("default", FontWeight.BOLD, 15));
             Text appendTxt = new Text();
-            appendTxt.setFont(Font.font("default", 16));
+            appendTxt.setFont(Font.font("default", 15));
             attrTxtList.add(appendTxt);
 
             if (i == attrArr.length - 1) {
-                attrTxtTable.add(new Text(), 0, i);
-                attrTxtTable.add(new Text(), 1, i);
-                i++;
+                attrTxtPrefix.getChildren().add(new Text());
+                attrTxtRealValue.getChildren().add(new Text());
             }
-            attrTxtTable.add(attrTxt, 0, i);
-            attrTxtTable.add(appendTxt, 1, i);
+            attrTxtPrefix.getChildren().add(attrTxt);
+            attrTxtRealValue.getChildren().add(appendTxt);
         }
-        attrTxtTable.setLayoutX(0.488372 * SCREENWIDTH + 4);
-        attrTxtTable.setLayoutY(0.63125 * SCREENHEIGHT + 5);
-        attrTxtTable.setAlignment(Pos.CENTER_LEFT);
+
+        attrTxtPrefix.setAlignment(Pos.CENTER_LEFT);
+        attrTxtRealValue.setAlignment(Pos.CENTER_LEFT);
+
+        attrTxtTable.getChildren().addAll(attrTxtPrefix, attrTxtRealValue);
         attrTxtTable.setMaxSize(0.32 * SCREENWIDTH + 20, 0.43 * SCREENHEIGHT - 40);
 
         attrDetailBlock.getChildren().addAll(scrollImgView, attrTxtTable);
         attrDetailBlock.setAlignment(Pos.CENTER);
-
+        StackPane.setAlignment(attrTxtTable, Pos.CENTER_LEFT);
+        StackPane.setMargin(attrTxtTable, new Insets(0, 0, 0, 50));
 
 
         mokeponDetailBlock.getChildren().addAll(mokeponImgBlock, mokeponNameBlock, attrDetailBlock);
@@ -155,3 +162,4 @@ public class FxMokeponDetailView implements MokeponDetailView {
     }
 
 }
+

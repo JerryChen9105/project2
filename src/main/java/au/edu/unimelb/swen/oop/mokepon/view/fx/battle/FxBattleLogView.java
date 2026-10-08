@@ -16,8 +16,8 @@ public class FxBattleLogView implements BattleLogView {
     public FxBattleLogView() {
         battleLogRoot.setFont(Font.font("default", 15));
         battleLogRoot.setEditable(false);
-        battleLogRoot.setPrefSize(630, 300);
-        battleLogRoot.setLayoutX(ScreenPosition.SCREENWIDTH - 660);
+        battleLogRoot.setPrefSize(630, 290);
+        battleLogRoot.setLayoutX(ScreenPosition.SCREENWIDTH - 685);
         battleLogRoot.setLayoutY(ScreenPosition.SCREENHEIGHT - 335);
     }
 
@@ -38,3 +38,4 @@ public class FxBattleLogView implements BattleLogView {
         battleLogRoot.clear();
     }
 }
+

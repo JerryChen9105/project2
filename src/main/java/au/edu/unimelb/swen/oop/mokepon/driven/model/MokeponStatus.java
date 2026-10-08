@@ -5,6 +5,7 @@ import au.edu.unimelb.swen.oop.mokepon.driven.model.effect.Effect;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MokeponStatus {
 
@@ -60,6 +61,13 @@ public class MokeponStatus {
         return currentDodge;
     }
 
+    public ArrayList<Skill> getSkillList() {
+        return skillList;
+    }
+
+    public ArrayList<Effect> getEffectList() {
+        return effectList;
+    }
 
     public void setCurrentHP(int hp) {
         currentHP = hp;
@@ -94,25 +102,28 @@ public class MokeponStatus {
         effectList.add(effect);
     }
 
+    public boolean hasEffect(String effectName) {
+        for (Effect effect : effectList) {
+            if (effect.getName().equals(effectName) && !effect.isExpired()) return true;
+        }
+        return false;
+    }
+
     public Effect[] updateEffect() {
         if (effectList.isEmpty()) return null;
 
-        Effect[] resultArr = new Effect[effectList.size()];
-        boolean[] removeArr = new boolean[effectList.size()];
-        for (int i = 0; i < effectList.size(); i++) {
-            Effect effect = effectList.get(i);
+        ArrayList<Effect> expiredEffects = new ArrayList<>();
+        Iterator<Effect> iterator = effectList.iterator();
+        while (iterator.hasNext()) {
+            Effect effect = iterator.next();
             effect.onTurnEnd(this);
             if (effect.isExpired()) {
-                resultArr[i] = effect;
-                removeArr[i] = true;
-            } else {
-                resultArr[i] = null;
-                removeArr[i] = false;
+                expiredEffects.add(effect);
+                iterator.remove();
             }
         }
-        return resultArr;
+        if (expiredEffects.isEmpty()) return null;
+        return expiredEffects.toArray(new Effect[0]);
     }
-
-
 
 }

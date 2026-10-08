@@ -3,7 +3,6 @@ package au.edu.unimelb.swen.oop.mokepon.view;
 import au.edu.unimelb.swen.oop.mokepon.util.ScreenPosition;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg.GameMenuView;
 import javafx.scene.Node;
-import javafx.scene.control.MenuItem;
 
 public class GameBgView {
 
@@ -25,8 +24,24 @@ public class GameBgView {
         return gameMenuView.node();
     }
 
-    public MenuItem getMenuItem(int index) {
-        return gameMenuView.getMenuItemArr()[index];
+    public void setExitBtn(Runnable runnable) {
+        gameMenuView.setExitAction(runnable);
+    }
+
+    public void setRunAwayBtn(Runnable runnable) {
+        gameMenuView.setRunAwayAction(runnable);
+    }
+
+    public void setMainMenuBtn(Runnable runnable) {
+        gameMenuView.setMainMenuAction(runnable);
+    }
+
+    public void enable(int index) {
+        gameMenuView.enable(index);
+    }
+
+    public void disable(int index) {
+        gameMenuView.disable(index);
     }
 
 }

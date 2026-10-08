@@ -19,17 +19,17 @@ public class BunkerSkill implements Skill {
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         ArrayList<String> messageList = new ArrayList<>();
         messageList.add("\nPlayer's " + user.getName() + " used Bunker!\n");
-        if (user.getCurrentDefence() >= 100) {
-            user.setCurrentDefence(100);
+        if (user.getMokeponStatus().getCurrentDefence() >= 100) {
+            user.getMokeponStatus().setCurrentDefence(100);
             messageList.add("\tBut their defence is filled.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
 
         int defenceImcrement = GainCalculator.calculate(1, 9);
-        user.setCurrentDefence(user.getCurrentDefence() + defenceImcrement);
-        if (user.getCurrentDefence() > 100) {
-            defenceImcrement = user.getCurrentDefence() - 100;
-            user.setCurrentDefence(100);
+        user.getMokeponStatus().setCurrentDefence(user.getMokeponStatus().getCurrentDefence() + defenceImcrement);
+        if (user.getMokeponStatus().getCurrentDefence() > 100) {
+            defenceImcrement = user.getMokeponStatus().getCurrentDefence() - 100;
+            user.getMokeponStatus().setCurrentDefence(100);
         }
         messageList.add("\tThey raised their defence by " + defenceImcrement + " points!\n");
         return new BattleResult(messageList, BattleOutcome.ONGOING);

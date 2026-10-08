@@ -19,17 +19,17 @@ public class SwoleSkill implements Skill {
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         ArrayList<String> messageList = new ArrayList<>();
         messageList.add("\nPlayer's " + user.getName() + " used Swole!\n");
-        if (user.getCurrentStrength() >= 100) {
-            user.setCurrentStrength(100);
+        if (user.getMokeponStatus().getCurrentStrength() >= 100) {
+            user.getMokeponStatus().setCurrentStrength(100);
             messageList.add("\tBut their strength is filled.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
 
         int strengthImcrement = GainCalculator.calculate(1, 9);
-        user.setCurrentStrength(user.getCurrentStrength() + strengthImcrement);
-        if (user.getCurrentStrength() > 100) {
-            strengthImcrement = user.getCurrentStrength() - 100;
-            user.setCurrentStrength(100);
+        user.getMokeponStatus().setCurrentStrength(user.getMokeponStatus().getCurrentStrength() + strengthImcrement);
+        if (user.getMokeponStatus().getCurrentStrength() > 100) {
+            strengthImcrement = user.getMokeponStatus().getCurrentStrength() - 100;
+            user.getMokeponStatus().setCurrentStrength(100);
         }
         messageList.add("\tThey raised their strength by " + strengthImcrement + " points!\n");
         return new BattleResult(messageList, BattleOutcome.ONGOING);

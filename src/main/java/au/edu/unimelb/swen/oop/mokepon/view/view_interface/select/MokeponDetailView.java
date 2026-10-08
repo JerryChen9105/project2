@@ -9,3 +9,4 @@ public interface MokeponDetailView extends View {
     public void clear();
 
 }
+

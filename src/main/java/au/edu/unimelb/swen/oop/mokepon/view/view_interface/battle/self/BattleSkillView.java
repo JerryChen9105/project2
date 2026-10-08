@@ -1,4 +1,4 @@
-package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle;
+package au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self;
 
 import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
@@ -12,3 +12,4 @@ public interface BattleSkillView extends View {
     public void setDisabled(boolean disabled);
 
 }
+

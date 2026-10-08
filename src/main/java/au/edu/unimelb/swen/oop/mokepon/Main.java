@@ -3,36 +3,61 @@ package au.edu.unimelb.swen.oop.mokepon;
 import au.edu.unimelb.swen.oop.mokepon.app.GameWindow;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
+import au.edu.unimelb.swen.oop.mokepon.controller.MokeponBattleController;
+import au.edu.unimelb.swen.oop.mokepon.controller.MokeponOverworldController;
 import au.edu.unimelb.swen.oop.mokepon.controller.MokeponSelectController;
 import au.edu.unimelb.swen.oop.mokepon.controller.ScreenController;
 import au.edu.unimelb.swen.oop.mokepon.data.GameData;
-import au.edu.unimelb.swen.oop.mokepon.data.ItemImgLoader;
 import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
-import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
-import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleService;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
+import au.edu.unimelb.swen.oop.mokepon.event.EnterBattleEvent;
+import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
+import au.edu.unimelb.swen.oop.mokepon.event.ExitOverworldEvent;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
-import au.edu.unimelb.swen.oop.mokepon.util.ItemImageLoader;
+import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
 import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
 import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 import au.edu.unimelb.swen.oop.mokepon.view.GameBgView;
+import au.edu.unimelb.swen.oop.mokepon.view.MokeponBattleView;
+import au.edu.unimelb.swen.oop.mokepon.view.MokeponOverworldView;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleCardView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleNameView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.enemy.FxBattleEnemyView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleItemView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleLogView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleSelfView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleSkillView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.bg.FxGameMenuView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.overworld.*;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponChooseView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleNameView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.enemy.BattleEnemyView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleItemView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleLogView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleSelfView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleSkillView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.overworld.*;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponChooseView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.select.MokeponListView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.function.Consumer;
 
@@ -55,52 +80,159 @@ public class Main extends Application {
         eventBus = new EventBus();
         gameBgView = new GameBgView(new FxGameMenuView());
 
-        Consumer<ChooseMokeponEvent> chooseMokeponEventConsumer = event -> {};
-        eventBus.subscribe(ChooseMokeponEvent.class, chooseMokeponEventConsumer);
-
-
 
         Properties gameProperty = loadPropertiesFromArgument();
-
         GameData.setGameData(gameProperty);
-        ItemImageLoader.setItemLoader(new ItemImgLoader(gameProperty));
-
-        MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
-        ArrayList<Mokepon> mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());
 
 
-
-
-
-
+        // select block construction
         MokeponListView fxMokeponListView = new FxMokeponListView();
         MokeponDetailView fxMokeponDetailView = new FxMokeponDetailView();
         MokeponChooseView fxMokeponChooseView = new FxMokeponChooseView();
 
         MokeponSelectView mokeponSelectView = new MokeponSelectView(
-                fxMokeponListView, fxMokeponDetailView, fxMokeponChooseView
+                fxMokeponListView,
+                fxMokeponDetailView,
+                fxMokeponChooseView
         );
 
         ScreenController mokeponSelectController = new MokeponSelectController(
-                mokeponSelectView, gameState, mokeponList, eventBus, randomSource, screenManager
+                mokeponSelectView, gameState, eventBus, screenManager
         );
 
-
-
-
-
-
         screenManager.register(ScreenState.SELECT, mokeponSelectController);
-
-
-
-
         mokeponSelectController.init();
+        //===============================================================================================
 
+        // overworld block construction
+        TileView fxTileView = new FxTileView();
+        MovementView fxMovementView = new FxMovementView();
+        PlayerStatisticView fxPlayerStatisticView = new FxPlayerStatisticView();
+        StatusBarView fxStatusBarView = new FxStatusBarView();
+        ExitMarkerView fxExitMarkerView = new FxExitMarkerView();
+
+        MokeponOverworldView mokeponOverworldView = new MokeponOverworldView(
+                fxTileView,
+                fxMovementView,
+                fxPlayerStatisticView,
+                fxStatusBarView,
+                null,
+                fxExitMarkerView);
+
+        ScreenController mokeponOverworldController = new MokeponOverworldController(
+                mokeponOverworldView, gameState, eventBus, randomSource, screenManager
+        );
+
+        screenManager.register(ScreenState.OVERWORLD, mokeponOverworldController);
+        mokeponOverworldController.init();
+        mokeponOverworldController.hide();
+        //===============================================================================================
+
+        // battle block construction
+        BattleCardView fxBattleCardView = new FxBattleCardView();
+        BattleSkillView fxBattleSkillView = new FxBattleSkillView();
+        BattleItemView fxBattleItemView = new FxBattleItemView();
+        BattleNameView fxBattleNameView = new FxBattleNameView();
+        BattleSelfView fxBattleSelfView = new FxBattleSelfView(
+                fxBattleCardView, fxBattleItemView, fxBattleSkillView, fxBattleNameView
+        );
+
+        BattleCardView fxBattleCardView2 = new FxBattleCardView();
+        BattleNameView fxBattleNameView2 = new FxBattleNameView();
+        BattleEnemyView fxBattleEnemyView = new FxBattleEnemyView(
+                fxBattleCardView2, fxBattleNameView2
+        );
+
+        BattleLogView fxBattleLogView = new FxBattleLogView();
+
+        MokeponBattleView mokeponBattleView = new MokeponBattleView(
+                fxBattleSelfView,
+                fxBattleEnemyView,
+                fxBattleLogView,
+                null,
+                null
+        );
+
+        BattleService battleService = new BattleService(randomSource);
+        BattleContext battleContext = new BattleContext();
+        MokeponBattleController mokeponBattleController = new MokeponBattleController(
+                mokeponBattleView, gameState, battleService, eventBus, battleContext, randomSource, screenManager
+        );
+
+        screenManager.register(ScreenState.BATTLE, mokeponBattleController);
+        mokeponBattleController.init();
+        mokeponBattleController.hide();
+        //===============================================================================================
+
+
+        // test space
+        screenManager.switchTo(ScreenState.SELECT);
+
+        MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
+        Mokepon a = mokeponLoader.load("Sealance");
+        Mokepon e = mokeponLoader.load("Puffume");
+        a.setMokeponStatus();
+        e.setMokeponStatus();
+        gameState.setPlayerMokepon(a);
+        gameState.setEnemyMokepon(e);
+
+        gameState.getInventory().add(ItemType.COFFEE);
+        gameState.getInventory().add(ItemType.POISON);
+
+        fxBattleEnemyView.initEnemyStatus(e);
+
+
+        screenManager.switchTo(ScreenState.BATTLE);
+        //===============================================================================================
+
+
+        // select -> overworld event
+        Consumer<ChooseMokeponEvent> chooseMokeponEventConsumer = event -> {
+            event.state().setPlayerMokepon(event.selectedMokepon());
+        };
+        eventBus.subscribe(ChooseMokeponEvent.class, chooseMokeponEventConsumer);
+
+        Consumer<ChooseMokeponEvent> chooseMokeponEventConsumer2 = event -> {
+            gameBgView.enable(1);
+        };
+        eventBus.subscribe(ChooseMokeponEvent.class, chooseMokeponEventConsumer2);
+        //===============================================================================================
+        // overworld -> select event
+        Consumer<ExitOverworldEvent> exitOverworldEventConsumer = event -> {
+            event.gameState().resetForNewSelection();
+        };
+        eventBus.subscribe(ExitOverworldEvent.class, exitOverworldEventConsumer);
+        //===============================================================================================
+
+        // overworld -> battle event
+        Consumer<EnterBattleEvent> enterBattleEventConsumer = event -> {
+            gameBgView.enable(0);
+        };
+        eventBus.subscribe(EnterBattleEvent.class, enterBattleEventConsumer);
+        //===============================================================================================
+
+
+        // menu bar button action
+        gameBgView.setExitBtn(primaryStage::close);
+        gameBgView.setRunAwayBtn(() -> {
+            mokeponBattleController.hide();
+            gameBgView.disable(0);
+            mokeponOverworldController.show();
+
+        });
+        gameBgView.setMainMenuBtn(() -> {
+            mokeponOverworldController.hide();
+            gameBgView.disable(1);
+            mokeponSelectController.init();
+            mokeponSelectController.show();
+        });
+        //===============================================================================================
 
         Group mainRoot = (Group) gameBgView.getBgViewRoot();
         mainRoot.getChildren().addAll(
-                mokeponSelectView.getMokeponSelectRoot()
+                mokeponSelectController.getRoot(),
+                mokeponOverworldController.getRoot(),
+                mokeponBattleController.getRoot()
         );
         Scene scene = new Scene(mainRoot);
         primaryStage.setScene(scene);
@@ -125,3 +257,4 @@ public class Main extends Application {
         Application.launch(args);
     }
 }
+

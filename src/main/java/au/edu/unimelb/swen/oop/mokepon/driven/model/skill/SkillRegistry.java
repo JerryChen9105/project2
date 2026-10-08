@@ -1,7 +1,5 @@
 package au.edu.unimelb.swen.oop.mokepon.driven.model.skill;
 
-import au.edu.unimelb.swen.oop.mokepon.battle.skill.*;
-
 import java.util.Map;
 
 public class SkillRegistry {

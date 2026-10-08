@@ -1,18 +1,19 @@
-package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
+package au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self;
 
 import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
-import au.edu.unimelb.swen.oop.mokepon.util.ItemImageLoader;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleItemView;
+import au.edu.unimelb.swen.oop.mokepon.util.battle.ItemImgViewLoader;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleItemView;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.function.Consumer;
@@ -23,19 +24,21 @@ public class FxBattleItemView implements BattleItemView {
     private HBox battleItemRoot = new HBox(10);
     private LinkedHashMap<String, Button> itemBtnMap = new LinkedHashMap<>();
 
-    private Font itemFont = FontLoader.getGostischFont(18);
+    private BooleanProperty globalDisableProperty = new SimpleBooleanProperty(false);
 
 
     public FxBattleItemView() {
-        for (ItemType itemType : ItemType.values()) {
-            Button itemBtn = new Button("0", new ImageView(ItemImageLoader.getItemImg(itemType)));
+        for (ItemType itemType : ItemType.realValues()) {
+            Button itemBtn = new Button("0", ItemImgViewLoader.getItemImgView(itemType));
+            itemBtn.setContentDisplay(ContentDisplay.TOP);
+            itemBtn.setGraphicTextGap(10);
             itemBtn.setOpacity(0.2);
             itemBtn.setStyle("-fx-pref-width: 50;" +
-                    "-fx-pref-height: 75;" +
+                    "-fx-pref-height: 85;" +
                     "-fx-background-color: #d3d3d3;" +
-                    "-fx-background-radius: 25px;" +
+                    "-fx-background-radius: 30px;" +
                     "-fx-text-fill: #000000");
-            itemBtn.setFont(itemFont);
+            itemBtn.setFont(FontLoader.getGostischFont(24));
             itemBtnMap.put(itemType.name(), itemBtn);
         }
         battleItemRoot.getChildren().addAll(itemBtnMap.values());
@@ -51,7 +54,7 @@ public class FxBattleItemView implements BattleItemView {
     }
 
     @Override
-    public void setItems(HashMap<ItemType, IntegerProperty> itemDeposit, Consumer<IntegerProperty> onUseItem) {
+    public void setItems(HashMap<ItemType, IntegerProperty> itemDeposit, Consumer<ItemType> onUseItem) {
         itemDeposit.forEach((itemType, integerProperty) -> {
             Button itemBtn = itemBtnMap.get(itemType.name());
             itemBtn.setOnMouseEntered(enter -> {
@@ -62,22 +65,20 @@ public class FxBattleItemView implements BattleItemView {
             });
             itemBtn.setOnMouseClicked(event -> {
                 itemBtn.setOpacity(0.75);
-                onUseItem.accept(integerProperty);
+                onUseItem.accept(itemType);
             });
-            integerProperty.addListener((observable, oldValue, newValue) -> {
-                if ((Integer)newValue <= 0) {
-                    itemBtn.setDisable(true);
-                } else {
-                    itemBtn.setDisable(false);
-                }
-            });
+
+            itemBtn.disableProperty().bind(
+                    integerProperty.lessThanOrEqualTo(0).or(globalDisableProperty)
+            );
+            itemBtn.textProperty().bind(integerProperty.asString());
         });
     }
 
     @Override
     public void setDisable(boolean disable) {
-        itemBtnMap.values().forEach(itemBtn -> {
-            itemBtn.setDisable(disable);
-        });
+        globalDisableProperty.set(disable);
     }
 }
+
+

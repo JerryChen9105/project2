@@ -9,3 +9,4 @@ public interface StatusBarView extends View {
     public void clear();
 
 }
+

@@ -1,7 +1,6 @@
 package au.edu.unimelb.swen.oop.mokepon.view.view_interface.bg;
 
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
-import javafx.scene.control.MenuItem;
 
 public interface GameMenuView extends View {
 
@@ -9,6 +8,11 @@ public interface GameMenuView extends View {
 
     public void disable(int index);
 
-    public MenuItem[] getMenuItemArr();
+    public void setExitAction(Runnable exitClick);
+
+    public void setRunAwayAction(Runnable runAwayAction);
+
+    public void setMainMenuAction(Runnable mainMenuAction);
 
 }
+

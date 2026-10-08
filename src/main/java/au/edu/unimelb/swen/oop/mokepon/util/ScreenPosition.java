@@ -9,8 +9,10 @@ public class ScreenPosition {
     public static final double BGWIDTH = 1280;
     public static final double BGHEIGHT = 768;
     public static final double MENUBARHEIGHT = 15;
-    public static final double SCREENWIDTH = BGWIDTH;
-    public static final double SCREENHEIGHT = BGHEIGHT + MENUBARHEIGHT;
+    public static final double WINDOWHEIGHT = 10;
+    public static final double WINDOWWIDTH = 5;
+    public static final double SCREENWIDTH = BGWIDTH + WINDOWWIDTH * 2;
+    public static final double SCREENHEIGHT = BGHEIGHT + MENUBARHEIGHT + WINDOWHEIGHT * 2;
     public static final double SCREENLEFT = SCREENBOUNDS.getMinX();
     public static final double SCREENTOP = SCREENBOUNDS.getMinY();
 

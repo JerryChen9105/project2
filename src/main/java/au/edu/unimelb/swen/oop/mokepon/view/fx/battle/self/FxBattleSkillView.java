@@ -1,8 +1,8 @@
-package au.edu.unimelb.swen.oop.mokepon.view.fx.battle;
+package au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self;
 
 import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleSkillView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleSkillView;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -24,6 +24,9 @@ public class FxBattleSkillView implements BattleSkillView {
 
 
     public FxBattleSkillView() {
+
+        skillTitle.setFont(FontLoader.getGostischFont(24));
+
         battleSkillRoot.getChildren().add(skillTitle);
         battleSkillRoot.setAlignment(Pos.CENTER);
     }
@@ -70,3 +73,4 @@ public class FxBattleSkillView implements BattleSkillView {
         });
     }
 }
+

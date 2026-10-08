@@ -14,4 +14,14 @@ public class MokeponTypeImageLoader {
         return ImageLoader.load(TYPEIMGPREFIX + mokeponType.toString().toLowerCase(Locale.ROOT) + ".png", 32, 32);
     }
 
+    /*private static final EnumMap<MokeponType, Image> imageCache = new EnumMap<>(MokeponType.class);
+
+    public static Image getTypeImg(MokeponType mokeponType) {
+        if (mokeponType == null) return null;
+
+        return imageCache.computeIfAbsent(mokeponType, type ->
+                ImageLoader.load(TYPEIMGPREFIX + type.toString().toLowerCase(Locale.ROOT) + ".png", 32, 32)
+        );
+    }*/
+
 }

@@ -52,6 +52,9 @@ public class FxMokeponListView implements MokeponListView {
         scrollPane.setPrefSize(300, 600);
 
         mokeponSelectTitle.setFont(titleFont);
+        mokeponSelectTitle.setStyle("-fx-fill: #000000;" +
+                "-fx-stroke: #ffffff;" +
+                "-fx-stroke-width: 2px;");
 
         selectBlock.getChildren().addAll(mokeponSelectTitle, scrollPane);
         selectBlock.setAlignment(Pos.CENTER);
@@ -107,3 +110,4 @@ public class FxMokeponListView implements MokeponListView {
         selectedButton = null;
     }
 }
+

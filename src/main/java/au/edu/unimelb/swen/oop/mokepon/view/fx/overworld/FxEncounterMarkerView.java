@@ -2,7 +2,7 @@ package au.edu.unimelb.swen.oop.mokepon.view.fx.overworld;
 
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.util.FontLoader;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.overworld.BattleMarkerView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.overworld.EncounterMarkerView;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -11,7 +11,7 @@ import javafx.scene.text.Text;
 
 import java.util.function.Consumer;
 
-public class FxBattleMarkerView implements BattleMarkerView {
+public class FxEncounterMarkerView implements EncounterMarkerView {
 
     private VBox battleMarkerRoot = new VBox(10);
     private Text titleTxt = new Text();
@@ -22,7 +22,7 @@ public class FxBattleMarkerView implements BattleMarkerView {
     private Consumer<Mokepon> switchToBattle;
 
 
-    public FxBattleMarkerView() {
+    public FxEncounterMarkerView() {
         titleTxt.setFont(FontLoader.getGostischFont(24));
         hintTxt.setFont(FontLoader.getGostischFont(18));
         fightBtn.setFont(FontLoader.getGostischFont(20));
@@ -67,3 +67,4 @@ public class FxBattleMarkerView implements BattleMarkerView {
         battleMarkerRoot.setVisible(visible);
     }
 }
+

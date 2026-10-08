@@ -11,7 +11,8 @@ public class Inventory {
 
 
     public Inventory() {
-        for (ItemType itemType : ItemType.values()) {
+        for (ItemType itemType : ItemType.realValues()) {
+            if (itemType == ItemType.UNKNOWN) continue;
             itemMap.put(itemType, new SimpleIntegerProperty(0));
         }
     }
@@ -23,7 +24,11 @@ public class Inventory {
 
     public void add(ItemType itemType) {
         IntegerProperty itemNum = itemMap.get(itemType);
-        itemNum.setValue(itemNum.getValue() + 1);
+        itemNum.setValue(itemNum.get() + 1);
+    }
+
+    public IntegerProperty itemIntegerProperty(ItemType itemType) {
+        return itemMap.get(itemType);
     }
 
     public int getCount(ItemType itemType) {
@@ -45,3 +50,5 @@ public class Inventory {
     }
 
 }
+
+

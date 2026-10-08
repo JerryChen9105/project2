@@ -2,11 +2,12 @@ package au.edu.unimelb.swen.oop.mokepon.controller;
 
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenManager;
 import au.edu.unimelb.swen.oop.mokepon.app.ScreenState;
+import au.edu.unimelb.swen.oop.mokepon.data.GameData;
+import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
 import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
-import au.edu.unimelb.swen.oop.mokepon.util.random.RandomSource;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
 import javafx.scene.Node;
 
@@ -17,30 +18,30 @@ public class MokeponSelectController implements ScreenController {
 
     private MokeponSelectView view;
     private GameState state;
-    private ArrayList<Mokepon> mokeponList;
     private EventBus eventBus;
-    private RandomSource randomSource;
     private ScreenManager screenManager;
+
+    private ArrayList<Mokepon> mokeponList;
 
 
     public MokeponSelectController(
             MokeponSelectView view,
             GameState state,
-            ArrayList<Mokepon> mokeponList,
             EventBus eventBus,
-            RandomSource randomSource,
             ScreenManager screenManager) {
         this.view = view;
         this.state = state;
-        this.mokeponList = mokeponList;
         this.eventBus = eventBus;
-        this.randomSource = randomSource;
         this.screenManager = screenManager;
+
+        MokeponLoader mokeponLoader = new MokeponLoader(GameData.getGameData());
+        this.mokeponList = new ArrayList<>(mokeponLoader.loadAll().values());
     }
 
 
     @Override
     public void init() {
+        state.resetForNewSelection();
         Consumer<Mokepon> btnClickEvent = mokepon -> {
             if ((state.getSelectedMokepon() == null) || !state.getSelectedMokepon().equals(mokepon)) {
                 onMokeponSelected(mokepon);
@@ -49,12 +50,15 @@ public class MokeponSelectController implements ScreenController {
             }
         };
         view.getMokeponListView().setItems(mokeponList, btnClickEvent);
+
         state.selectedMokeponProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 view.getMokeponListView().clearSelection();
                 view.getMokeponDetailView().clear();
             }
         });
+
+        view.getMokeponChooseView().setChooseAction(this::onChooseClicked);
     }
 
     @Override
@@ -89,10 +93,7 @@ public class MokeponSelectController implements ScreenController {
 
         state.setPlayerMokepon(selectedMokepon);
 
-        Mokepon enemyMokepon = mokeponList.get(randomSource.nextInt(0, mokeponList.size()));
-        state.setEnemyMokepon(enemyMokepon);
-
-        eventBus.publish(new ChooseMokeponEvent(selectedMokepon, enemyMokepon, state));
-        screenManager.switchTo(ScreenState.BATTLE);
+        eventBus.publish(new ChooseMokeponEvent(selectedMokepon, state));
+        screenManager.switchTo(ScreenState.OVERWORLD);
     }
 }
