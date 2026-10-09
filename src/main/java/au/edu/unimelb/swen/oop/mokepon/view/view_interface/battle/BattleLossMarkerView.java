@@ -4,6 +4,11 @@ import au.edu.unimelb.swen.oop.mokepon.view.view_interface.View;
 
 public interface BattleLossMarkerView extends View {
 
+    void setReturnBtn(Runnable onReturnClicked);
+
+    void setQuitBtn(Runnable onQuitClicked);
+
+    void setVisible(boolean visible);
 }
 
 

@@ -539,10 +539,6 @@ public class Main2 extends Application {
         nodeList.forEach(node -> root.getChildren().add(node));
         Scene scene = new Scene(root);
 
-        /*scene.getStylesheets().add(
-                getClass().getResource("/style.css").toExternalForm()
-        );*/
-
         gameWindow.setX(relativeCenterX(screenBounds.getWidth() / 2, screenWidth));
         gameWindow.setY(screenTop);
 

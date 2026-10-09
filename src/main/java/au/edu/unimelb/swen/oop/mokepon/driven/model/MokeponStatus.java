@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 public class MokeponStatus {
 
+    private String playerID = "player";
     private int currentHP;
     private int currentEnergy;
     private int currentStrength;
@@ -70,6 +71,10 @@ public class MokeponStatus {
         return effectList;
     }
 
+    public String getPlayerID() {
+        return playerID;
+    }
+
     public void setCurrentHP(int hp) {
         currentHP = hp;
     }
@@ -94,6 +99,10 @@ public class MokeponStatus {
         currentDodge = dodge;
     }
 
+    public void setPlayerID(String playerID) {
+        this.playerID = playerID;
+    }
+
     public void takeDamage(int damage) {
         if (currentHP <= damage) currentHP = 0;
         else currentHP -= damage;
@@ -110,21 +119,17 @@ public class MokeponStatus {
         return false;
     }
 
-    public Effect[] updateEffect(BattleContext battleContext) {
-        if (effectList.isEmpty()) return null;
+    public void updateEffect(Mokepon owner, BattleContext battleContext) {
 
         ArrayList<Effect> expiredEffects = new ArrayList<>();
-        Iterator<Effect> iterator = effectList.iterator();
-        while (iterator.hasNext()) {
-            Effect effect = iterator.next();
-            effect.onTurnEnd(this, battleContext);
-            if (effect.isExpired()) {
-                expiredEffects.add(effect);
-                iterator.remove();
-            }
-        }
-        if (expiredEffects.isEmpty()) return null;
-        return expiredEffects.toArray(new Effect[0]);
+        effectList.forEach(effect -> {
+            effect.onTurnEnd(owner.getMokeponStatus(), battleContext);
+            if (effect.isExpired()) expiredEffects.add(effect);
+        });
+        expiredEffects.forEach(effect -> {
+            effectList.remove(effect);
+        });
+
     }
 
 }

@@ -44,6 +44,7 @@ public class FxWinMarkerView implements BattleWinMarkerView {
         winMarkerBlock.setAlignment(Pos.CENTER);
 
         winMarkerRoot.getChildren().addAll(winMarkerShadow, winMarkerBg, winMarkerBlock);
+        winMarkerRoot.setAlignment(Pos.CENTER);
     }
 
 

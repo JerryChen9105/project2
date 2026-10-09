@@ -9,6 +9,7 @@ import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleService;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
 import au.edu.unimelb.swen.oop.mokepon.event.BattleToOverworldEvent;
+import au.edu.unimelb.swen.oop.mokepon.event.BattleToSelectEvent;
 import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
 import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
@@ -43,6 +44,8 @@ public class MokeponBattleController implements ScreenController {
         this.context = context;
         this.randomSource = randomSource;
         this.screenManager = screenManager;
+
+        view.getWinMarkerView().setReturnBtn(this::onReturnOverworldClicked);
     }
 
 
@@ -53,15 +56,25 @@ public class MokeponBattleController implements ScreenController {
         if (self == null || enemy == null) return;
 
         self.setMokeponStatus();
+        self.getMokeponStatus().setPlayerID("Player");
         enemy.setMokeponStatus();
+        enemy.getMokeponStatus().setPlayerID("Enemy");
         view.getSelfView().setDisable(false);
         view.getSelfView().initSelfStatus(self, this::onSkillClicked,
                 state.getInventory().getItemMap(), this::onItemUsed);
         view.getEnemyView().initEnemyStatus(enemy);
+
         view.getLogView().clear();
-        view.getLogView().append("Player chose " + self.getName() +
-                ". Began a fight against enemy " + enemy.getName() + "!\n\n");
+        view.getLogView().append(self.getMokeponStatus().getPlayerID() + " chose " + self.getName() +
+                ". Began a fight against " + enemy.getMokeponStatus().getPlayerID() + " " + enemy.getName() + "!\n\n");
+
         view.getWinMarkerView().setReturnBtn(this::onReturnOverworldClicked);
+        view.getWinMarkerView().setVisible(false);
+
+        view.getLossMarkerView().setReturnBtn(this::onReturnMainMenuClicked);
+        view.getLossMarkerView().setQuitBtn(this::onQuitClicked);
+        view.getLossMarkerView().setVisible(false);
+
     }
 
     @Override
@@ -79,15 +92,20 @@ public class MokeponBattleController implements ScreenController {
         return view.getMokeponBattleRoot();
     }
 
+
+
     private void onSkillClicked(Skill skill) {
         if (state.getPlayerMokepon().getMokeponStatus().getCurrentEnergy() < skill.getEnergyCost()) return;
 
         BattleResult battleResult = battleService.useSkill(
-                skill ,state.getPlayerMokepon(), state.getEnemyMokepon(), context
+                skill ,state.getPlayerMokepon(), state.getEnemyMokepon(), context, state.getSelfDamageMult()
         );
+
         battleResult.getMessageList().forEach(message -> {
             view.getLogView().append(message);
         });
+        flushContextLog();
+
         view.getSelfView().updateSelfStatus(state.getPlayerMokepon());
         view.getEnemyView().updateEnemyStatus(state.getEnemyMokepon());
         if (battleResult.isEnded()) {
@@ -97,6 +115,7 @@ public class MokeponBattleController implements ScreenController {
 
         runEnemyTurn();
     }
+
 
     private void onItemUsed(ItemType itemType) {
         state.getInventory().use(itemType);
@@ -128,18 +147,49 @@ public class MokeponBattleController implements ScreenController {
         view.getEnemyView().updateEnemyStatus(state.getEnemyMokepon());
     }
 
+    private void onReturnOverworldClicked() {
+        view.getWinMarkerView().setVisible(false);
+        state.setOverworldIsEnded(false);
+        state.getEnemyMokepon().clearMokeponStatus();
+        state.getPlayerMokepon().clearMokeponStatus();
+        eventBus.publish(new BattleToOverworldEvent());
+        screenManager.switchTo(ScreenState.OVERWORLD);
+    }
+
+    private void onReturnMainMenuClicked() {
+        view.getLossMarkerView().setVisible(false);
+        state.setOverworldIsEnded(true);
+        state.resetForNewSelection();
+        eventBus.publish(new BattleToSelectEvent());
+        screenManager.switchTo(ScreenState.SELECT);
+    }
+
+    private void onQuitClicked() {
+        screenManager.terminateGame();
+    }
+
+
+
+
+    private void flushContextLog() {
+        context.getLogList().forEach(message -> {
+            view.getLogView().append(message);
+        });
+        context.getLogList().clear();
+    }
+
     private void runEnemyTurn() {
         Mokepon enemy = state.getEnemyMokepon();
         Mokepon player = state.getPlayerMokepon();
 
         BattleResult battleResult = battleService.useEnemyRandomSkill(
-                enemy, player, context
+                enemy, player, context, state.getEnemyDamageMult()
         );
+
         battleResult.getMessageList().forEach(message -> {
             view.getLogView().append(message);
         });
-        view.getSelfView().updateSelfStatus(player);
-        view.getEnemyView().updateEnemyStatus(enemy);
+        flushContextLog();
 
         runTurnEnd();
     }
@@ -147,32 +197,33 @@ public class MokeponBattleController implements ScreenController {
     private void runTurnEnd() {
         Mokepon enemy = state.getEnemyMokepon();
         Mokepon player = state.getPlayerMokepon();
-        handleBattleEnd(battleService.resolveTurnEnd(player, enemy, context));
+
+        BattleOutcome outcome = battleService.resolveTurnEnd(player, enemy, context);
+        flushContextLog();
+
+        view.getSelfView().updateSelfStatus(player);
+        view.getEnemyView().updateEnemyStatus(enemy);
+
+        handleBattleEnd(outcome);
     }
 
     private void handleBattleEnd(BattleOutcome battleOutcome) {
         switch (battleOutcome) {
             case PLAYER_WIN -> {
-                view.getLogView().append("You won the battle!\n");
-                state.fightCountProperty().set(state.getFightCount() + 1);
+                view.getLogView().append("\tYou won\n");
                 view.getSelfView().setDisable(true);
+                state.fightCountProperty().set(state.getFightCount() + 1);
                 view.getWinMarkerView().setVisible(true);
             }
             case PLAYER_LOSE -> {
-                view.getLogView().append("You lost the battle...\n");
+                view.getLogView().append("\tYou loss\n");
                 view.getSelfView().setDisable(true);
+                view.getLossMarkerView().setVisible(true);
             }
             default -> {
                 view.getLogView().append("\n");
             }
         }
-    }
-
-    private void onReturnOverworldClicked() {
-        state.getEnemyMokepon().clearMokeponStatus();
-        state.getPlayerMokepon().clearMokeponStatus();
-        screenManager.switchTo(ScreenState.OVERWORLD);
-        eventBus.publish(new BattleToOverworldEvent());
     }
 
 }

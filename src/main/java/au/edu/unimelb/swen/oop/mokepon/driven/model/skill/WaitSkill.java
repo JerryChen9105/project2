@@ -26,11 +26,10 @@ public class WaitSkill implements Skill {
     }
 
     @Override
-    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext, double damageMult) {
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("Player's " + user.getName() + " used Wait!\n");
+        messageList.add(user.getMokeponStatus().getPlayerID() + "'s " + user.getName() + " used Wait!\n");
         if (user.getMokeponStatus().getCurrentEnergy() >= user.getMaxEnergy()) {
-            user.getMokeponStatus().setCurrentDefence(user.getMaxEnergy());
             messageList.add("\tBut their energy is filled.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }

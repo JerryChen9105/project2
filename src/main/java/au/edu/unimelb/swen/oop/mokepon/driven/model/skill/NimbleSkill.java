@@ -16,15 +16,15 @@ public class NimbleSkill implements Skill {
     }
 
     @Override
-    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext, double damageMult) {
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("Player's " + user.getName() + " used Nimble!\n");
+        messageList.add(user.getMokeponStatus().getPlayerID() + "'s " + user.getName() + " used Nimble!\n");
         if (user.getMokeponStatus().getCurrentDodge() >= 100) {
             user.getMokeponStatus().setCurrentDodge(100);
             messageList.add("\tBut their dodge is filled.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
-        int dodgeImcrement = GainCalculator.calculate(1, 9);
+        int dodgeImcrement = GainCalculator.calculate(1, 10);
         user.getMokeponStatus().setCurrentDodge(user.getMokeponStatus().getCurrentDodge() + dodgeImcrement);
         if (user.getMokeponStatus().getCurrentDodge() > 100) {
             dodgeImcrement = user.getMokeponStatus().getCurrentDodge() - 100;

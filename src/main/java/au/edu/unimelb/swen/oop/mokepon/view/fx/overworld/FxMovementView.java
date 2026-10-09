@@ -113,5 +113,10 @@ public class FxMovementView implements MovementView {
     public void setRightAction(Runnable rightAction) {
         rightBtn.setOnAction(action -> rightAction.run());
     }
+
+    @Override
+    public void setDisable(boolean disable) {
+        for (Button btn : btnArr) btn.setDisable(disable);
+    }
 }
 

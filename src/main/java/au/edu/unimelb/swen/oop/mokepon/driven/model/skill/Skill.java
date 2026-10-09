@@ -8,7 +8,7 @@ public interface Skill {
 
     public String getName();
     public int getEnergyCost();
-    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext);
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext, double damageMult);
 
 }
 

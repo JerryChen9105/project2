@@ -56,11 +56,23 @@ public class MokeponOverworldController implements ScreenController {
 
         view.getExitMarkerView().setReturnButton(this::onReturnClicked);
         view.getExitMarkerView().setQuitButton(this::onQuitClicked);
+
+        gameState.fightCountProperty().addListener(_ -> {
+            if (gameState.getEnemyMokepon() == null) return;
+            view.getStatusBarView().setStatusText("You beat the enemy " + gameState.getEnemyMokepon().getName() + "!");
+            view.getTileView().popEntity(overworldSystem.getPlayerCoordinate());
+            overworldSystem.checkOutEnemyType();
+        });
     }
 
 
     @Override
     public void init() {
+        view.getExitMarkerView().setVisible(false);
+        view.getEncounterMarkerView().setVisible(false);
+        view.getStatusBarView().clear();
+        view.getMovementView().setDisable(false);
+
         if (!gameState.isOverworldIsEnded()) return;
 
         initOverworldSys();
@@ -83,12 +95,6 @@ public class MokeponOverworldController implements ScreenController {
         view.getPlayerStatisticView().setFightCount(gameState.fightCountProperty());
 
 
-        view.getStatusBarView().clear();
-
-        view.getExitMarkerView().setVisible(false);
-
-        view.getEncounterMarkerView().setVisible(false);
-
         gameState.setOverworldIsEnded(false);
     }
 
@@ -102,14 +108,6 @@ public class MokeponOverworldController implements ScreenController {
                 ItemInfoLoader.getCoordinateItemMap());
     }
 
-    private void handleMovement(int dx, int dy) {
-        OverworldStatus overworldStatus = overworldSystem.movePlayer(dx, dy);
-        if (playerMoveControl(overworldStatus)) {
-            Coordinate realPos = overworldSystem.getPlayerCoordinate();
-            view.getTileView().putPlayer(realPos);
-        }
-    }
-
     private void onUpClicked() {
         handleMovement(0, -1);
     }
@@ -121,6 +119,14 @@ public class MokeponOverworldController implements ScreenController {
     }
     private void onRightClicked() {
         handleMovement(1, 0);
+    }
+
+    private void handleMovement(int dx, int dy) {
+        OverworldStatus overworldStatus = overworldSystem.movePlayer(dx, dy);
+        if (playerMoveControl(overworldStatus)) {
+            Coordinate realPos = overworldSystem.getPlayerCoordinate();
+            view.getTileView().putPlayer(realPos);
+        }
     }
 
     private boolean playerMoveControl(OverworldStatus overworldStatus) {
@@ -144,6 +150,8 @@ public class MokeponOverworldController implements ScreenController {
                 return true;
             }
             case ENEMY -> {
+                view.getMovementView();
+
                 String enemyHint = "";
                 int enemyHasAdv = 0;
                 EnemyType enemyType = overworldSystem.checkCurEnemyType();
@@ -173,6 +181,8 @@ public class MokeponOverworldController implements ScreenController {
                 view.getEncounterMarkerView().setVisible(true);
 
                 view.getStatusBarView().setStatusText("Encountered a wild Mokepon!");
+
+                view.getMovementView().setDisable(true);
                 return true;
             }
             case EXIT -> {
@@ -218,6 +228,8 @@ public class MokeponOverworldController implements ScreenController {
 
     private void onRunAwayClicked() {
         view.getEncounterMarkerView().setVisible(false);
+
+        view.getMovementView().setDisable(false);
     }
 
     private void onFightClicked() {
@@ -229,6 +241,9 @@ public class MokeponOverworldController implements ScreenController {
 
         double selfDamageMult = (double)TerrainAdvantage.hasTerrainAdvantage(gameState.getPlayerMokepon().getMokeponType(),
                 overworldSystem.checkCurTileType()) / 2 + 1;
+
+        gameState.setSelfDamageMult(selfDamageMult);
+        gameState.setEnemyDamageMult(enemyDamageMult);
         eventBus.publish(new EnterBattleEvent(gameState, selfDamageMult, enemyDamageMult));
         screenManager.switchTo(ScreenState.BATTLE);
     }

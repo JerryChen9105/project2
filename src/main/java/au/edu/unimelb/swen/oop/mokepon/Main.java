@@ -21,12 +21,9 @@ import au.edu.unimelb.swen.oop.mokepon.view.GameBgView;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponBattleView;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponOverworldView;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleCardView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleNameView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxWinMarkerView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.*;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.enemy.FxBattleEnemyView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleItemView;
-import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleLogView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleSelfView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleSkillView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.bg.FxGameMenuView;
@@ -34,12 +31,9 @@ import au.edu.unimelb.swen.oop.mokepon.view.fx.overworld.*;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponChooseView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleNameView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleWinMarkerView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.*;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.enemy.BattleEnemyView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleItemView;
-import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleLogView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleSelfView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleSkillView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.overworld.*;
@@ -145,13 +139,14 @@ public class Main extends Application {
 
         BattleLogView fxBattleLogView = new FxBattleLogView();
         BattleWinMarkerView fxWinMarkerView = new FxWinMarkerView();
+        BattleLossMarkerView fxLossMarkerView = new FxLossMarkerView();
 
         MokeponBattleView mokeponBattleView = new MokeponBattleView(
                 fxBattleSelfView,
                 fxBattleEnemyView,
                 fxBattleLogView,
                 fxWinMarkerView,
-                null
+                fxLossMarkerView
         );
 
         BattleService battleService = new BattleService(randomSource);
@@ -166,25 +161,11 @@ public class Main extends Application {
         //===============================================================================================
 
 
+
         // test space
-        /*screenManager.switchTo(ScreenState.SELECT);
-
-        MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
-        Mokepon a = mokeponLoader.load("Stormtalon");
-        Mokepon e = mokeponLoader.load("Sprigkid");
-        a.setMokeponStatus();
-        e.setMokeponStatus();
-        gameState.setPlayerMokepon(a);
-        gameState.setEnemyMokepon(e);
-
-        gameState.getInventory().add(ItemType.COFFEE);
-        gameState.getInventory().add(ItemType.POISON);
-
-        fxBattleEnemyView.initEnemyStatus(e);
-
-
-        screenManager.switchTo(ScreenState.BATTLE);*/
         //===============================================================================================
+
+
 
 
         // select -> overworld event
@@ -207,6 +188,7 @@ public class Main extends Application {
         eventBus.subscribe(ExitOverworldEvent.class, exitOverworldEventConsumer);
         //===============================================================================================
 
+
         // overworld -> battle event
         Consumer<EnterBattleEvent> enterBattleEventConsumer = event -> {
             gameBgView.enable(0);
@@ -226,9 +208,16 @@ public class Main extends Application {
         eventBus.subscribe(BattleToOverworldEvent.class, battleToOverworldEventConsumer);
         //===============================================================================================
 
-        // battle -> select event
 
+        // battle -> select event
+        Consumer<BattleToSelectEvent> battleToSelectEventConsumer = event -> {
+            gameBgView.disable(0);
+            gameBgView.disable(1);
+        };
+        eventBus.subscribe(BattleToSelectEvent.class, battleToSelectEventConsumer);
         //===============================================================================================
+
+
 
 
         // menu bar button action
@@ -246,6 +235,8 @@ public class Main extends Application {
         });
         //===============================================================================================
 
+
+
         Group mainRoot = (Group) gameBgView.getBgViewRoot();
         mainRoot.getChildren().addAll(
                 mokeponSelectController.getRoot(),
@@ -255,7 +246,6 @@ public class Main extends Application {
         Scene scene = new Scene(mainRoot);
         primaryStage.setScene(scene);
         primaryStage.show();
-
         screenManager.switchTo(ScreenState.SELECT);
 
     }

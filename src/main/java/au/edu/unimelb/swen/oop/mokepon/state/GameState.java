@@ -91,6 +91,7 @@ public class GameState {
         playerMokepon.setValue(null);
         enemyMokepon.setValue(null);
         inventory.clear();
+        fightCount.setValue(0);
     }
 
 }

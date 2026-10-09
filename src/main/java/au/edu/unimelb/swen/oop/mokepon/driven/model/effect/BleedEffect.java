@@ -21,12 +21,12 @@ public class BleedEffect implements Effect {
             owner.takeDamage(bleedDamage);
             remainingTurn--;
         }
-        if (isExpired()) battleContext.log("The bleeding stopped.");
+        if (isExpired()) battleContext.log("The bleeding stopped.\n");
     }
 
     @Override
     public boolean isExpired() {
-        return remainingTurn <= 0;
+        return remainingTurn < 0;
     }
 
     @Override

@@ -12,5 +12,7 @@ public interface MovementView extends View {
 
     public void setRightAction(Runnable rightAction);
 
+    public void setDisable(boolean disable);
+
 }
 

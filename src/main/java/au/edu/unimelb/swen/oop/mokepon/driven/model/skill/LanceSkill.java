@@ -18,17 +18,19 @@ public class LanceSkill implements Skill {
     }
 
     @Override
-    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
+    public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext, double damageMult) {
         boolean hit = HitCalculator.check(user.getMokeponStatus(), target.getMokeponStatus());
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("Player's " + user.getName() + " used Lance!\n");
+        messageList.add(user.getMokeponStatus().getPlayerID() + "'s " + user.getName() + " used Lance!\n");
 
         if (!hit) {
             messageList.add("\tBut they missed.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
         }
 
-        int damage = DamageCalculator.calculate(user.getMokeponStatus(), target.getMokeponStatus(), 0.5);
+        int damage = DamageCalculator.calculate(user.getMokeponStatus(),
+                target.getMokeponStatus(),
+                0.5 + (damageMult - 1));
         target.getMokeponStatus().takeDamage(damage);
 
         target.getMokeponStatus().addEffect(new BleedEffect(user.getMokeponStatus().getCurrentStrength()));

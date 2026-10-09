@@ -20,15 +20,15 @@ public class BattleService {
     }
 
 
-    public BattleResult useSkill(Skill skill, Mokepon self, Mokepon other, BattleContext battleContext) {
+    public BattleResult useSkill(Skill skill, Mokepon self, Mokepon other, BattleContext battleContext, double damageMult) {
         self.getMokeponStatus().setCurrentEnergy(self.getMokeponStatus().getCurrentEnergy() - skill.getEnergyCost());
-        BattleResult skillResult = skill.execute(self, other, battleContext);
+        BattleResult skillResult = skill.execute(self, other, battleContext, damageMult);
         BattleOutcome outcome = checkBattleEnd(self, other);
         if (outcome != BattleOutcome.ONGOING) return new BattleResult(skillResult.getMessageList(), outcome);
         return skillResult;
     }
 
-    public BattleResult useEnemyRandomSkill(Mokepon self, Mokepon other, BattleContext battleContext) {
+    public BattleResult useEnemyRandomSkill(Mokepon self, Mokepon other, BattleContext battleContext, double damageMult) {
         ArrayList<Skill> availableSkillList = new ArrayList<>();
         self.getMokeponStatus().getSkillList().forEach(skill -> {
             if (skill.getEnergyCost() <= self.getMokeponStatus().getCurrentEnergy()) {
@@ -38,19 +38,17 @@ public class BattleService {
 
         Skill chosenSkill = availableSkillList.get(randomSource.nextInt(0, availableSkillList.size()));
 
-        return useSkill(chosenSkill, self, other, battleContext);
+        return useSkill(chosenSkill, self, other, battleContext, damageMult);
     }
 
     public BattleOutcome resolveTurnEnd(Mokepon player, Mokepon enemy, BattleContext context) {
-        // 需求：先结算敌人的状态
-        Effect[] enemyExpiredEffectArr = enemy.getMokeponStatus().updateEffect(context);
-        // （这里需要确保您的 Effect 在触发 onTurnEnd 时，如果造成了伤害，要写进 context.log 中）
+        enemy.getMokeponStatus().updateEffect(enemy, context);
+        //System.out.println(enemy.getMokeponStatus().getEffectList().size());
         if (enemy.getMokeponStatus().getCurrentHP() <= 0) {
             return BattleOutcome.PLAYER_WIN;
         }
-
-        // 敌人没死，再结算玩家的状态
-        Effect[] playerExpiredEffectArr = player.getMokeponStatus().updateEffect(context);
+        player.getMokeponStatus().updateEffect(player, context);
+        //System.out.println(player.getMokeponStatus().getEffectList().size());
         if (player.getMokeponStatus().getCurrentHP() <= 0) {
             return BattleOutcome.PLAYER_LOSE;
         }

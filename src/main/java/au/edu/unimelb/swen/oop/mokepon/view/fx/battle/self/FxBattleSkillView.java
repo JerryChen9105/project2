@@ -42,6 +42,8 @@ public class FxBattleSkillView implements BattleSkillView {
     public void setSkills(ArrayList<Skill> skillList, Consumer<Skill> onSkillClicked) {
         if (skillList.isEmpty()) return;
 
+        battleSkillRoot.getChildren().removeAll(skillBtnList);
+        skillBtnList.clear();
         skillList.forEach(skill -> {
             Button skillBtn = new Button(skill.getName() + "[" + skill.getEnergyCost() + "]");
             skillBtn.setFont(skillFont);

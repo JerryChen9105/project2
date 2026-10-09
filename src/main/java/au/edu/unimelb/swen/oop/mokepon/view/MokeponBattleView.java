@@ -30,9 +30,6 @@ public class MokeponBattleView {
     private BattleLossMarkerView battleLossMarkerView;
 
 
-    private Mokepon selfMokepon = null;
-    private Mokepon enemyMokepon = null;
-
 
 
 
@@ -49,7 +46,9 @@ public class MokeponBattleView {
 
         battleRoot.getChildren().addAll(battleSelfView.node(),
                 battleEnemyView.node(),
-                battleLogView.node());
+                battleLogView.node(),
+                battleWinMarkerView.node(),
+                battleLossMarkerView.node());
     }
 
 

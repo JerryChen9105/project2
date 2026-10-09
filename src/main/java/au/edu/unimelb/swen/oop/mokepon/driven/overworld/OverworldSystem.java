@@ -59,6 +59,15 @@ public class OverworldSystem {
         return itemType;
     }
 
+    public EnemyType checkOutEnemyType() {
+        EnemyType enemyType = coordinateEnemyMap.get(player);
+        if (enemyType == null) return null;
+
+        coordinateEnemyMap.remove(player);
+        coordinateStatusMap.remove(player);
+        return enemyType;
+    }
+
     public TileType checkCurTileType() {
         return worldMap.getTileType(player);
     }

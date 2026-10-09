@@ -18,7 +18,7 @@ public class StunEffect implements Effect {
 
     @Override
     public boolean isExpired() {
-        return remainingTurn <= 0;
+        return remainingTurn < 0;
     }
 
 
