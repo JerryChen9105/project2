@@ -42,11 +42,14 @@ public class MokeponOverworldView {
         movementView.node().setLayoutX(ScreenPosition.SCREENWIDTH - 300);
         movementView.node().setLayoutY(ScreenPosition.SCREENHEIGHT - 170);
 
+        encounterMarkerView.setVisible(false);
+
         mokeponOverworldRoot.getChildren().addAll(tileView.node(),
                 playerStatisticView.node(),
                 statusBarView.node(),
                 movementView.node(),
-                exitMarkerView.node());
+                exitMarkerView.node(),
+                encounterMarkerView.node());
     }
 
 
@@ -70,7 +73,7 @@ public class MokeponOverworldView {
         return statusBarView;
     }
 
-    public EncounterMarkerView getMokeponMarkerView() {
+    public EncounterMarkerView getEncounterMarkerView() {
         return encounterMarkerView;
     }
 

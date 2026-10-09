@@ -10,3 +10,5 @@ public interface BattleEnemyView extends View {
     public void updateEnemyStatus(Mokepon enemy);
 
 }
+
+

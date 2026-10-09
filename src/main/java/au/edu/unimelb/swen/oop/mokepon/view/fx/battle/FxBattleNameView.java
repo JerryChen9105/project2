@@ -26,3 +26,4 @@ public class FxBattleNameView implements BattleNameView {
     }
 }
 
+

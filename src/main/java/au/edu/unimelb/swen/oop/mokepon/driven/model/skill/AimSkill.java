@@ -18,7 +18,7 @@ public class AimSkill implements Skill {
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("\nPlayer's " + user.getName() + " used Aim!\n");
+        messageList.add("Player's " + user.getName() + " used Aim!\n");
         if (user.getMokeponStatus().getCurrentAccuracy() >= 100) {
             user.getMokeponStatus().setCurrentAccuracy(100);
             messageList.add("\tBut their accuracy is filled.\n");
@@ -40,3 +40,5 @@ public class AimSkill implements Skill {
         return 3;
     }
 }
+
+

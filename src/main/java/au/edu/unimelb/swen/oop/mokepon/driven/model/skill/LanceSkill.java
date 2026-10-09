@@ -1,8 +1,14 @@
 package au.edu.unimelb.swen.oop.mokepon.driven.model.skill;
 
 import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleContext;
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleOutcome;
 import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleResult;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.effect.BleedEffect;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.util.DamageCalculator;
+import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.util.HitCalculator;
+
+import java.util.ArrayList;
 
 public class LanceSkill implements Skill {
 
@@ -13,7 +19,22 @@ public class LanceSkill implements Skill {
 
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
-        return null;
+        boolean hit = HitCalculator.check(user.getMokeponStatus(), target.getMokeponStatus());
+        ArrayList<String> messageList = new ArrayList<>();
+        messageList.add("Player's " + user.getName() + " used Lance!\n");
+
+        if (!hit) {
+            messageList.add("\tBut they missed.\n");
+            return new BattleResult(messageList, BattleOutcome.ONGOING);
+        }
+
+        int damage = DamageCalculator.calculate(user.getMokeponStatus(), target.getMokeponStatus(), 0.5);
+        target.getMokeponStatus().takeDamage(damage);
+
+        target.getMokeponStatus().addEffect(new BleedEffect(user.getMokeponStatus().getCurrentStrength()));
+
+        messageList.add("\tHit " + target.getName() + " for " + damage + " damage! They started bleeding!\n");
+        return new BattleResult(messageList, BattleOutcome.ONGOING);
     }
 
     @Override
@@ -21,3 +42,5 @@ public class LanceSkill implements Skill {
         return 4;
     }
 }
+
+

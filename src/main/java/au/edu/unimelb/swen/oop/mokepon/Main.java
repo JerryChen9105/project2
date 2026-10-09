@@ -12,10 +12,7 @@ import au.edu.unimelb.swen.oop.mokepon.data.MokeponLoader;
 import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleContext;
 import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleService;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.Mokepon;
-import au.edu.unimelb.swen.oop.mokepon.event.ChooseMokeponEvent;
-import au.edu.unimelb.swen.oop.mokepon.event.EnterBattleEvent;
-import au.edu.unimelb.swen.oop.mokepon.event.EventBus;
-import au.edu.unimelb.swen.oop.mokepon.event.ExitOverworldEvent;
+import au.edu.unimelb.swen.oop.mokepon.event.*;
 import au.edu.unimelb.swen.oop.mokepon.state.GameState;
 import au.edu.unimelb.swen.oop.mokepon.state.ItemType;
 import au.edu.unimelb.swen.oop.mokepon.util.random.JavaRandomSource;
@@ -26,6 +23,7 @@ import au.edu.unimelb.swen.oop.mokepon.view.MokeponOverworldView;
 import au.edu.unimelb.swen.oop.mokepon.view.MokeponSelectView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleCardView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleNameView;
+import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxWinMarkerView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.enemy.FxBattleEnemyView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.self.FxBattleItemView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.battle.FxBattleLogView;
@@ -38,6 +36,7 @@ import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponDetailView;
 import au.edu.unimelb.swen.oop.mokepon.view.fx.select.FxMokeponListView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleCardView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleNameView;
+import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleWinMarkerView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.enemy.BattleEnemyView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.self.BattleItemView;
 import au.edu.unimelb.swen.oop.mokepon.view.view_interface.battle.BattleLogView;
@@ -110,13 +109,14 @@ public class Main extends Application {
         PlayerStatisticView fxPlayerStatisticView = new FxPlayerStatisticView();
         StatusBarView fxStatusBarView = new FxStatusBarView();
         ExitMarkerView fxExitMarkerView = new FxExitMarkerView();
+        EncounterMarkerView fxEncounterMarkerView = new FxEncounterMarkerView();
 
         MokeponOverworldView mokeponOverworldView = new MokeponOverworldView(
                 fxTileView,
                 fxMovementView,
                 fxPlayerStatisticView,
                 fxStatusBarView,
-                null,
+                fxEncounterMarkerView,
                 fxExitMarkerView);
 
         ScreenController mokeponOverworldController = new MokeponOverworldController(
@@ -144,12 +144,13 @@ public class Main extends Application {
         );
 
         BattleLogView fxBattleLogView = new FxBattleLogView();
+        BattleWinMarkerView fxWinMarkerView = new FxWinMarkerView();
 
         MokeponBattleView mokeponBattleView = new MokeponBattleView(
                 fxBattleSelfView,
                 fxBattleEnemyView,
                 fxBattleLogView,
-                null,
+                fxWinMarkerView,
                 null
         );
 
@@ -166,11 +167,11 @@ public class Main extends Application {
 
 
         // test space
-        screenManager.switchTo(ScreenState.SELECT);
+        /*screenManager.switchTo(ScreenState.SELECT);
 
         MokeponLoader mokeponLoader = new MokeponLoader(gameProperty);
-        Mokepon a = mokeponLoader.load("Sealance");
-        Mokepon e = mokeponLoader.load("Puffume");
+        Mokepon a = mokeponLoader.load("Stormtalon");
+        Mokepon e = mokeponLoader.load("Sprigkid");
         a.setMokeponStatus();
         e.setMokeponStatus();
         gameState.setPlayerMokepon(a);
@@ -182,7 +183,7 @@ public class Main extends Application {
         fxBattleEnemyView.initEnemyStatus(e);
 
 
-        screenManager.switchTo(ScreenState.BATTLE);
+        screenManager.switchTo(ScreenState.BATTLE);*/
         //===============================================================================================
 
 
@@ -200,6 +201,8 @@ public class Main extends Application {
         // overworld -> select event
         Consumer<ExitOverworldEvent> exitOverworldEventConsumer = event -> {
             event.gameState().resetForNewSelection();
+            gameState.setOverworldIsEnded(true);
+            gameBgView.disable(1);
         };
         eventBus.subscribe(ExitOverworldEvent.class, exitOverworldEventConsumer);
         //===============================================================================================
@@ -207,24 +210,39 @@ public class Main extends Application {
         // overworld -> battle event
         Consumer<EnterBattleEvent> enterBattleEventConsumer = event -> {
             gameBgView.enable(0);
+            event.state().getPlayerMokepon().clearMokeponStatus();
+            event.state().getEnemyMokepon().clearMokeponStatus();
+            event.state().getPlayerMokepon().setMokeponStatus();
+            event.state().getEnemyMokepon().setMokeponStatus();
+            event.state().setSelfDamageMult(event.selfDamageMult());
+            event.state().setEnemyDamageMult(event.enemyDamageMult());
         };
         eventBus.subscribe(EnterBattleEvent.class, enterBattleEventConsumer);
+        //===============================================================================================
+        // battle -> Overworld event
+        Consumer<BattleToOverworldEvent> battleToOverworldEventConsumer = event -> {
+            gameBgView.disable(0);
+        };
+        eventBus.subscribe(BattleToOverworldEvent.class, battleToOverworldEventConsumer);
+        //===============================================================================================
+
+        // battle -> select event
+
         //===============================================================================================
 
 
         // menu bar button action
         gameBgView.setExitBtn(primaryStage::close);
         gameBgView.setRunAwayBtn(() -> {
-            mokeponBattleController.hide();
-            gameBgView.disable(0);
-            mokeponOverworldController.show();
+            eventBus.publish(new BattleToOverworldEvent());
+            screenManager.switchTo(ScreenState.OVERWORLD);
 
         });
         gameBgView.setMainMenuBtn(() -> {
-            mokeponOverworldController.hide();
-            gameBgView.disable(1);
-            mokeponSelectController.init();
-            mokeponSelectController.show();
+            gameState.resetForNewSelection();
+            eventBus.publish(new BattleToOverworldEvent());
+            eventBus.publish(new ExitOverworldEvent(gameState));
+            screenManager.switchTo(ScreenState.SELECT);
         });
         //===============================================================================================
 
@@ -237,6 +255,8 @@ public class Main extends Application {
         Scene scene = new Scene(mainRoot);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        screenManager.switchTo(ScreenState.SELECT);
 
     }
 

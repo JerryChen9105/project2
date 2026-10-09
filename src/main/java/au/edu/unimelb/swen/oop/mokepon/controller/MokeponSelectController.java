@@ -90,9 +90,7 @@ public class MokeponSelectController implements ScreenController {
     private void onChooseClicked() {
         Mokepon selectedMokepon = state.getSelectedMokepon();
         if (selectedMokepon == null) return;
-
         state.setPlayerMokepon(selectedMokepon);
-
         eventBus.publish(new ChooseMokeponEvent(selectedMokepon, state));
         screenManager.switchTo(ScreenState.OVERWORLD);
     }

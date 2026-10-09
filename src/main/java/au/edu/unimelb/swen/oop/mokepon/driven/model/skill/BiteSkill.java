@@ -37,3 +37,5 @@ public class BiteSkill implements Skill {
         return 1;
     }
 }
+
+

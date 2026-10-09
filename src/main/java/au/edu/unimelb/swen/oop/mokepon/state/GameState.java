@@ -14,6 +14,10 @@ public class GameState {
     private IntegerProperty fightCount = new SimpleIntegerProperty(0);
     private Inventory inventory = new Inventory();
 
+    private double selfDamageMult = 1;
+    private double enemyDamageMult = 1;
+    private boolean overworldIsEnded = true;
+
     public ObjectProperty<Mokepon> selectedMokeponProperty() {
         return selectedMokepon;
     }
@@ -52,6 +56,30 @@ public class GameState {
 
     public void incrementFightCount() {
         fightCount.setValue(fightCount.getValue() + 1);
+    }
+
+    public double getSelfDamageMult() {
+        return selfDamageMult;
+    }
+
+    public double getEnemyDamageMult() {
+        return enemyDamageMult;
+    }
+
+    public void setSelfDamageMult(double selfDamageMult) {
+        this.selfDamageMult = selfDamageMult;
+    }
+
+    public void setEnemyDamageMult(double enemyDamageMult) {
+        this.enemyDamageMult = enemyDamageMult;
+    }
+
+    public boolean isOverworldIsEnded() {
+        return overworldIsEnded;
+    }
+
+    public void setOverworldIsEnded(boolean overworldIsEnded) {
+        this.overworldIsEnded = overworldIsEnded;
     }
 
     public Inventory getInventory() {

@@ -16,8 +16,6 @@ public class OverworldSystem {
     private LinkedHashMap<Coordinate, ItemType> coordinateItemMap;
     private LinkedHashMap<Coordinate, EnemyType> coordinateEnemyMap;
 
-    private Inventory inventory;
-
 
     public OverworldSystem(ArrayList<ArrayList<Character>> worldMapListMatrix,
                            Coordinate playerCoordinate,
@@ -41,9 +39,16 @@ public class OverworldSystem {
         coordinateStatusMap.put(exitCoordinate, OverworldStatus.EXIT);
     }
 
-    public int getPlayerX() { return player.getX(); }
-    public int getPlayerY() { return player.getY(); }
-    public Coordinate getPlayerCoordinate() { return new Coordinate(player.getX(), player.getY()); }
+    public int getPlayerX() {
+        return player.getX();
+    }
+    public int getPlayerY() {
+        return player.getY();
+    }
+
+    public Coordinate getPlayerCoordinate() {
+        return new Coordinate(player.getX(), player.getY());
+    }
 
     public ItemType checkOutItemType() {
         ItemType itemType = coordinateItemMap.get(player);
@@ -52,6 +57,14 @@ public class OverworldSystem {
         coordinateItemMap.remove(player);
         coordinateStatusMap.remove(player);
         return itemType;
+    }
+
+    public TileType checkCurTileType() {
+        return worldMap.getTileType(player);
+    }
+
+    public EnemyType checkCurEnemyType() {
+        return coordinateEnemyMap.get(player);
     }
 
     public OverworldStatus movePlayer(int dx, int dy) {

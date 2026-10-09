@@ -6,3 +6,4 @@ public interface BattleLossMarkerView extends View {
 
 }
 
+

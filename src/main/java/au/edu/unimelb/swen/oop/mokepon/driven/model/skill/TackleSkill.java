@@ -20,7 +20,7 @@ public class TackleSkill implements Skill {
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         boolean hit = HitCalculator.check(user.getMokeponStatus(), target.getMokeponStatus());
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("\nPlayer's " + user.getName() + " used Tackle!\n");
+        messageList.add("Player's " + user.getName() + " used Tackle!\n");
         if (!hit) {
             messageList.add("\tBut they missed.\n");
             return new BattleResult(messageList, BattleOutcome.ONGOING);
@@ -37,3 +37,5 @@ public class TackleSkill implements Skill {
         return 5;
     }
 }
+
+

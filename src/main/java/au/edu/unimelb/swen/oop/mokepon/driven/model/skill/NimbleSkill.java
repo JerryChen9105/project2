@@ -18,7 +18,7 @@ public class NimbleSkill implements Skill {
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("\nPlayer's " + user.getName() + " used Nimble!\n");
+        messageList.add("Player's " + user.getName() + " used Nimble!\n");
         if (user.getMokeponStatus().getCurrentDodge() >= 100) {
             user.getMokeponStatus().setCurrentDodge(100);
             messageList.add("\tBut their dodge is filled.\n");
@@ -39,3 +39,5 @@ public class NimbleSkill implements Skill {
         return 3;
     }
 }
+
+

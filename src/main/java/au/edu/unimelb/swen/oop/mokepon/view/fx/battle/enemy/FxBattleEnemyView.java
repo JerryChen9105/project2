@@ -62,3 +62,5 @@ public class FxBattleEnemyView implements BattleEnemyView {
     }
 
 }
+
+

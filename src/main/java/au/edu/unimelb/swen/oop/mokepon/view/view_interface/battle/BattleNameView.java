@@ -7,3 +7,5 @@ public interface BattleNameView extends View {
     public void setText(String str);
 
 }
+
+

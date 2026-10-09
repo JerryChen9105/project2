@@ -18,3 +18,5 @@ public interface BattleSelfView extends View {
 
     public void setDisable(boolean disable);
 }
+
+

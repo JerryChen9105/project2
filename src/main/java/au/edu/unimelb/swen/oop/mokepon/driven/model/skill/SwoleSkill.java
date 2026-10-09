@@ -18,7 +18,7 @@ public class SwoleSkill implements Skill {
     @Override
     public BattleResult execute(Mokepon user, Mokepon target, BattleContext battleContext) {
         ArrayList<String> messageList = new ArrayList<>();
-        messageList.add("\nPlayer's " + user.getName() + " used Swole!\n");
+        messageList.add("Player's " + user.getName() + " used Swole!\n");
         if (user.getMokeponStatus().getCurrentStrength() >= 100) {
             user.getMokeponStatus().setCurrentStrength(100);
             messageList.add("\tBut their strength is filled.\n");
@@ -40,3 +40,5 @@ public class SwoleSkill implements Skill {
         return 3;
     }
 }
+
+

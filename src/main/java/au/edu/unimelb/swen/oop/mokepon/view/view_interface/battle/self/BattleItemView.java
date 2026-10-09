@@ -15,3 +15,4 @@ public interface BattleItemView extends View {
 
 }
 
+

@@ -21,12 +21,6 @@ public class BattleService {
 
 
     public BattleResult useSkill(Skill skill, Mokepon self, Mokepon other, BattleContext battleContext) {
-        if (self.getMokeponStatus().getCurrentEnergy() < skill.getEnergyCost()) {
-            ArrayList<String> messageList = new ArrayList<>();
-            messageList.add(self.getName() + " do not have enough energy for " + skill.getName() + "!");
-            return new BattleResult(messageList, BattleOutcome.ONGOING);
-        }
-
         self.getMokeponStatus().setCurrentEnergy(self.getMokeponStatus().getCurrentEnergy() - skill.getEnergyCost());
         BattleResult skillResult = skill.execute(self, other, battleContext);
         BattleOutcome outcome = checkBattleEnd(self, other);
@@ -35,32 +29,28 @@ public class BattleService {
     }
 
     public BattleResult useEnemyRandomSkill(Mokepon self, Mokepon other, BattleContext battleContext) {
-        ArrayList<String> affordableSkillList = new ArrayList<>();
-        int currentEnergy = self.getMokeponStatus().getCurrentEnergy();
-
-        for (String skillName : self.getSkills()) {
-            Skill skill = SkillRegistry.getSkill(skillName);
-            if (skill.getEnergyCost() <= currentEnergy) {
-                affordableSkillList.add(skillName);
+        ArrayList<Skill> availableSkillList = new ArrayList<>();
+        self.getMokeponStatus().getSkillList().forEach(skill -> {
+            if (skill.getEnergyCost() <= self.getMokeponStatus().getCurrentEnergy()) {
+                availableSkillList.add(skill);
             }
-        }
+        });
 
-        int randomIndex = randomSource.nextInt(0, affordableSkillList.size());
-        Skill chosenSkill = SkillRegistry.getSkill(affordableSkillList.get(randomIndex));
+        Skill chosenSkill = availableSkillList.get(randomSource.nextInt(0, availableSkillList.size()));
 
         return useSkill(chosenSkill, self, other, battleContext);
     }
 
     public BattleOutcome resolveTurnEnd(Mokepon player, Mokepon enemy, BattleContext context) {
         // 需求：先结算敌人的状态
-        Effect[] enemyExpiredEffectArr = enemy.getMokeponStatus().updateEffect();
+        Effect[] enemyExpiredEffectArr = enemy.getMokeponStatus().updateEffect(context);
         // （这里需要确保您的 Effect 在触发 onTurnEnd 时，如果造成了伤害，要写进 context.log 中）
         if (enemy.getMokeponStatus().getCurrentHP() <= 0) {
             return BattleOutcome.PLAYER_WIN;
         }
 
         // 敌人没死，再结算玩家的状态
-        Effect[] playerExpiredEffectArr = player.getMokeponStatus().updateEffect();
+        Effect[] playerExpiredEffectArr = player.getMokeponStatus().updateEffect(context);
         if (player.getMokeponStatus().getCurrentHP() <= 0) {
             return BattleOutcome.PLAYER_LOSE;
         }

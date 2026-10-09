@@ -12,3 +12,4 @@ public interface BattleCardView extends View {
 
 }
 
+

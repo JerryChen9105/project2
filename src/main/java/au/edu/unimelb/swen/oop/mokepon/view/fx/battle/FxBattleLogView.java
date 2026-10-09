@@ -39,3 +39,4 @@ public class FxBattleLogView implements BattleLogView {
     }
 }
 
+

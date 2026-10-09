@@ -1,5 +1,6 @@
 package au.edu.unimelb.swen.oop.mokepon.driven.model;
 
+import au.edu.unimelb.swen.oop.mokepon.driven.battle.BattleContext;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.SkillRegistry;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.effect.Effect;
 import au.edu.unimelb.swen.oop.mokepon.driven.model.skill.Skill;
@@ -109,14 +110,14 @@ public class MokeponStatus {
         return false;
     }
 
-    public Effect[] updateEffect() {
+    public Effect[] updateEffect(BattleContext battleContext) {
         if (effectList.isEmpty()) return null;
 
         ArrayList<Effect> expiredEffects = new ArrayList<>();
         Iterator<Effect> iterator = effectList.iterator();
         while (iterator.hasNext()) {
             Effect effect = iterator.next();
-            effect.onTurnEnd(this);
+            effect.onTurnEnd(this, battleContext);
             if (effect.isExpired()) {
                 expiredEffects.add(effect);
                 iterator.remove();
@@ -127,3 +128,5 @@ public class MokeponStatus {
     }
 
 }
+
+
