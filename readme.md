@@ -29,3 +29,9 @@
 ### 3. Codex
 ### 4. DeepSeek
 ###
+#### ==========================================================
+## Private Code Repository Declaration
+### All the code in this project file is only for private review,
+### public reference, and self improving purpose. Academic
+### misconduct and plagiarism is strongly not recommended and
+### forbidden.
