@@ -37,6 +37,7 @@ public class TileLoader extends GameDataLoader<Integer, ArrayList<Character>> {
         return tileMap.get(obj);
     }
 
+    @Override
     public LinkedHashMap<Integer, ArrayList<Character>> loadAll() {
         return tileMap;
     }
